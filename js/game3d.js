@@ -810,6 +810,7 @@ class Game3D {
 
       const ally = e.faction === p.faction;
       const hpR = Math.max(0, e.hp / e.maxHp);
+      const enduR = Math.max(0, e.endurance / e.maxEndurance);
       const isTarget = (e === p.target);
       const isFocus = (e === p || isTarget);
       const raceName = e.race && RACES[e.race] ? RACES[e.race].name : '';
@@ -819,6 +820,7 @@ class Game3D {
       let html = '';
       html += `<div class="np-name" style="color:${nameColor}">${plateName}</div>`;
       html += `<div class="np-hp"><span style="width:${hpR * 100}%"></span></div>`;
+      html += `<div class="np-endu"><span style="width:${enduR * 100}%"></span></div>`;
       if (e.casting) html += `<div class="np-cast"><span style="width:${(1 - e.casting.remaining / e.casting.total) * 100}%"></span></div>`;
       // chips CC (cibles focus)
       if (isFocus) { const chips = EffectSystem.statusChips(e).map(c => `<span class="np-chip ${c.cls}">${c.label}</span>`).join(''); if (chips) html += `<div class="np-chips">${chips}</div>`; }
