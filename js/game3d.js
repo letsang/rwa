@@ -108,6 +108,11 @@ class Game3D {
     const csel = document.getElementById('class-select');
     const startBtn = document.getElementById('start-btn');
     const realmLabel = document.getElementById('chosen-realm-label');
+    const raceTitle = document.getElementById('selected-race-title');
+    const raceDescription = document.getElementById('selected-race-description');
+    const raceCaption = document.getElementById('selected-race-caption');
+    const classTitle = document.getElementById('selected-class-title');
+    const classDescription = document.getElementById('selected-class-description');
     const show = screen => {
       [titleScreen, realmScreen, characterScreen, loadingScreen].forEach(el => el.classList.add('hidden'));
       screen.classList.remove('hidden');
@@ -117,20 +122,52 @@ class Game3D {
       WEST:   { name: 'Royaume de l’Ouest', sigil: 'O', color: '#7fa6ed', glow: 'rgba(58,98,182,.58)', lore: 'Clans des landes, forêts noyées de brume et lames indomptées.' },
       EAST:   { name: 'Royaume de l’Est', sigil: 'E', color: '#e27a6f', glow: 'rgba(180,53,45,.58)', lore: 'Terres de braise, magie interdite et légions nées sous le soleil rouge.' },
     };
+    const racePresentation = {
+      HUMAN: 'Peuple de cités et de forteresses, les Humains se dressent avec discipline face aux guerres des royaumes.',
+      ELF: 'Anciens habitants des forêts occidentales, les Elfes cultivent une tradition de grâce, de mémoire et de magie.',
+      GOBLIN: 'Ingénieux et imprévisibles, les Gobelins survivent par leur ruse et leur parfaite connaissance des terres sauvages.',
+      TROLL: 'Nés des hautes terres du Nord, les Trolls portent dans leur stature la rudesse de la pierre et des vents glacés.',
+      DWARF: 'Forgerons et bâtisseurs opiniâtres, les Nains défendent leurs serments avec une ténacité que peu peuvent égaler.',
+      DRAKE: 'Marqués par un héritage ancien, les Drakes unissent une silhouette singulière à la fierté des clans du Nord.',
+      OGRE: 'Massifs et redoutables, les Ogres de l’Est avancent avec l’assurance de ceux que peu d’adversaires osent arrêter.',
+      DARK_ELF: 'Les Elfes Noirs manient les secrets et les traditions occultes d’un peuple façonné par les terres de l’Est.',
+      ORC: 'Guerriers endurcis par des générations de conflits, les Orcs placent la force du clan au-dessus de toute chose.',
+    };
     // Flux dicté par la matrice : ROYAUME -> RACE -> CLASSE.
     let cf = null, cr = null, cc = null;
     const check = () => startBtn.disabled = !(cf && cr && cc);
+    const showRaceDetails = rid => {
+      const R = RACES[rid];
+      raceTitle.textContent = R ? R.name : 'Race';
+      raceCaption.textContent = R ? R.name : '—';
+      raceDescription.textContent = racePresentation[rid] || 'Peuple du royaume.';
+    };
+    const clearClassDetails = () => {
+      classTitle.textContent = 'Classe';
+      classDescription.textContent = 'Choisis la voie de ton champion.';
+    };
+    const showClassDetails = cid => {
+      const C = CLASSES[cid];
+      classTitle.textContent = C ? C.name : 'Classe';
+      classDescription.textContent = C ? 'Rôle de combat : ' + C.role + '.' : 'Choisis la voie de ton champion.';
+    };
 
     // ---- Étape 3 : classes autorisées pour la race choisie ----
     const buildClasses = () => {
-      csel.innerHTML = ''; cc = null;
+      csel.innerHTML = ''; cc = null; clearClassDetails();
       if (!cr) { csel.innerHTML = '<div class="race-hint">Choisis d\'abord une race.</div>'; check(); return; }
       for (const cid of RACE_CLASSES[cr]) {
         const C = CLASSES[cid];
         const el = document.createElement('div');
         el.className = 'choice';
         el.innerHTML = `<span class="name">${C.name}</span><span class="role">${C.role}</span>`;
-        el.onclick = () => { [...csel.children].forEach(c => c.classList.remove('selected')); el.classList.add('selected'); cc = cid; check(); };
+        el.onclick = () => {
+          [...csel.children].forEach(c => c.classList.remove('selected'));
+          el.classList.add('selected');
+          cc = cid;
+          showClassDetails(cid);
+          check();
+        };
         csel.appendChild(el);
       }
     };
@@ -139,7 +176,8 @@ class Game3D {
     const buildRaces = () => {
       rsel.innerHTML = ''; cr = null;
       if (!cf) { rsel.innerHTML = '<div class="race-hint">Choisis d\'abord un royaume.</div>'; buildClasses(); return; }
-      for (const rid of FACTION_RACES[cf]) {
+      const realmRaces = FACTION_RACES[cf];
+      for (const rid of realmRaces) {
         const R = RACES[rid];
         const el = document.createElement('div');
         el.className = 'choice race-choice';
@@ -148,12 +186,21 @@ class Game3D {
           [...rsel.children].forEach(c => c.classList.remove('selected'));
           el.classList.add('selected');
           cr = rid;
+          this.menuRace = rid;
+          showRaceDetails(rid);
           this.selectRacePreview(rid);
           buildClasses();
           check();
         };
         rsel.appendChild(el);
       }
+      // La première race du royaume est présentée immédiatement, comme dans un
+      // écran de création classique. La classe reste un choix explicite.
+      cr = realmRaces[0];
+      this.menuRace = cr;
+      if (rsel.firstElementChild) rsel.firstElementChild.classList.add('selected');
+      showRaceDetails(cr);
+      this.selectRacePreview(cr);
       buildClasses();
     };
 
@@ -229,8 +276,8 @@ class Game3D {
     const scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
     scene.autoClearDepthAndStencil = true;
-    const camera = new BABYLON.UniversalCamera('racePreviewCamera', new BABYLON.Vector3(0, 3.3, -18), scene);
-    camera.fov = 0.58;
+    const camera = new BABYLON.UniversalCamera('racePreviewCamera', new BABYLON.Vector3(0, 2.5, -10), scene);
+    camera.fov = 0.62;
     camera.minZ = 0.1;
     camera.maxZ = 80;
     camera.setTarget(new BABYLON.Vector3(0, 2.7, 0));
@@ -256,7 +303,7 @@ class Game3D {
         return m;
       },
     };
-    const preview = { token, engine, scene, animLib, visuals: new Map(), selectedRace: null, ring: null };
+    const preview = { token, engine, scene, camera, animLib, visuals: new Map(), selectedRace: null };
     this.racePreview = preview;
     engine.runRenderLoop(() => { if (!scene.isDisposed) scene.render(); });
 
@@ -265,7 +312,6 @@ class Game3D {
     window.addEventListener('resize', resize);
 
     const races = FACTION_RACES[faction] || [];
-    const xPositions = [-4.8, 0, 4.8];
     try {
       await animLib.ensure('Idle');
       if (this.racePreview !== preview || token !== this.racePreviewToken) return;
@@ -286,23 +332,15 @@ class Game3D {
           visual.dispose();
           return;
         }
-        visual.setTransform(xPositions[index], 0, 0, Math.PI);
+        visual.setTransform(0, 0, 0, Math.PI);
         visual.playAnim('idle');
+        visual.setEnabled(false);
         preview.visuals.set(race, visual);
       }));
 
       if (this.racePreview !== preview || token !== this.racePreviewToken) return;
-      const ring = BABYLON.MeshBuilder.CreateTorus('racePreviewSelection', { diameter: 3.4, thickness: 0.08, tessellation: 48 }, scene);
-      ring.position.y = 0.05;
-      const ringMat = new BABYLON.StandardMaterial('racePreviewSelectionMat', scene);
-      ringMat.diffuseColor = new BABYLON.Color3(0.78, 0.64, 0.34);
-      ringMat.emissiveColor = new BABYLON.Color3(0.24, 0.16, 0.05);
-      ring.material = ringMat;
-      ring.isPickable = false;
-      ring.setEnabled(false);
-      preview.ring = ring;
       preview.races = races;
-      preview.xPositions = xPositions;
+      this.selectRacePreview(this.menuRace || races[0]);
       stage.classList.add('ready');
     } catch (err) {
       if (this.racePreview === preview) {
@@ -315,13 +353,15 @@ class Game3D {
   }
 
   selectRacePreview(race) {
+    this.menuRace = race;
     const p = this.racePreview;
-    if (!p || !p.ring || !p.races) return;
-    const index = p.races.indexOf(race);
-    if (index < 0) return;
+    if (!p || !p.races || !p.visuals.has(race)) return;
     p.selectedRace = race;
-    p.ring.position.x = p.xPositions[index];
-    p.ring.setEnabled(true);
+    for (const [rid, visual] of p.visuals) visual.setEnabled(rid === race);
+    const visual = p.visuals.get(race);
+    const height = Math.max(2, visual.modelHeight || visual.bodyTopY || 4);
+    p.camera.position.set(0, height * 0.52, -Math.max(7, height * 2.15));
+    p.camera.setTarget(new BABYLON.Vector3(0, height * 0.50, 0));
   }
 
   disposeRacePreview() {

@@ -41,18 +41,36 @@
       <h2>FORGE TON DESTIN</h2>
       <p id="chosen-realm-label"></p>
     </header>
-    <section class="creation-step">
-      <div class="step-heading"><span>01</span><div><h3>Choisis ta race</h3><p>Chaque peuple possède sa propre silhouette.</p></div></div>
-      <div id="race-preview-stage" class="race-preview-stage" aria-label="Aperçu 3D des races du royaume">
-        <canvas id="race-preview-canvas"></canvas>
-        <p id="race-preview-status">Chargement des champions…</p>
-      </div>
-      <div id="race-select" class="choice-grid race-grid"></div>
-    </section>
-    <section class="creation-step">
-      <div class="step-heading"><span>02</span><div><h3>Choisis ta classe</h3><p>Les voies disponibles dépendent de ta race.</p></div></div>
-      <div id="class-select" class="choice-grid class-grid"></div>
-    </section>
+    <div class="character-creation-layout">
+      <aside class="character-description-panel">
+        <p class="eyebrow">Description</p>
+        <h3 id="selected-race-title">Race</h3>
+        <p id="selected-race-description">Choisis un royaume pour découvrir ses peuples.</p>
+        <div class="description-separator"></div>
+        <p class="eyebrow">Voie</p>
+        <h3 id="selected-class-title">Classe</h3>
+        <p id="selected-class-description">Choisis ensuite la voie de ton champion.</p>
+      </aside>
+
+      <section class="character-model-panel">
+        <div id="race-preview-stage" class="race-preview-stage" aria-label="Aperçu 3D de la race sélectionnée">
+          <canvas id="race-preview-canvas"></canvas>
+          <p id="race-preview-status">Chargement du champion…</p>
+        </div>
+        <p id="selected-race-caption" class="selected-race-caption">—</p>
+      </section>
+
+      <aside class="character-options-panel">
+        <section class="creation-step">
+          <div class="step-heading"><span>01</span><div><h3>Race</h3><p>Peuples du royaume</p></div></div>
+          <div id="race-select" class="choice-grid race-grid"></div>
+        </section>
+        <section class="creation-step">
+          <div class="step-heading"><span>02</span><div><h3>Classe</h3><p>Voies disponibles</p></div></div>
+          <div id="class-select" class="choice-grid class-grid"></div>
+        </section>
+      </aside>
+    </div>
     <div class="creation-actions">
       <button id="character-back-btn" class="back-btn inline">← Royaumes</button>
       <button id="start-btn" class="medieval-btn primary enter-war" disabled>ENTRER DANS LA GUERRE</button>
