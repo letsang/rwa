@@ -3,7 +3,8 @@
 ## Calibration visuelle figée
 
 - La configuration exportée depuis le panneau DEV devient la baseline `CURRENT`.
-- Fog 50–100 `#969696`, contraste 1.2, lumières 1.3/1.5, HDRI 0.2 et grain 0.2.
+- Fog 50–100 `#7a7a7a`, contraste 1.2, lumières 2/1.5, HDRI 0.5,
+  grain 0.03 et softness 0.01.
 - Le shader terrain et l'ombre de contact sont synchronisés avec cette référence.
 - Le panneau DEV expose aussi `Softness / Blur`, un flou séparable à coût nul lorsqu'il est désactivé.
 

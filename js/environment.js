@@ -12,15 +12,15 @@
 
 // Palette froide/désaturée (RGB 0..1). Couleurs jamais trop pures (§26).
 const RWA_ENV = {
-  fogColor:   [0.588235, 0.588235, 0.588235], // #969696 — calibration visuelle validée
+  fogColor:   [0.478431, 0.478431, 0.478431], // #7a7a7a — calibration visuelle validée
   skyTop:     [0.46, 0.53, 0.62],   // ciel gris-bleu (zénith)
   skyHorizon: [0.68, 0.71, 0.75],   // horizon plus clair, laiteux
   sunDir:     [-0.45, -0.82, 0.35], // lumière descendante, légèrement de côté (dir de propagation)
-  sunColor:   [0.870588, 0.870588, 0.870588], // #dedede
-  // Valeurs terrain rebased depuis la calibration live #646464.
-  ambUp:      [0.282609, 0.298429, 0.318627],
-  ambDown:    [0.141304, 0.141361, 0.127451],
-  terrainSunIntensity: 1.3,
+  sunColor:   [0.6, 0.6, 0.6], // #999999
+  // Valeurs terrain rebased depuis la calibration live #666666.
+  ambUp:      [0.288261, 0.304398, 0.325000],
+  ambDown:    [0.144130, 0.144188, 0.130000],
+  terrainSunIntensity: 2.0,
   terrainAmbientIntensity: 1.388889,
   fogStart:   50,                   // unités RENDU (fog LINÉAIRE)
   fogEnd:     100,
@@ -50,13 +50,13 @@ class Environment {
     // Hémisphérique un peu plus fort + sol moins noir -> personnages/végé lisibles
     // (le terrain a son PROPRE shader calé sur RWA_ENV, non affecté).
     this.hemi = new BABYLON.HemisphericLight('rwaHemi', new BABYLON.Vector3(0, 1, 0), scene);
-    this.hemi.diffuse = BABYLON.Color3.FromHexString('#646464');
+    this.hemi.diffuse = BABYLON.Color3.FromHexString('#666666');
     this.hemi.groundColor = new BABYLON.Color3(0.34, 0.36, 0.38);
     this.hemi.intensity = 1.5;
     this.sun = new BABYLON.DirectionalLight('rwaSun', new BABYLON.Vector3(E.sunDir[0], E.sunDir[1], E.sunDir[2]), scene);
     this.sun.diffuse = c3(E.sunColor);
     this.sun.specular = new BABYLON.Color3(0.05, 0.05, 0.05);
-    this.sun.intensity = 1.3;
+    this.sun.intensity = 2.0;
 
     // --- SKY : gradient de secours, remplacé par le HDRI CC0 après chargement. ---
     this._buildSkyDome();
@@ -77,13 +77,14 @@ class Environment {
     this.softnessPasses = null;
     this._softness = 0;
 
-    // Grain fixe issu de la calibration validée (0.2 dans l'UI = 10 chez Babylon).
+    // Grain fixe issu de la calibration validée (0.03 dans l'UI = 1.5 chez Babylon).
     this._buildTuningPipeline();
     if (this.pipeline) {
       this.pipeline.grainEnabled = true;
-      this.pipeline.grain.intensity = 10;
+      this.pipeline.grain.intensity = 1.5;
       this.pipeline.grain.animated = false;
     }
+    this._applySoftness(0.01);
 
     // --- LANDMARKS (V0.4.6f) : orientation + identité de royaume, déterministes ---
     this.buildLandmarks();
@@ -339,7 +340,7 @@ class Environment {
     const hdri = new BABYLON.HDRCubeTexture('./assets/environment/kloofendal_48d_partly_cloudy_puresky_1k.hdr', scene, 256, false, true, false, true);
     hdri.name = 'rwaKloofendalPartlyCloudyHDR';
     scene.environmentTexture = hdri;
-    scene.environmentIntensity = 0.2;
+    scene.environmentIntensity = 0.5;
 
     const sky = BABYLON.MeshBuilder.CreateBox('rwaHDRSky', { size: RWA_ENV.skySize }, scene);
     sky.infiniteDistance = true; sky.isPickable = false; sky.applyFog = false;

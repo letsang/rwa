@@ -12,7 +12,7 @@ global.WORLD_SEED = 1337;
 const environmentSource = fs.readFileSync(path.join(__dirname, '../js/environment.js'), 'utf8');
 vm.runInThisContext(environmentSource, { filename: 'environment.js' });
 const Environment = window.Environment;
-Environment.prototype._buildHDRISky = function () { this.scene.environmentIntensity = 0.2; };
+Environment.prototype._buildHDRISky = function () { this.scene.environmentIntensity = 0.5; };
 Environment.prototype.buildLandmarks = function () {};
 
 const engine = new BABYLON.NullEngine();
@@ -22,13 +22,13 @@ scene.activeCamera = camera;
 const environment = new Environment(scene);
 const baseline = environment.captureTuning();
 assert.deepEqual(baseline, {
-  fog: { mode: 'linear', start: 50, end: 100, color: '#969696' },
+  fog: { mode: 'linear', start: 50, end: 100, color: '#7a7a7a' },
   grading: { saturation: 1, contrast: 1.2, exposure: 1 },
   lighting: {
-    directionalIntensity: 1.3, ambientIntensity: 1.5,
-    directionalColor: '#dedede', ambientColor: '#646464', environmentIntensity: 0.2,
+    directionalIntensity: 2, ambientIntensity: 1.5,
+    directionalColor: '#999999', ambientColor: '#666666', environmentIntensity: 0.5,
   },
-  postProcess: { sharpen: 0, vignette: 0, grain: 0.2, softness: 0 },
+  postProcess: { sharpen: 0, vignette: 0, grain: 0.03, softness: 0.01 },
 }, 'la calibration validée doit être la baseline Babylon initiale');
 const settings = JSON.parse(JSON.stringify(baseline));
 
@@ -101,8 +101,9 @@ assert.equal(uniforms.fogColor.toHexString(), '#778899');
 environment.applyTuning(baseline);
 assert.equal(scene.imageProcessingConfiguration.colorCurvesEnabled, false, 'CURRENT désactive la saturation ajoutée');
 assert.equal(environment.pipeline.grainEnabled, true, 'CURRENT restaure le grain calibré');
-assert.equal(environment.pipeline.grain.intensity, 10, 'CURRENT restaure exactement le grain 0.2');
-assert.equal(environment.softnessPasses, null, 'CURRENT supprime les passes de flou à la valeur zéro');
+assert.equal(environment.pipeline.grain.intensity, 1.5, 'CURRENT restaure exactement le grain 0.03');
+assert.equal(environment.softnessPasses.length, 2, 'CURRENT restaure les deux passes de softness');
+assert.ok(Math.abs(environment.softnessPasses[0].kernel - 1.15) < 0.001, 'CURRENT restaure exactement le softness 0.01');
 
 worldVisuals.scene.onBeforeRenderObservable.remove(worldVisuals._obs);
 scene.dispose();

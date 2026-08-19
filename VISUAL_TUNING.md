@@ -25,9 +25,9 @@ chargé automatiquement au lancement.
 ## Référence visuelle active
 
 La baseline `CURRENT` est figée avec la calibration validée : fog linéaire
-50–100 (`#969696`), saturation 1, contraste 1.2, exposition 1, lumière
-directionnelle 1.3 (`#dedede`), ambiance 1.5 (`#646464`), environnement 0.2,
-grain 0.2, sans sharpen ni vignette, et ombre de contact à 0.5.
+50–100 (`#7a7a7a`), saturation 1, contraste 1.2, exposition 1, lumière
+directionnelle 2 (`#999999`), ambiance 1.5 (`#666666`), environnement 0.5,
+grain 0.03, softness 0.01, sans sharpen ni vignette, et ombre de contact à 0.5.
 
 ## Paramètres réellement exposés
 
