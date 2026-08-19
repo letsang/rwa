@@ -302,6 +302,8 @@ caméra, de contrôle territorial et de simulation reste active.
   compatible lors de l'ouverture de l'écran de création ou d'un changement de race ;
 - remplacement des titres texte Race et Classe par deux panneaux illustrés centrés
   dans la colonne d'options de l'écran de création ;
+- remplacement du fond de chargement par `title-background3.png` et simplification
+  de son en-tête en un unique libellé `Chargement`, sans diamant décoratif ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges

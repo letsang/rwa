@@ -159,13 +159,11 @@ html, body {
 .fixed-controls > div { display: flex; justify-content: space-between; gap: 12px; margin: 9px 0; color: #aeb3bb; font-size: 12px; }
 .fixed-controls kbd { color: #d7c59e; font: 600 10px 'Myriad Pro'; }
 .modal-close { position: absolute; top: 10px; right: 14px; border: 0; background: transparent; color: #aaa; font-size: 27px; cursor: pointer; }
-.loading-screen { z-index: 250; flex-direction: column; background: radial-gradient(circle at center, #202731, #07090c 62%); color: #d9cfba; }
+.loading-screen { z-index: 250; flex-direction: column; background: linear-gradient(rgba(5,9,13,.28), rgba(5,9,13,.42)), url('./assets/ui/title-background3.png') center/cover no-repeat; color: #d9cfba; }
 .loading-screen h2 { font: 700 30px 'Minion Pro'; letter-spacing: .18em; margin: 16px 0 20px; }
 .loading-screen p { color: #858b91; letter-spacing: .08em; }
-.loading-sigil { color: #c4a45f; font-size: 32px; animation: sigilPulse 1.3s ease-in-out infinite; }
 .loading-bar { width: min(380px, 70vw); height: 2px; background: #272c32; margin-bottom: 13px; overflow: hidden; }
 .loading-bar span { display: block; height: 100%; width: 38%; background: #c1a158; animation: loadingSweep 1.2s ease-in-out infinite; }
-@keyframes sigilPulse { 50% { opacity: .35; transform: scale(.8) rotate(45deg); } }
 @keyframes loadingSweep { from { transform: translateX(-105%); } to { transform: translateX(270%); } }
 
 @media (max-width: 860px) {

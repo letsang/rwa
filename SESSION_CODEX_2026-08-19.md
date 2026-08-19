@@ -98,6 +98,9 @@ même manière sa première classe disponible.
 Les titres texte des deux grilles sont remplacés par les panneaux illustrés Race et
 Classe, centrés au-dessus de leurs choix respectifs et affichés à 60 % de leur
 premier calibrage d'intégration.
+L'écran de chargement utilise `assets/ui/title-background3.png` en plein écran.
+Son diamant et le titre « Le royaume t'attend » sont remplacés par le simple libellé
+« Chargement » ; la barre et le statut détaillé restent visibles.
 
 ### Répartition canonique actuelle
 
