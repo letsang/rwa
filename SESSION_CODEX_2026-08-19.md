@@ -78,6 +78,8 @@ cellules fixes que celle des classes.
 Toutes les cases de race et de classe partagent maintenant exactement la même
 largeur et la même hauteur. L'action `Commencer →` est ancrée au centre inférieur
 du panneau d'options.
+La répartition desktop finale utilise 30 % pour la description, 30 % pour le modèle
+3D pleine hauteur et les 40 % restants pour les options.
 
 ### Répartition canonique actuelle
 
