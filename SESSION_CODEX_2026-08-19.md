@@ -71,6 +71,11 @@ torse plutôt que sa silhouette complète.
 Sur desktop, les trois colonnes occupent respectivement 25 %, 50 % et 25 % de la
 largeur de l'écran.
 
+L'aperçu 3D a ensuite été étendu à toute la surface de l'écran derrière les deux
+panneaux latéraux de 25 %. Les sous-titres « Peuples du royaume » et « Voies
+disponibles » ont été retirés, et la grille des races utilise désormais les mêmes
+cellules fixes que celle des classes.
+
 ### Répartition canonique actuelle
 
 | Royaume de l'Ouest | Royaume du Nord | Royaume de l'Est |
