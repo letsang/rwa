@@ -95,6 +95,8 @@ historiques de DAoC.
 La première race du royaume et la première classe compatible sont sélectionnées
 automatiquement à l'ouverture de l'écran. Un changement de race sélectionne de la
 même manière sa première classe disponible.
+Les titres texte des deux grilles sont remplacés par les panneaux illustrés Race et
+Classe, centrés au-dessus de leurs choix respectifs.
 
 ### Répartition canonique actuelle
 

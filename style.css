@@ -111,8 +111,8 @@ html, body {
 .character-model-panel { position: absolute; z-index: 0; inset: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: stretch; background: radial-gradient(circle at 50% 38%, rgba(76,86,98,.24), rgba(5,8,11,.15) 64%); }
 .creation-step { position: relative; padding: 19px 0 10px; }
 .character-options-panel .creation-step:first-child { padding-top: 0; }
-.step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
-.step-heading h3 { font: 700 20px 'Minion Pro'; letter-spacing: .06em; text-transform: uppercase; }
+.step-heading { display: flex; align-items: flex-start; justify-content: center; width: 100%; height: 60px; margin-bottom: 13px; overflow: hidden; }
+.step-heading-image { display: block; width: min(100%, 280px); height: auto; transform: translateY(-18%); }
 .choice-grid { --choice-gap: 8px; display: grid; gap: var(--choice-gap); }
 .class-grid.large { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, 44px); grid-auto-flow: row; }
 .class-grid.large .choice { display: grid; place-items: center; width: 100%; height: 44px; }
