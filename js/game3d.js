@@ -21,6 +21,13 @@ const CAM_MODES = {
 /* Secteurs de locomotion (8 dir), index = round(angleLocal/45) % 8.
    angleLocal = 0 -> mouvement vers l'avant du personnage. Sens validé par test. */
 const LOCO_SUFFIX = ['F', 'FL', 'L', 'BL', 'B', 'BR', 'R', 'FR'];
+// Clips réellement utilisés par le gameplay courant. Ils sont préchargés avant
+// de révéler la scène afin qu'aucune animation ne démarre par un chargement lazy.
+const STARTUP_ANIMATION_KEYS = [
+  'Idle',
+  ...LOCO_SUFFIX.flatMap(suffix => ['Walk_' + suffix, 'Jog_' + suffix]),
+  'Attack_01',
+];
 // Seuils d'ALLURE basés sur la VITESSE RÉELLE (unités sim/s), indépendants de la cause :
 //   0 ── LOCO_IDLE_SPEED ── Walk_* ── LOCO_JOG_SPEED ── Jog_*
 // La COURSE (Jog) est l'allure par défaut : vitesses de base ~105-115 > seuil -> Jog.
@@ -83,6 +90,10 @@ class Game3D {
 
   log(t) { UI.log(t); }
   canQuickcast() { return false; }
+  setLoadingStatus(text) {
+    const el = document.querySelector('#loading-screen p');
+    if (el) el.textContent = text;
+  }
 
   /* ================= MENU ================= */
   setupMenu() {
@@ -171,6 +182,7 @@ class Game3D {
       // Laisse le navigateur peindre l'écran de chargement avant l'initialisation 3D.
       requestAnimationFrame(() => setTimeout(async () => {
         document.getElementById('game-root').classList.remove('hidden');
+        this.setLoadingStatus('Création du champ de bataille…');
         await this.start(cf, cc, cr);
         loadingScreen.classList.add('hidden');
         this.audio.enterGame(cf);
@@ -199,10 +211,15 @@ class Game3D {
 
     this.initBabylon();
     this.buildWorld();
-    let playerVisualReady = Promise.resolve();
+    const visualPromises = [];
+    let loadedVisuals = 0;
+    this.setLoadingStatus('Chargement des personnages — 0/' + this.entities.length);
     for (const e of this.entities) {
-      const visualReady = this.buildUnit(e);
-      if (e === this.player) playerVisualReady = visualReady;
+      const visualReady = Promise.resolve(this.buildUnit(e)).finally(() => {
+        loadedVisuals++;
+        this.setLoadingStatus('Chargement des personnages — ' + loadedVisuals + '/' + this.entities.length);
+      });
+      visualPromises.push(visualReady);
     }
 
     UI.buildSkillbar(this.player);
@@ -225,8 +242,26 @@ class Game3D {
     // stream initial autour du spawn
     this.chunkManager.update(this.player.x, this.player.y);
 
-    // L'écran de chargement et title restent actifs jusqu'à ce que le joueur soit visible.
-    await playerVisualReady;
+    // L'écran de chargement et title restent actifs jusqu'à ce que TOUT le contenu
+    // visible au lancement soit prêt. Cela remplace le lazy loading perceptible des
+    // personnages, de la végétation et des animations par un chargement initial net.
+    await Promise.allSettled(visualPromises);
+    this.setLoadingStatus('Préparation de la végétation…');
+    if (this.vegetation && this.vegetation.treeAssetsReady) await this.vegetation.treeAssetsReady;
+    if (this.vegetation) this.vegetation.update(this.player.x, this.player.y);
+    if (this.water) this.water.update();
+
+    this.setLoadingStatus('Mise en cache des animations…');
+    if (this.animLib) await this.animLib.load(STARTUP_ANIMATION_KEYS);
+
+    this.setLoadingStatus('Finalisation de la scène…');
+    if (this.scene.whenReadyAsync) await this.scene.whenReadyAsync();
+
+    // Rendu de chauffe encore masqué par l'écran de chargement : compilation du
+    // shader terrain, positionnement des unités et premier remplissage des buffers.
+    this.updateCamera(0.016);
+    this.updateMeshes(0.016);
+    this.scene.render();
 
     const eng = this.engine;
     eng.runRenderLoop(() => {
@@ -258,8 +293,9 @@ class Game3D {
     cam.fov = 0.9; cam.minZ = 0.1; cam.maxZ = 950;   // fog atmosphérique (V0.4.6e) cache la coupure
     this.camera = cam; scene.activeCamera = cam;
 
-    // Bibliothèque d'animations Manny partagée (LAZY : rien n'est chargé tant qu'un
-    // personnage au rig Manny ne demande pas un clip).
+    // Bibliothèque d'animations Manny partagée. Les clips utilisés par le gameplay
+    // sont mis en cache pendant l'écran de chargement ; ensure() reste le filet de
+    // sécurité pour un futur clip qui ne ferait pas partie du lot initial.
     this.animLib = new AnimationLibrary(scene, './assets/animations/');
 
     // Lumière/fog/ciel : gérés par Environment (V0.4.6e), créé dans buildWorld.
@@ -380,8 +416,8 @@ class Game3D {
       // Appliquée au root du personnage skinné dans loadModel (pas aux bones).
       const vs = (typeof RACE_VISUAL_SCALE !== 'undefined' && RACE_VISUAL_SCALE[e.race]) || 1;
       const opts = Object.assign({}, glb, { scale: glb.scale * vs });
-      // Chargement ASYNCHRONE : la promesse du joueur pilote l'écran de chargement ;
-      // les autres personnages continuent à se charger en arrière-plan.
+      // Chargement ASYNCHRONE : toutes les promesses sont agrégées par start(), qui
+      // conserve l'écran de chargement jusqu'à ce que chaque personnage soit prêt.
       return CharacterVisual.loadModel(this, e, glb.url, opts)
         .then(cv => { e.visual = cv; e._bodyTopY = cv.bodyTopY; this.logGlbAnimsOnce(cv); })
         .catch(err => {

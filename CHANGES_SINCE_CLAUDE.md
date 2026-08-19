@@ -231,6 +231,9 @@ caméra, de contrôle territorial et de simulation reste active.
 - maintien de `title.mp3` pendant tous les menus et l'écran de chargement ;
 - attente explicite du chargement du visuel du joueur avant de masquer l'écran
   de chargement et de lancer `midplay.mp3` ;
+- extension du chargement initial à tous les personnages, aux arbres GLB, aux
+  textures/HDRI de la scène et aux animations réellement utilisées, avec un
+  premier rendu de chauffe masqué afin d'éviter leur apparition progressive ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc
