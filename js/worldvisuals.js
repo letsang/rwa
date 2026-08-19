@@ -105,16 +105,16 @@ class WorldVisualsSystem {
   }
 
   _buildTextures() {
-    this.texGrass = this._texture('rwaGrassAlbedo', 'grass_albedo.png', false);
-    this.texDirt = this._texture('rwaDirtAlbedo', 'dirt_albedo.png', false);
-    this.texRock = this._texture('rwaRockAlbedo', 'rock_albedo.png', false);
-    this.texWet = this._texture('rwaMudAlbedo', 'mud_albedo.png', false);
+    this.texGrass = this._texture('rwaGrassAlbedo', 'grass_albedo.jpg', false);
+    this.texDirt = this._texture('rwaDirtAlbedo', 'dirt_albedo.jpg', false);
+    this.texRock = this._texture('rwaRockAlbedo', 'rock_albedo.jpg', false);
+    this.texWet = this._texture('rwaMudAlbedo', 'mud_albedo.jpg', false);
     this.normGrass = this._texture('rwaGrassNormal', 'grass_normal.jpg', true);
     this.normDirt = this._texture('rwaDirtNormal', 'dirt_normal.jpg', true);
     this.normRock = this._texture('rwaRockNormal', 'rock_normal.jpg', true);
     this.normWet = this._texture('rwaMudNormal', 'mud_normal.jpg', true);
-    this.roughGrass = this._texture('rwaGrassRoughness', 'grass_rough.png', true);
-    this.roughDirt = this._texture('rwaDirtRoughness', 'dirt_rough.png', true);
+    this.roughGrass = this._texture('rwaGrassRoughness', 'grass_rough.jpg', true);
+    this.roughDirt = this._texture('rwaDirtRoughness', 'dirt_rough.jpg', true);
     this.roughRock = this._texture('rwaRockRoughness', 'rock_rough.jpg', true);
     this.roughWet = this._texture('rwaMudRoughness', 'mud_rough.jpg', true);
   }
@@ -138,7 +138,7 @@ uniform vec3 fogColor; uniform vec2 fogRange; uniform vec3 camPos; uniform float
 vec3 sampAlb(sampler2D s, vec2 uv){
   vec3 det = texture2D(s, uv).rgb;
   float m = texture2D(s, uv*macroScale).r;         // grande variation
-  return det * mix(0.82, 1.20, m);
+  return det * mix(0.78, 1.06, m);
 }
 vec3 unpackNormal(sampler2D s, vec2 uv){ return texture2D(s, uv).rgb*2.0-1.0; }
 void main(void){
@@ -146,11 +146,11 @@ void main(void){
   vec2 uv = vUV;
   vec3 albedo = sampAlb(grassTex,uv)*w.r + sampAlb(dirtTex,uv)*w.g + sampAlb(rockTex,uv)*w.b + sampAlb(wetTex,uv)*w.a;
   // variation couleur micro
-  float cv = 0.90 + 0.18 * texture2D(dirtTex, vPosW.xz*0.02).g;
+  float cv = 0.86 + 0.12 * texture2D(dirtTex, vPosW.xz*0.02).g;
   albedo *= cv;
   // Normales PBR mélangées avec les mêmes poids que l'albedo.
   vec3 nrm = normalize(unpackNormal(grassNormTex,uv)*w.r + unpackNormal(dirtNormTex,uv)*w.g + unpackNormal(rockNormTex,uv)*w.b + unpackNormal(wetNormTex,uv)*w.a);
-  float nStrength = 0.42 + 0.48*w.b;               // rock plus marqué
+  float nStrength = 0.26 + 0.32*w.b;               // relief lisible sans bruit blanc
   vec3 Ng = normalize(vNormalW);
   vec3 N = normalize(Ng + vec3(1.0,0.0,0.0)*nrm.x*nStrength + vec3(0.0,0.0,1.0)*nrm.y*nStrength);
   // éclairage
@@ -158,7 +158,8 @@ void main(void){
   float ndl = max(dot(N, Ld), 0.0);
   float hemi = 0.5 + 0.5*N.y;
   vec3 amb = mix(ambDown, ambUp, hemi);
-  vec3 lit = albedo * (amb + sunColor*ndl);
+  // Budget lumineux borné : empêche ambiance + soleil de clipper les albedos clairs.
+  vec3 lit = albedo * (amb*0.68 + sunColor*ndl*0.58);
   // Roughness PBR : contrôle conjoint de la largeur et de l'intensité spéculaire.
   float roughness = texture2D(grassRoughTex,uv).r*w.r + texture2D(dirtRoughTex,uv).r*w.g + texture2D(rockRoughTex,uv).r*w.b + texture2D(wetRoughTex,uv).r*w.a;
   vec3 V = normalize(camPos - vPosW);

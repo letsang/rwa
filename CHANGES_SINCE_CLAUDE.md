@@ -212,6 +212,27 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
 Cette modification concerne uniquement la présentation du HUD. La logique de
 caméra, de contrôle territorial et de simulation reste active.
 
+## Correction du terrain blanc
+
+L'audit visuel a révélé que les cartes Poly Haven avaient été affectées aux
+mauvais slots lors de leur première intégration : les fichiers utilisés comme
+normales étaient en réalité les diffuses colorées, tandis que les albedos runtime
+étaient des cartes en niveaux de gris. Le shader ne pouvait donc produire qu'un
+terrain gris-blanc.
+
+La correction comprend :
+
+- remplacement des 12 cartes par les variantes officielles Poly Haven 1K :
+  Diffuse, Normal OpenGL et Roughness pour grass/dirt/rock/mud ;
+- validation MD5 de chaque fichier contre l'API officielle Poly Haven ;
+- ajout des quatre URL sources précises dans `assets/SOURCES.txt` ;
+- réduction de la modulation macro qui surexposait les pixels clairs ;
+- plafonnement du cumul ambiance + soleil pour éviter le clipping blanc ;
+- diminution de la force des normal maps pour un relief plus naturel.
+
+La peinture des poids, les biomes, les routes, la génération canonique et le
+renderer par chunks ne sont pas modifiés.
+
 ## Prochaine passe recommandée
 
 - valider visuellement les échelles et l'orientation des huit arbres sur plusieurs biomes ;

@@ -6,21 +6,28 @@ Last verified: 2026-08-19
 TERRAIN PBR — POLY HAVEN (CC0)
 Runtime directory: assets/terrain/
 
-grass_albedo.png / grass_normal.jpg / grass_rough.png
+grass_albedo.jpg / grass_normal.jpg / grass_rough.jpg
 Source: Poly Haven — Leafy Grass
+Original URL: https://polyhaven.com/a/leafy_grass
 License: CC0
 
-dirt_albedo.png / dirt_normal.jpg / dirt_rough.png
+dirt_albedo.jpg / dirt_normal.jpg / dirt_rough.jpg
 Source: Poly Haven — Dirt Floor
+Original URL: https://polyhaven.com/a/dirt_floor
 License: CC0
 
-rock_albedo.png / rock_normal.jpg / rock_rough.jpg
+rock_albedo.jpg / rock_normal.jpg / rock_rough.jpg
 Source: Poly Haven — Rock Ground
+Original URL: https://polyhaven.com/a/rock_ground
 License: CC0
 
-mud_albedo.png / mud_normal.jpg / mud_rough.jpg
+mud_albedo.jpg / mud_normal.jpg / mud_rough.jpg
 Source: Poly Haven — Brown Mud
+Original URL: https://polyhaven.com/a/brown_mud
 License: CC0
+
+Runtime maps are the official 1K JPG variants: Diffuse, Normal (GL) and Rough.
+Their MD5 hashes were validated against the Poly Haven API before integration.
 
 ENVIRONMENT HDRI — POLY HAVEN (CC0)
 Runtime file: assets/environment/golden_gate_hills_1k.hdr
