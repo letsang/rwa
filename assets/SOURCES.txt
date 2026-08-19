@@ -30,10 +30,11 @@ Runtime maps are the official 1K JPG variants: Diffuse, Normal (GL) and Rough.
 Their MD5 hashes were validated against the Poly Haven API before integration.
 
 ENVIRONMENT HDRI — POLY HAVEN (CC0)
-Runtime file: assets/environment/golden_gate_hills_1k.hdr
-Source: Poly Haven — Golden Gate Hills
-Original URL: https://polyhaven.com/a/golden_gate_hills
+Runtime file: assets/environment/kloofendal_48d_partly_cloudy_puresky_1k.hdr
+Source: Poly Haven — Kloofendal 48d Partly Cloudy (Pure Sky)
+Original URL: https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
 License: CC0
+Runtime variant: official 1K HDR, MD5 c69498687e876bf68d2a8b8a62234eb9
 
 GRASS ALPHA CARD — OPENGAMEART (CC0)
 Runtime file: assets/vegetation/grass/vegetation_grass_card_03.png

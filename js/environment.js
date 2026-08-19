@@ -177,8 +177,8 @@ class Environment {
   _buildHDRISky() {
     if (!BABYLON.HDRCubeTexture) return;
     const scene = this.scene;
-    const hdri = new BABYLON.HDRCubeTexture('./assets/environment/golden_gate_hills_1k.hdr', scene, 256, false, true, false, true);
-    hdri.name = 'rwaGoldenGateHillsHDR';
+    const hdri = new BABYLON.HDRCubeTexture('./assets/environment/kloofendal_48d_partly_cloudy_puresky_1k.hdr', scene, 256, false, true, false, true);
+    hdri.name = 'rwaKloofendalPartlyCloudyHDR';
     scene.environmentTexture = hdri;
     scene.environmentIntensity = 0.62;
 

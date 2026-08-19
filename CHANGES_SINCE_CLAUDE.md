@@ -182,8 +182,8 @@ Ajouts postérieurs à la première passe Codex :
 - remplacement des quatre textures procédurales du shader terrain par 12 cartes
   Poly Haven CC0 : albedo, normal et roughness pour grass/dirt/rock/mud ;
 - conservation des masques vertex, des routes, du blending biome et de l'anti-tiling ;
-- ajout du HDRI Golden Gate Hills CC0 comme ciel et environnement de réflexion,
-  avec l'ancien dôme gradient conservé uniquement comme fallback de chargement ;
+- ajout initial du HDRI Golden Gate Hills CC0 comme ciel et environnement de
+  réflexion, remplacé ensuite par Kloofendal 48d Partly Cloudy Pure Sky CC0 ;
 - remplacement des cartes d'herbe unies par la texture alpha CC0 OpenGameArt ;
 - chargement asynchrone de huit arbres GLB du Retro Tree Pack, puis remplacement
   des placeholders sans changer les transforms, positions, rangs ou bandes LOD ;
@@ -245,6 +245,15 @@ couleur de fond gris-brume.
 Les deux ciels utilisent maintenant une taille de 800 unités, compatible avec la
 caméra, et le gradient du dôme de secours est recalculé sur ce nouveau rayon. La
 distance de vue, le fog du terrain et le gameplay restent inchangés.
+
+## Remplacement du HDRI
+
+Le HDRI Golden Gate Hills a été retiré du build et remplacé par le fichier fourni
+`kloofendal_48d_partly_cloudy_puresky_1k.hdr`, issu de Poly Haven sous licence
+CC0. Sa taille et son MD5 ont été validés contre l'API officielle avant
+intégration. Le skybox, l'environnement de réflexion et l'éclairage indirect
+utilisent tous cette nouvelle source ; le dôme gradient reste le fallback de
+chargement.
 
 ## Prochaine passe recommandée
 
