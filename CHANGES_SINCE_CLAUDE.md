@@ -290,6 +290,9 @@ caméra, de contrôle territorial et de simulation reste active.
 - grilles de races et de classes finalement contraintes à la même structure
   `4 × 2` occupant 100 % du panneau ; les trois races remplissent les trois
   premières cellules et les autres emplacements restent vides ;
+- suppression du composant spécifique `race-select/race-grid` ; la section Race
+  utilise désormais une copie structurelle de `class-select`, avec les mêmes
+  classes CSS `choice-grid class-grid large` et un identifiant technique distinct ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges

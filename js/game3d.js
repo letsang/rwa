@@ -107,7 +107,7 @@ class Game3D {
     const characterScreen = document.getElementById('menu');
     const loadingScreen = document.getElementById('loading-screen');
     const fsel = document.getElementById('faction-select');
-    const rsel = document.getElementById('race-select');
+    const rsel = document.getElementById('race-class-select');
     const csel = document.getElementById('class-select');
     const startBtn = document.getElementById('start-btn');
     const raceTitle = document.getElementById('selected-race-title');
@@ -272,7 +272,7 @@ class Game3D {
     const stage = document.getElementById('race-preview-stage');
     const canvas = document.getElementById('race-preview-canvas');
     const status = document.getElementById('race-preview-status');
-    const raceSelect = document.getElementById('race-select');
+    const raceSelect = document.getElementById('race-class-select');
     if (!stage || !canvas || !status || !raceSelect) return;
     stage.classList.remove('ready');
     raceSelect.classList.add('preview-loading');
@@ -388,7 +388,7 @@ class Game3D {
     if (p.engine) p.engine.dispose();
     const stage = document.getElementById('race-preview-stage');
     if (stage) stage.classList.remove('ready');
-    const raceSelect = document.getElementById('race-select');
+    const raceSelect = document.getElementById('race-class-select');
     if (raceSelect) raceSelect.classList.remove('preview-loading');
   }
 

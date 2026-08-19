@@ -113,13 +113,13 @@ html, body {
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
 .step-heading h3 { font: 700 20px 'Minion Pro'; letter-spacing: .06em; text-transform: uppercase; }
 .choice-grid { --choice-gap: 8px; display: grid; gap: var(--choice-gap); }
-.race-grid, .class-grid.large { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, 44px); grid-auto-flow: row; }
-.race-grid .choice, .class-grid.large .choice { display: grid; place-items: center; width: 100%; height: 44px; }
+.class-grid.large { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, 44px); grid-auto-flow: row; }
+.class-grid.large .choice { display: grid; place-items: center; width: 100%; height: 44px; }
 .race-preview-stage { position: relative; width: 100%; height: 100%; flex: 1; min-height: 0; overflow: hidden; background: transparent; }
 #race-preview-canvas { display: block; width: 100%; height: 100%; outline: 0; touch-action: none; }
 #race-preview-status { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); color: #b8aa8d; font: 600 12px 'Myriad Pro'; letter-spacing: .14em; text-transform: uppercase; pointer-events: none; }
 .race-preview-stage.ready #race-preview-status { display: none; }
-.race-grid.preview-loading { pointer-events: none; opacity: .48; }
+#race-class-select.preview-loading { pointer-events: none; opacity: .48; }
 .choice {
   flex: 1;
   border: 0;

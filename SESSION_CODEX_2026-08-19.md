@@ -82,6 +82,9 @@ La classe d'artillerie est désormais nommée `MAGE` dans toute la logique et
 l'interface. Les grilles de races et de classes utilisent toutes deux une structure
 `4 × 2` sur 100 % de la largeur du panneau. Les trois races occupent les trois
 premières cellules ; les autres emplacements restent vides.
+Le composant spécifique `race-select/race-grid` a finalement été supprimé. La
+section Race réutilise exactement la structure CSS de `class-select`, avec un
+identifiant distinct uniquement pour préserver un DOM valide et le câblage JavaScript.
 
 ### Répartition canonique actuelle
 
