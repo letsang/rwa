@@ -33,6 +33,9 @@ au terrain pendant cette passe. Ils restent réservés au prochain Visual Qualit
   souris ; les seize actions clavier peuvent être réassignées, les doublons sont
   échangés automatiquement, les choix sont sauvegardés localement et un bouton
   restaure la configuration par défaut ;
+- correction du Stick en interrupteur stable : un second appui l'annule, maintenir
+  la touche ne le répète pas et seul un nouvel appui de déplacement interrompt le
+  suivi (une direction déjà maintenue avant le Stick ne l'annule plus en boucle) ;
 
 ### 1. Nouveau parcours d'ouverture
 

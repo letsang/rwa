@@ -672,14 +672,16 @@ class Game3D {
     }, { passive: false });
 
     window.addEventListener('keydown', e => {
+      const firstPress = !this.keys.has(e.code);
       this.keys.add(e.code);
       if (this.player.dead) return;
       const action = RWAKeybindings.actionForCode(e.code);
-      if (action === 'targetNearest') { e.preventDefault(); if (!e.repeat) this.targetNearestEnemy(); return; }
-      if (action === 'toggleCamera') { e.preventDefault(); if (!e.repeat) this.toggleCamera(); return; }
-      if (action === 'toggleDebug') { e.preventDefault(); if (!e.repeat) this.toggleDebug(); return; }
-      if (action === 'jump') { e.preventDefault(); if (!e.repeat) this.startJump(); return; }
-      if (action === 'stick') { e.preventDefault(); if (!e.repeat) this.toggleStick(); return; }
+      if (['moveForward', 'moveBackward', 'moveLeft', 'moveRight'].includes(action) && firstPress) this.clearStick(false);
+      if (action === 'targetNearest') { e.preventDefault(); if (firstPress) this.targetNearestEnemy(); return; }
+      if (action === 'toggleCamera') { e.preventDefault(); if (firstPress) this.toggleCamera(); return; }
+      if (action === 'toggleDebug') { e.preventDefault(); if (firstPress) this.toggleDebug(); return; }
+      if (action === 'jump') { e.preventDefault(); if (firstPress) this.startJump(); return; }
+      if (action === 'stick') { e.preventDefault(); if (firstPress) this.toggleStick(); return; }
       const p = this.player;
       const skillByAction = {
         ability1: p.def.skills[0], ability2: p.def.skills[1], ability3: p.def.skills[2], ability4: p.def.skills[3],
@@ -689,6 +691,7 @@ class Game3D {
       if (sk) { e.preventDefault(); this.castPlayerSkill(sk); }
     });
     window.addEventListener('keyup', e => this.keys.delete(e.code));
+    window.addEventListener('blur', () => this.keys.clear());
   }
 
   toggleCamera() {
@@ -727,16 +730,18 @@ class Game3D {
 
   clearStick(notify) {
     const p = this.player;
-    if (!p || !p._stickActive) return;
+    if (!p) return false;
+    const wasActive = !!(p._stickActive || p.followTarget);
     p._stickActive = false;
     p.followTarget = null;
-    if (notify) UI.notify('Stick annulé', '#b8c8d8');
+    if (notify && wasActive) UI.notify('Stick annulé', '#b8c8d8');
+    return wasActive;
   }
 
   toggleStick() {
     const p = this.player;
     if (!p) return;
-    if (p._stickActive) { this.clearStick(true); return; }
+    if (p._stickActive || p.followTarget) { this.clearStick(true); return; }
     const target = p.target;
     if (!target || target === p || target.dead || !this.isEnemyVisible(target)) {
       UI.notify('Sélectionne un personnage avant d’utiliser Stick.', '#d8c59b');
@@ -877,7 +882,6 @@ class Game3D {
     const lf = pressed('moveLeft');
     const rt = pressed('moveRight');
     if (!(up || dn || lf || rt)) { if (this.wasdActive) { p.moveTarget = null; this.wasdActive = false; } return; }
-    this.clearStick(false);
     // Base caméra RÉELLE (Babylon) projetée au sol -> évite toute désynchro de signe.
     // forward = direction où regarde la caméra (Axis.Z) ; right = Axis.X.
     const fwd = this.camera.getDirection(BABYLON.Axis.Z);
