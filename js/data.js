@@ -148,9 +148,9 @@ const CLASSES = {
       quickcast: true, desc: 'Le prochain sort est instantané et non interruptible.' },
   },
 
-  /* ---------- RUNEMASTER : Mage DPS / artillerie ---------- */
-  RUNEMASTER: {
-    id: 'RUNEMASTER', name: 'Runemaster', role: 'Artillerie', icon: '🔥',
+  /* ---------- MAGE : DPS / artillerie ---------- */
+  MAGE: {
+    id: 'MAGE', name: 'Mage', role: 'Artillerie', icon: '🔥',
     hp: 760, mana: 100, endurance: 100, attackRange: 500,
     autoAttack: null,
     passive: 'Rune Casting : chaque sort terminé donne une Rune (max 3, +puissance). Interruption = -1 Rune.',
@@ -289,7 +289,7 @@ const CLASSES = {
   },
 };
 
-const CLASS_IDS = ['GUARDIAN', 'BERSERKER', 'SORCERER', 'RUNEMASTER', 'CLERIC', 'SKALD', 'RANGER', 'ROGUE'];
+const CLASS_IDS = ['GUARDIAN', 'BERSERKER', 'SORCERER', 'MAGE', 'CLERIC', 'SKALD', 'RANGER', 'ROGUE'];
 
 /* Poisons (Rogue) */
 const POISONS = {

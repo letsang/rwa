@@ -46,10 +46,10 @@ class Entity {
     this.respawnLoc = null;
 
     this.combatTimer = 99;        // temps hors combat
-    this.runes = 0;               // Runemaster
+    this.runes = 0;               // Mage
     this.currentPoison = 'lethal';// Rogue
     this.quickcast = false;       // Sorcerer
-    this.uninterruptible = 0;     // Runemaster MoC
+    this.uninterruptible = 0;     // Mage MoC
     this.pendingDotDamage = 0;
 
     this.floats = [];             // textes flottants attachés
@@ -111,7 +111,7 @@ class Entity {
     if (reason === 'INTERRUPT') {
       this.interruptLock = 3.0;
       this.floatText('INTERRUPTED', '#ff5a5a');
-      // Runemaster perd une rune
+      // Le Mage perd une rune
       if (this.def.runes && this.runes > 0) this.runes--;
     }
   }
@@ -351,7 +351,7 @@ class Entity {
     this.moveUpdate(dt);
     this.regen(dt);
 
-    // Runemaster : rune buff visuel (puissance appliquée dans combat)
+    // Mage : rune buff visuel (puissance appliquée dans combat)
     // Textes flottants
     for (const f of this.floats) { f.life -= dt; f.y -= 26 * dt; }
     this.floats = this.floats.filter(f => f.life > 0);

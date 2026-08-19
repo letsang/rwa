@@ -22,7 +22,7 @@
                Orc         Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
 
    Correspondance de nommage interne :
-     Mage = RUNEMASTER · Assassin = ROGUE · Drake = DRAKE (fichier Drake.glb).
+     Mage = MAGE · Assassin = ROGUE · Drake = DRAKE (fichier Drake.glb).
    Correspondance royaume (matrice) → faction moteur (world.js REALM_TO_FACTION) :
      NORD → CENTER · EST → EAST · OUEST → WEST.
    ============================================================ */
@@ -71,17 +71,17 @@ const RACE_VISUAL_SCALE = {
 };
 
 /* ---------- MATRICE : classes disponibles par RACE ---------- */
-const ALL8 = ['GUARDIAN', 'BERSERKER', 'SORCERER', 'RUNEMASTER', 'CLERIC', 'SKALD', 'RANGER', 'ROGUE'];
+const ALL8 = ['GUARDIAN', 'BERSERKER', 'SORCERER', 'MAGE', 'CLERIC', 'SKALD', 'RANGER', 'ROGUE'];
 const RACE_CLASSES = {
   HUMAN:    ALL8.slice(),
   DWARF:    ['GUARDIAN', 'BERSERKER', 'SKALD', 'RANGER', 'ROGUE'],
-  ELF:      ['SORCERER', 'RUNEMASTER', 'CLERIC', 'RANGER', 'ROGUE'],
-  DARK_ELF: ['SORCERER', 'RUNEMASTER', 'CLERIC', 'RANGER', 'ROGUE'],
+  ELF:      ['SORCERER', 'MAGE', 'CLERIC', 'RANGER', 'ROGUE'],
+  DARK_ELF: ['SORCERER', 'MAGE', 'CLERIC', 'RANGER', 'ROGUE'],
   OGRE:     ['GUARDIAN', 'BERSERKER', 'SORCERER', 'CLERIC', 'SKALD'],
   DRAKE:    ALL8.slice(),
-  TROLL:    ['GUARDIAN', 'BERSERKER', 'RUNEMASTER', 'CLERIC', 'SKALD'],
+  TROLL:    ['GUARDIAN', 'BERSERKER', 'MAGE', 'CLERIC', 'SKALD'],
   ORC:      ALL8.slice(),
-  GOBLIN:   ['SORCERER', 'RUNEMASTER', 'CLERIC', 'RANGER', 'ROGUE'],
+  GOBLIN:   ['SORCERER', 'MAGE', 'CLERIC', 'RANGER', 'ROGUE'],
 };
 
 /* ---------- Cartes dérivées (calculées, jamais désynchronisées) ---------- */

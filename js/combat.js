@@ -4,7 +4,7 @@
    AoE (target caps), dash, interrupt, cleanse, poison, runes...
    ============================================================ */
 
-const MAGIC_CLASSES = ['SORCERER', 'RUNEMASTER', 'CLERIC'];
+const MAGIC_CLASSES = ['SORCERER', 'MAGE', 'CLERIC'];
 
 const CombatSystem = {
 
@@ -54,7 +54,7 @@ const CombatSystem = {
     if (targetRef) caster.facing = Math.atan2(targetRef.y - caster.y, targetRef.x - caster.x);
     else if (gx != null) caster.facing = Math.atan2(gy - caster.y, gx - caster.x);
 
-    // Puissance (Runes du Runemaster)
+    // Puissance (Runes du Mage)
     let power = 1 + (caster.def.runes ? caster.runes * 0.12 : 0);
     power *= (caster.flags.damageMult || 1);
 

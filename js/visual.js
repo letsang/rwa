@@ -126,9 +126,9 @@ class CharacterVisual {
     switch (e.classId) {
       case 'GUARDIAN': { const sh = BABYLON.MeshBuilder.CreateCylinder('sh', { height: 0.2, diameter: 1.8, tessellation: 6 }, s); sh.rotation.x = Math.PI / 2; sh.material = metal; put(sh, 'offHand', -0.1, 0, 0); break; }
       case 'BERSERKER': { for (const [sock, sgn] of [['mainHand', 1], ['offHand', -1]]) { const ax = BABYLON.MeshBuilder.CreateBox('ax' + sgn, { width: 0.15, height: 1.6, depth: 0.5 }, s); ax.material = metal; put(ax, sock, 0, 0.2, 0); } break; }
-      case 'SORCERER': case 'RUNEMASTER': {
+      case 'SORCERER': case 'MAGE': {
         const st = BABYLON.MeshBuilder.CreateCylinder('st', { height: bodyH + 1.0, diameter: 0.16 }, s); st.material = wood; put(st, 'mainHand', 0, (bodyH + 1.0) / 2 - bodyH * 0.55, 0);
-        const orb = BABYLON.MeshBuilder.CreateSphere('orb', { diameter: 0.7 }, s); orb.material = e.classId === 'RUNEMASTER' ? g.mat('fireorb', '#e0663a', { emissive: '#5a1e0a' }) : g.mat('magicorb', '#8a7fe6', { emissive: '#2a2060' }); put(orb, 'mainHand', 0, (bodyH + 1.0) - bodyH * 0.55, 0);
+        const orb = BABYLON.MeshBuilder.CreateSphere('orb', { diameter: 0.7 }, s); orb.material = e.classId === 'MAGE' ? g.mat('fireorb', '#e0663a', { emissive: '#5a1e0a' }) : g.mat('magicorb', '#8a7fe6', { emissive: '#2a2060' }); put(orb, 'mainHand', 0, (bodyH + 1.0) - bodyH * 0.55, 0);
         break; }
       case 'CLERIC': { const v = BABYLON.MeshBuilder.CreateBox('cv', { width: 0.2, height: 1.2, depth: 0.2 }, s); v.material = gold; put(v, 'mainHand', 0, 0.6, 0.3); const hh = BABYLON.MeshBuilder.CreateBox('ch', { width: 0.8, height: 0.2, depth: 0.2 }, s); hh.material = gold; put(hh, 'mainHand', 0, 0.7, 0.3); break; }
       case 'SKALD': { const lute = BABYLON.MeshBuilder.CreateSphere('lute', { diameter: 0.9 }, s); lute.scaling.z = 0.4; lute.material = wood; put(lute, 'back', 0, 0, 0); break; }

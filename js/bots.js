@@ -176,8 +176,8 @@ const BotAI = {
       }
     }
 
-    // RUNEMASTER : artillerie
-    if (bot.classId === 'RUNEMASTER' && t) {
+    // MAGE : artillerie
+    if (bot.classId === 'MAGE' && t) {
       const cluster = this.enemyCluster(bot, game, 500, 150);
       const storm = skills.find(s => s.id === 'rune_storm');
       if (cluster && cluster.count >= 3 && !bot.onCooldown(storm)) { bot.tryCast(storm, null, cluster.x, cluster.y); return; }

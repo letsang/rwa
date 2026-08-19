@@ -78,8 +78,11 @@ cellules fixes que celle des classes.
 Toutes les cases de race et de classe partagent la même hauteur. L'action
 `Commencer →` est ancrée au centre inférieur du panneau d'options.
 La grille des races a ensuite été réorganisée en trois colonnes sur une seule ligne.
-La grille des classes adopte finalement les trois mêmes colonnes et la même hauteur
-fixe de 44 px : toutes les cellules des deux grilles ont des dimensions identiques.
+La disposition finale des classes est de quatre colonnes sur deux lignes. La largeur
+des trois cellules de race est calculée sur cette même base de quatre colonnes, avec
+la formule `(largeur disponible - 3 espacements) / 4`, pour garantir des dimensions
+strictement identiques. La classe d'artillerie est désormais nommée `MAGE` dans
+toute la logique et l'interface.
 
 ### Répartition canonique actuelle
 
