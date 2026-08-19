@@ -22,6 +22,13 @@ Le rendu par défaut ne dépend jamais du panneau. Aucun preset sauvegardé n'es
 chargé automatiquement au lancement.
 `F8` est réservé à cet outil DEV et n'est pas réaffectable dans les key bindings.
 
+## Référence visuelle active
+
+La baseline `CURRENT` est figée avec la calibration validée : fog linéaire
+50–100 (`#969696`), saturation 1, contraste 1.2, exposition 1, lumière
+directionnelle 1.3 (`#dedede`), ambiance 1.5 (`#646464`), environnement 0.2,
+grain 0.2, sans sharpen ni vignette, et ombre de contact à 0.5.
+
 ## Paramètres réellement exposés
 
 | Section | Contrôle | Propriété Babylon / runtime |

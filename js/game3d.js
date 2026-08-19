@@ -605,7 +605,7 @@ class Game3D {
     const m = new BABYLON.StandardMaterial('blobMat', scene);
     m.diffuseTexture = tex; m.diffuseTexture.hasAlpha = true; m.useAlphaFromDiffuseTexture = true;
     m.emissiveColor = new BABYLON.Color3(0, 0, 0); m.disableLighting = true; m.specularColor = new BABYLON.Color3(0, 0, 0);
-    m.backFaceCulling = false; m.alpha = 1; m.zOffset = -2;
+    m.backFaceCulling = false; m.alpha = 0.5; m.zOffset = -2;
     const plane = BABYLON.MeshBuilder.CreatePlane('blobShadow', { size: size || 4 }, scene);
     plane.rotation.x = Math.PI / 2; plane.material = m; plane.isPickable = false; plane.applyFog = true;
     plane.bakeCurrentTransformIntoVertices(); plane.setEnabled(false);

@@ -1,5 +1,11 @@
 # Modifications depuis la dernière version de Claude
 
+## Calibration visuelle figée
+
+- La configuration exportée depuis le panneau DEV devient la baseline `CURRENT`.
+- Fog 50–100 `#969696`, contraste 1.2, lumières 1.3/1.5, HDRI 0.2 et grain 0.2.
+- Le shader terrain et l'ombre de contact sont synchronisés avec cette référence.
+
 Cette note décrit exclusivement les changements réalisés par Codex à partir de l'état
 du projet trouvé le 19 août 2026 dans `realm-warfare-v0.3.1-light`.
 

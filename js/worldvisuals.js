@@ -191,12 +191,13 @@ void main(void){
     m.setTexture('grassRoughTex', this.roughGrass); m.setTexture('dirtRoughTex', this.roughDirt); m.setTexture('rockRoughTex', this.roughRock); m.setTexture('wetRoughTex', this.roughWet);
     m.setVector3('sunDir', new BABYLON.Vector3(E.sunDir[0], E.sunDir[1], E.sunDir[2]));
     m.setColor3('sunColor', this._col(E.sunColor)); m.setColor3('ambUp', this._col(E.ambUp)); m.setColor3('ambDown', this._col(E.ambDown));
-    m.setFloat('sunIntensity', 1); m.setFloat('ambIntensity', 1);
+    m.setFloat('sunIntensity', E.terrainSunIntensity); m.setFloat('ambIntensity', E.terrainAmbientIntensity);
     m.setColor3('fogColor', this._col(E.fogColor)); m.setVector2('fogRange', new BABYLON.Vector2(E.fogStart, E.fogEnd));
     m.setVector3('camPos', new BABYLON.Vector3(0, 0, 0)); m.setFloat('uDebug', 0);
     m.setFloat('macroScale', WV_CONFIG.tileDetail / WV_CONFIG.tileMacro);
     this._tuningBaseline = {
       sunColor: E.sunColor.slice(), ambUp: E.ambUp.slice(), ambDown: E.ambDown.slice(),
+      sunIntensity: E.terrainSunIntensity, ambIntensity: E.terrainAmbientIntensity,
     };
     m.backFaceCulling = false; this.mat = m;
   }
@@ -218,10 +219,10 @@ void main(void){
     this.mat.setColor3('fogColor', BABYLON.Color3.FromHexString(fog.color));
     this.mat.setVector2('fogRange', new BABYLON.Vector2(fog.start, fog.end));
     this.mat.setColor3('sunColor', sunColor);
-    this.mat.setFloat('sunIntensity', light.directionalIntensity / Math.max(baseLight.directionalIntensity, 0.001));
+    this.mat.setFloat('sunIntensity', B.sunIntensity * light.directionalIntensity / Math.max(baseLight.directionalIntensity, 0.001));
     this.mat.setColor3('ambUp', this._col(B.ambUp.map((v, i) => v * scale[i])));
     this.mat.setColor3('ambDown', this._col(B.ambDown.map((v, i) => v * scale[i])));
-    this.mat.setFloat('ambIntensity', light.ambientIntensity / Math.max(baseLight.ambientIntensity, 0.001));
+    this.mat.setFloat('ambIntensity', B.ambIntensity * light.ambientIntensity / Math.max(baseLight.ambientIntensity, 0.001));
   }
 
   setDebug(v) { this.debug = v | 0; this.mat.setFloat('uDebug', this.debug); }
