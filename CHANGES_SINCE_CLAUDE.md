@@ -287,6 +287,8 @@ caméra, de contrôle territorial et de simulation reste active.
 - hauteur des cases de race et de classe unifiée, et action `Commencer →`
   déplacée au centre inférieur du panneau d'options ;
 - grille des trois races réorganisée sur une seule ligne de trois colonnes ;
+- grilles de races et de classes normalisées sur les mêmes trois colonnes et la
+  même hauteur fixe de 44 px afin que chaque cellule ait des dimensions identiques ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les

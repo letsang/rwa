@@ -113,8 +113,7 @@ html, body {
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
 .step-heading h3 { font: 700 20px 'Minion Pro'; letter-spacing: .06em; text-transform: uppercase; }
 .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.race-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 44px; }
-.class-grid.large { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 44px; }
+.race-grid, .class-grid.large { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 44px; }
 .race-grid .choice, .class-grid.large .choice { display: grid; place-items: center; width: 100%; height: 44px; }
 .race-preview-stage { position: relative; width: 100%; height: 100%; flex: 1; min-height: 0; overflow: hidden; background: transparent; }
 #race-preview-canvas { display: block; width: 100%; height: 100%; outline: 0; touch-action: none; }
@@ -133,7 +132,7 @@ html, body {
 .choice:not(.unavailable):hover { transform: translateY(-2px); background: rgba(181,150,88,.08); }
 .choice.selected { background: linear-gradient(135deg, rgba(176,142,71,.22), rgba(255,255,255,.04)); box-shadow: inset 0 0 20px rgba(203,168,91,.08); }
 .choice.unavailable { color: #777b82; background: rgba(255,255,255,.015); opacity: .32; filter: grayscale(1); cursor: not-allowed; }
-.choice .name { font-weight: 600; font-size: 14px; }
+.choice .name { max-width: 100%; overflow: hidden; font-weight: 600; font-size: clamp(11px, .85vw, 14px); white-space: nowrap; text-overflow: ellipsis; }
 
 .race-hint { grid-column: 1 / -1; padding: 18px; border: 0; color: #777f89; text-align: center; }
 .character-start-btn { position: absolute; z-index: 5; left: 50%; bottom: 22px; padding: 8px 16px; border: 0; background: transparent; color: #e1c47e; cursor: pointer; transform: translateX(-50%); font: 600 14px 'Myriad Pro'; letter-spacing: .12em; }

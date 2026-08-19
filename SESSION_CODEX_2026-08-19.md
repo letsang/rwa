@@ -78,6 +78,8 @@ cellules fixes que celle des classes.
 Toutes les cases de race et de classe partagent la même hauteur. L'action
 `Commencer →` est ancrée au centre inférieur du panneau d'options.
 La grille des races a ensuite été réorganisée en trois colonnes sur une seule ligne.
+La grille des classes adopte finalement les trois mêmes colonnes et la même hauteur
+fixe de 44 px : toutes les cellules des deux grilles ont des dimensions identiques.
 
 ### Répartition canonique actuelle
 
