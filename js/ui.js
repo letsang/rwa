@@ -1,5 +1,5 @@
 /* ============================================================
-   ui.js — Interface (DOM) : cible, HUD joueur,
+   ui.js — Interface (DOM) : cible,
    barre de compétences et notifications.
    ============================================================ */
 
@@ -56,32 +56,17 @@ const UI = {
   update(game) {
     const p = game.player;
 
-    /* Player stats */
-    const ps = document.getElementById('player-stats');
-    const F = FACTIONS[p.faction];
-    let resBar = '';
-    if (p.maxMana) resBar = this.bar('mana', p.mana / p.maxMana, `Mana ${Math.round(p.mana)}`);
-    else resBar = this.bar('endu', p.endurance / p.maxEndurance, `End. ${Math.round(p.endurance)}`);
-    let castBar = '';
-    if (p.casting) castBar = `<div class="p-cast">${this.bar('cast', 1 - p.casting.remaining / p.casting.total, p.casting.skill.name + '…')}</div>`;
-    let runeStr = p.def.runes ? ` • Runes ${p.runes}/3` : '';
-    let poisonStr = p.def.stealthClass ? ` • Poison: ${POISONS[p.currentPoison].name}` : '';
-    ps.innerHTML =
-      `<div class="p-head"><b style="color:${F.color}">${p.def.icon} ${p.def.name}</b>
-        <span>${F.name}${runeStr}${poisonStr}${p.isStealthed ? ' • 🕶 STEALTH' : ''}</span></div>` +
-      this.bar('hp', p.hp / p.maxHp, `HP ${Math.max(0, Math.round(p.hp))}/${p.maxHp}`) +
-      resBar + castBar;
-
     /* Target panel */
     const tp = document.getElementById('target-panel');
     const t = p.target;
     if (t && !t.dead) {
       tp.classList.remove('hidden');
       const tf = FACTIONS[t.faction];
+      const targetNameColor = t.faction === p.faction ? '#ffffff' : '#ff5a5a';
       const chips = EffectSystem.statusChips(t).map(c => `<span class="chip ${c.cls}">${c.label}</span>`).join('');
       let tcast = t.casting ? this.bar('cast', 1 - t.casting.remaining / t.casting.total, t.casting.skill.name + '…') : '';
       tp.innerHTML =
-        `<div class="t-name" style="color:${tf.color}">${t.def.icon} ${t.def.name}</div>
+        `<div class="t-name" style="color:${targetNameColor}">${t.def.name}</div>
          <div class="t-sub">${t.def.role} — ${tf.name}</div>` +
         this.bar('hp', t.hp / t.maxHp, `HP ${Math.max(0, Math.round(t.hp))}/${t.maxHp}`) +
         tcast +

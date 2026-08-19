@@ -75,10 +75,11 @@ Le fichier `js/audio.js` a été créé. Il contient `RWAudioManager`, chargé a
 
 Fonctionnalités ajoutées :
 
-- tentative de lecture de `title.mp3` sur l'écran-titre, avec reprise au premier
-  geste utilisateur lorsque l'autoplay du navigateur est bloqué ;
-- lecture de `play.mp3` au clic sur Jouer ;
-- lecture de `midplay.mp3` lors de l'entrée effective dans le jeu ;
+- lecture en boucle de `title.mp3` depuis l'écran-titre jusqu'à la fin du
+  chargement du monde et du personnage joueur, avec reprise au premier geste
+  utilisateur lorsque l'autoplay du navigateur est bloqué ;
+- suppression de l'étape et du fichier `play.mp3` ;
+- lecture de `midplay.mp3` une fois le chargement terminé et le jeu affiché ;
 - démarrage automatique de l'ambiance du royaume après `midplay` ;
 - playlists aléatoires sans répétition immédiate ;
 - volume général, musique, effets et mute ;
@@ -199,10 +200,10 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
 - suppression de la minimap et de son rendu Canvas à chaque mise à jour ;
 - déplacement du panneau de performances et de diagnostic dans l'ancien
   emplacement de la minimap, en haut à droite ;
-- déplacement du panneau du personnage (PV et ressource) en haut à gauche,
-  tout en conservant la barre de compétences centrée en bas ;
-- placement du panneau de cible sous celui du personnage pour éviter tout
-  chevauchement ;
+- suppression finale du panneau du personnage (PV et ressource), après un
+  premier repositionnement temporaire en haut à gauche ;
+- retour du panneau de cible en haut à gauche et conservation de la barre de
+  compétences centrée en bas ;
 - augmentation de la transparence des fonds du HUD : panneaux principaux,
   diagnostic, notifications et cases de compétences ;
 - conservation de la touche `V` pour changer de caméra et de la notification
@@ -211,6 +212,20 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
 
 Cette modification concerne uniquement la présentation du HUD. La logique de
 caméra, de contrôle territorial et de simulation reste active.
+
+## Lisibilité des personnages et séquence audio
+
+- suppression des icônes de classe dans le choix de classe, le panneau de cible
+  et les plaques au-dessus des personnages ;
+- conservation des icônes de compétences dans la barre d'actions ;
+- noms du joueur et des alliés affichés en blanc ;
+- noms ennemis toujours affichés en rouge, y compris lorsque l'ennemi est ciblé ;
+- masquage de la plaque complète au-delà de 1600 unités de simulation : nom,
+  PV, incantation, statuts et textes flottants de dégâts/soins ;
+- maintien de `title.mp3` pendant tous les menus et l'écran de chargement ;
+- attente explicite du chargement du visuel du joueur avant de masquer l'écran
+  de chargement et de lancer `midplay.mp3` ;
+- suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc
 

@@ -27,6 +27,7 @@ const LOCO_SUFFIX = ['F', 'FL', 'L', 'BL', 'B', 'BR', 'R', 'FR'];
 // La MARCHE (Walk) est réservée aux ralentissements (snare -> ~40-60 < seuil).
 const LOCO_IDLE_SPEED = 12;
 const LOCO_JOG_SPEED = 80;
+const NAMEPLATE_MAX_DISTANCE = 1600; // unités simulation : noms et textes flottants proches uniquement
 
 /* GLB par RACE (V0.4.2) : chaque race a son propre modèle, tous au rig Manny
    (161 os, pieds à y≈0) -> RWA Animation Library (retarget par nom d'os).
@@ -114,7 +115,7 @@ class Game3D {
         const C = CLASSES[cid];
         const el = document.createElement('div');
         el.className = 'choice';
-        el.innerHTML = `<span class="icon">${C.icon}</span><span class="name">${C.name}</span><span class="role">${C.role}</span>`;
+        el.innerHTML = `<span class="name">${C.name}</span><span class="role">${C.role}</span>`;
         el.onclick = () => { [...csel.children].forEach(c => c.classList.remove('selected')); el.classList.add('selected'); cc = cid; check(); };
         csel.appendChild(el);
       }
@@ -155,11 +156,9 @@ class Game3D {
     buildRaces();
 
     document.getElementById('play-btn').onclick = () => {
-      this.audio.playSelectionTransition();
       show(realmScreen);
     };
     document.getElementById('realm-back-btn').onclick = () => {
-      this.audio.playTitle();
       show(titleScreen);
     };
     document.getElementById('character-back-btn').onclick = () => show(realmScreen);
@@ -169,11 +168,11 @@ class Game3D {
       this.started = true;
       show(loadingScreen);
       // Laisse le navigateur peindre l'écran de chargement avant l'initialisation 3D.
-      requestAnimationFrame(() => setTimeout(() => {
+      requestAnimationFrame(() => setTimeout(async () => {
         document.getElementById('game-root').classList.remove('hidden');
-        this.start(cf, cc, cr);
-        this.audio.enterGame(cf);
+        await this.start(cf, cc, cr);
         loadingScreen.classList.add('hidden');
+        this.audio.enterGame(cf);
       }, 420));
     };
 
@@ -181,7 +180,7 @@ class Game3D {
   }
 
   /* ================= START ================= */
-  start(faction, classId, race) {
+  async start(faction, classId, race) {
     // --- entités (simulation inchangée) ---
     this.player = new Entity(this, faction, classId, true);
     this.player.race = race;
@@ -199,7 +198,11 @@ class Game3D {
 
     this.initBabylon();
     this.buildWorld();
-    for (const e of this.entities) this.buildUnit(e);
+    let playerVisualReady = Promise.resolve();
+    for (const e of this.entities) {
+      const visualReady = this.buildUnit(e);
+      if (e === this.player) playerVisualReady = visualReady;
+    }
 
     UI.buildSkillbar(this.player);
     this.patchSkillbar();
@@ -220,6 +223,9 @@ class Game3D {
       ' | res=' + this.chunkManager.res);
     // stream initial autour du spawn
     this.chunkManager.update(this.player.x, this.player.y);
+
+    // L'écran de chargement et title restent actifs jusqu'à ce que le joueur soit visible.
+    await playerVisualReady;
 
     const eng = this.engine;
     eng.runRenderLoop(() => {
@@ -373,9 +379,9 @@ class Game3D {
       // Appliquée au root du personnage skinné dans loadModel (pas aux bones).
       const vs = (typeof RACE_VISUAL_SCALE !== 'undefined' && RACE_VISUAL_SCALE[e.race]) || 1;
       const opts = Object.assign({}, glb, { scale: glb.scale * vs });
-      // Chargement ASYNCHRONE : l'entité vit déjà dans la simulation ; le modèle
-      // apparaît quand il est prêt. Aucun blocage de l'entrée en jeu.
-      CharacterVisual.loadModel(this, e, glb.url, opts)
+      // Chargement ASYNCHRONE : la promesse du joueur pilote l'écran de chargement ;
+      // les autres personnages continuent à se charger en arrière-plan.
+      return CharacterVisual.loadModel(this, e, glb.url, opts)
         .then(cv => { e.visual = cv; e._bodyTopY = cv.bodyTopY; this.logGlbAnimsOnce(cv); })
         .catch(err => {
           console.warn('[RWA] Échec du chargement ' + glb.url + ' → fallback placeholder pour '
@@ -386,6 +392,7 @@ class Game3D {
     } else {
       e.visual = new CharacterVisual(this, e).build();
       e._bodyTopY = e.visual.bodyTopY;
+      return Promise.resolve(e.visual);
     }
   }
 
@@ -790,6 +797,8 @@ class Game3D {
       if (!e.visual || e._bodyTopY == null) { plate.style.display = 'none'; continue; }
       const visible = !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
       if (!visible) { plate.style.display = 'none'; continue; }
+      const dx = e.x - p.x, dy = e.y - p.y;
+      if (dx * dx + dy * dy > NAMEPLATE_MAX_DISTANCE * NAMEPLATE_MAX_DISTANCE) { plate.style.display = 'none'; continue; }
       const wp = new BABYLON.Vector3(e.x * S, this.getTerrainHeight(e.x, e.y) + e._bodyTopY, e.y * S);
       // cull derrière la caméra
       if (this._camDir && BABYLON.Vector3.Dot(wp.subtract(camPos), this._camDir) < 0.5) { plate.style.display = 'none'; continue; }
@@ -802,10 +811,10 @@ class Game3D {
       const hpR = Math.max(0, e.hp / e.maxHp);
       const isTarget = (e === p.target);
       const isFocus = (e === p || isTarget);
-      // NOM au-dessus de la tête pour TOUS : blanc=cible, bleu=allié, rouge=ennemi.
-      const nameColor = isTarget ? '#ffffff' : (ally ? '#4f9fff' : '#ff5a5a');
+      // Blanc pour le joueur et ses alliés ; rouge pour tous les ennemis, cible comprise.
+      const nameColor = ally ? '#ffffff' : '#ff5a5a';
       let html = '';
-      html += `<div class="np-name" style="color:${nameColor}">${e.def.icon} ${e.def.name}${isFocus && e.race && RACES[e.race] ? ' · ' + RACES[e.race].name : ''}</div>`;
+      html += `<div class="np-name" style="color:${nameColor}">${e.def.name}${isFocus && e.race && RACES[e.race] ? ' · ' + RACES[e.race].name : ''}</div>`;
       html += `<div class="np-hp"><span style="width:${hpR * 100}%;background:${hpR > 0.4 ? '#4fbf6a' : '#d94f4f'}"></span></div>`;
       if (e.casting) html += `<div class="np-cast"><span style="width:${(1 - e.casting.remaining / e.casting.total) * 100}%"></span></div>`;
       // chips CC (cibles focus)

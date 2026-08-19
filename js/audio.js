@@ -8,7 +8,6 @@ const AUDIO_PATH = './assets/audio/';
 const AUDIO_LIBRARY = {
   intro: {
     title: AUDIO_PATH + 'Intro/title.mp3',
-    play: AUDIO_PATH + 'Intro/play.mp3',
     midplay: AUDIO_PATH + 'Intro/midplay.mp3',
   },
   ambient: {
@@ -157,10 +156,6 @@ class RWAudioManager {
 
   playTitle() {
     return this.setMusic(AUDIO_LIBRARY.intro.title, { loop: true, state: 'title' });
-  }
-
-  playSelectionTransition() {
-    return this.setMusic(AUDIO_LIBRARY.intro.play, { state: 'selection' });
   }
 
   enterGame(faction) {

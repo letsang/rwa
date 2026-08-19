@@ -123,7 +123,6 @@ html, body {
 }
 .choice:hover { transform: translateY(-2px); border-color: #9f8652; background: rgba(181,150,88,.08); }
 .choice.selected { border-color: #d2b66f; background: linear-gradient(135deg, rgba(176,142,71,.22), rgba(255,255,255,.04)); box-shadow: inset 0 0 20px rgba(203,168,91,.08); }
-.choice .icon { font-size: 26px; display: block; margin-bottom: 4px; }
 .choice .name { font-weight: 600; font-size: 14px; }
 .choice .role { font-size: 11px; color: #93a0b8; margin-top: 2px; }
 
@@ -172,7 +171,7 @@ html, body {
 
 /* Panneau cible */
 #target-panel {
-  position: absolute; top: 96px; left: 12px; width: 240px;
+  position: absolute; top: 12px; left: 12px; width: 240px;
   background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
 }
 #target-panel .t-name { font-weight: 700; font-size: 14px; }
@@ -189,12 +188,6 @@ html, body {
 .chip.mez{background:#8a4fd9;} .chip.root{background:#4f8a6a;} .chip.stun{background:#d9d94f;color:#222;}
 .chip.snare{background:#5f7f9a;} .chip.disease{background:#6a8a3a;} .chip.nearsight{background:#9a5f8a;}
 .chip.dot{background:#b04f3a;} .chip.buff{background:#3a7fb0;} .chip.immune{background:#cccccc;color:#222;}
-
-/* HUD joueur */
-#player-hud { position: absolute; inset: 0; pointer-events: none; }
-#player-stats { position: absolute; top: 12px; left: 12px; width: 320px; pointer-events: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; }
-#player-stats .p-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-#player-stats .p-cast { margin-top: 4px; }
 
 #skillbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto; }
 .skill-slot {
