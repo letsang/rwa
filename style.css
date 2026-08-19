@@ -100,12 +100,14 @@ html, body {
 .character-screen { align-items: stretch; padding: 0; }
 .character-shell { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: linear-gradient(140deg, rgba(20,25,31,.97), rgba(8,11,15,.98)); }
 .character-shell::before { content: ''; position: absolute; inset: 0; opacity: .08; background: url('./assets/ui/title-background.png') center/cover; pointer-events: none; }
-.character-creation-layout { position: relative; display: grid; grid-template-columns: 30% 30% 40%; width: 100%; height: 100%; min-height: 0; }
-.character-description-panel, .character-options-panel { position: relative; z-index: 2; width: 100%; height: 100%; padding: 72px 24px 64px; background: transparent; }
+.character-creation-layout { position: relative; width: 100%; height: 100%; min-height: 0; }
+.character-description-panel, .character-options-panel { position: absolute; z-index: 2; top: 0; width: 25%; height: 100%; padding: 72px 24px 64px; background: transparent; }
+.character-description-panel { left: 0; }
+.character-options-panel { right: 0; }
 .character-description-panel h3 { margin: 9px 0 8px; color: #e0d4bc; font: 700 24px 'Minion Pro'; letter-spacing: .05em; }
 .character-description-panel #selected-class-title { margin-top: 36px; }
 .character-description-panel > p:not(.eyebrow) { color: #9fa2a5; font: 400 14px/1.55 'Minion Pro'; }
-.character-model-panel { position: relative; z-index: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: stretch; background: radial-gradient(circle at 50% 38%, rgba(76,86,98,.24), rgba(5,8,11,.15) 64%); }
+.character-model-panel { position: absolute; z-index: 0; inset: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: stretch; background: radial-gradient(circle at 50% 38%, rgba(76,86,98,.24), rgba(5,8,11,.15) 64%); }
 .creation-step { position: relative; padding: 19px 0 10px; }
 .character-options-panel .creation-step:first-child { padding-top: 0; }
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }

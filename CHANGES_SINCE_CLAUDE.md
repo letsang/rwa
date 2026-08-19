@@ -286,8 +286,6 @@ caméra, de contrôle territorial et de simulation reste active.
   de classe, et grille des races alignée sur les cellules fixes des classes ;
 - dimensions des cases de race et de classe unifiées, et action `Commencer →`
   déplacée au centre inférieur du panneau d'options ;
-- répartition desktop réajustée à 30 % pour la description, 30 % pour le modèle
-  pleine hauteur et 40 % pour les options ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les
