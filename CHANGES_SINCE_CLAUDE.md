@@ -23,6 +23,10 @@ au terrain pendant cette passe. Ils restent réservés au prochain Visual Qualit
 
 ## Changements réalisés par Codex
 
+- suppression complète du cercle blanc de sélection et des plaques au-dessus des
+  personnages (nom, PV, endurance, incantation, statuts et dégâts/soins flottants),
+  sans modifier le ciblage ni la fonction Stick ;
+
 ### 1. Nouveau parcours d'ouverture
 
 Le menu unique a été remplacé par une séquence en plusieurs écrans :
