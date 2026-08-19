@@ -279,6 +279,8 @@ caméra, de contrôle territorial et de simulation reste active.
 - écran de création étendu en plein écran, panneaux latéraux rendus transparents
   et aperçu 3D porté à toute la hauteur ; caméra rapprochée dynamiquement sur la
   tête et le torse selon la hauteur réelle du modèle sélectionné ;
+- répartition desktop fixée à 25 % pour la description, 50 % pour le modèle 3D
+  et 25 % pour les options ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les

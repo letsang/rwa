@@ -100,7 +100,7 @@ html, body {
 .character-screen { align-items: stretch; padding: 0; }
 .character-shell { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: linear-gradient(140deg, rgba(20,25,31,.97), rgba(8,11,15,.98)); }
 .character-shell::before { content: ''; position: absolute; inset: 0; opacity: .08; background: url('./assets/ui/title-background.png') center/cover; pointer-events: none; }
-.character-creation-layout { position: relative; display: grid; grid-template-columns: minmax(210px, .72fr) minmax(380px, 1.45fr) minmax(300px, 1fr); width: 100%; height: 100%; min-height: 0; }
+.character-creation-layout { position: relative; display: grid; grid-template-columns: 25% 50% 25%; width: 100%; height: 100%; min-height: 0; }
 .character-description-panel, .character-options-panel { padding: 72px 24px 64px; background: transparent; }
 .character-description-panel h3 { margin: 9px 0 8px; color: #e0d4bc; font: 700 24px 'Minion Pro'; letter-spacing: .05em; }
 .character-description-panel #selected-class-title { margin-top: 36px; }

@@ -68,6 +68,8 @@ Le conteneur de création occupe désormais tout l'écran. Les panneaux de descr
 et d'options n'ont plus de fond, tandis que le panneau du modèle occupe toute la
 hauteur. La caméra adapte sa distance à la taille du modèle et cadre sa tête et son
 torse plutôt que sa silhouette complète.
+Sur desktop, les trois colonnes occupent respectivement 25 %, 50 % et 25 % de la
+largeur de l'écran.
 
 ### Répartition canonique actuelle
 
