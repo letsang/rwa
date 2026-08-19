@@ -727,7 +727,6 @@ class Game3D {
     this._camDir = target.subtract(camPos).normalize();
 
     this.camMode = CAM_MODES[this.mode].label;
-    document.getElementById('cam-mode').textContent = this.camMode;
   }
 
   updateMeshes(dt) {

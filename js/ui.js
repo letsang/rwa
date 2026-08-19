@@ -1,6 +1,6 @@
 /* ============================================================
-   ui.js — Interface (DOM) : war status, cible, HUD joueur,
-   barre de compétences, mini-map, notifications.
+   ui.js — Interface (DOM) : cible, HUD joueur,
+   barre de compétences et notifications.
    ============================================================ */
 
 const UI = {
@@ -55,17 +55,6 @@ const UI = {
 
   update(game) {
     const p = game.player;
-
-    /* War status */
-    const pct = game.map.controlPercentages();
-    const ws = document.getElementById('war-status');
-    ws.innerHTML = `<div class="war-title">⚔ GUERRE EN COURS ⚔</div>` +
-      FACTION_IDS.map(f => {
-        const F = FACTIONS[f];
-        return `<div class="war-row"><span class="lbl" style="color:${F.color}">${F.name}</span>
-          <span class="war-bar"><span style="width:${pct[f]}%;background:${F.color}"></span></span>
-          <span class="pct">${pct[f]}%</span></div>`;
-      }).join('');
 
     /* Player stats */
     const ps = document.getElementById('player-stats');
@@ -132,58 +121,6 @@ const UI = {
     } else {
       ro.classList.add('hidden');
     }
-
-    this.drawMinimap(game);
-  },
-
-  drawMinimap(game) {
-    const cv = document.getElementById('minimap');
-    const ctx = cv.getContext('2d');
-    const W = cv.width, H = cv.height;
-    const sx = W / WORLD.w, sy = H / WORLD.h;
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#0a0d14'; ctx.fillRect(0, 0, W, H);
-
-    // obstacles
-    ctx.fillStyle = '#2a3040';
-    for (const o of game.map.obstacles) ctx.fillRect(o.x * sx, o.y * sy, o.w * sx, o.h * sy);
-
-    // liens du graphe
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
-    for (const t of game.map.territories) {
-      for (const nid of t.neighbors) {
-        const n = game.map.byId[nid];
-        if (!n) continue;
-        ctx.beginPath(); ctx.moveTo(t.x * sx, t.y * sy); ctx.lineTo(n.x * sx, n.y * sy); ctx.stroke();
-      }
-    }
-
-    // territoires
-    for (const t of game.map.territories) {
-      const col = t.owner ? FACTIONS[t.owner].color : '#7a7a7a';
-      ctx.fillStyle = col;
-      const r = t.base ? 6 : (t.value > 1 ? 6 : 4);
-      ctx.beginPath(); ctx.arc(t.x * sx, t.y * sy, r, 0, 7); ctx.fill();
-      if (t.captureBy) {
-        ctx.strokeStyle = FACTIONS[t.captureBy].color; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(t.x * sx, t.y * sy, r + 3, -1.57, -1.57 + t.capture * 6.28); ctx.stroke();
-      }
-    }
-
-    // alliés visibles + ennemis détectés
-    const p = game.player;
-    for (const e of game.entities) {
-      if (e.dead) continue;
-      const ally = e.faction === p.faction;
-      if (!ally && !game.isVisibleToPlayer(e)) continue;
-      ctx.fillStyle = FACTIONS[e.faction].color;
-      ctx.beginPath(); ctx.arc(e.x * sx, e.y * sy, ally ? 1.6 : 2, 0, 7); ctx.fill();
-    }
-
-    // joueur
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(p.x * sx, p.y * sy, 3, 0, 7); ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
   },
 };
 

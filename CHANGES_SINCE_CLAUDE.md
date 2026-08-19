@@ -190,6 +190,22 @@ Ajouts postérieurs à la première passe Codex :
 - ajout de `assets/SOURCES.txt` et d'une notice locale transparente pour le pack
   d'arbres, dont l'archive fournie ne contenait pas de licence autonome.
 
+## Simplification du HUD en jeu
+
+La surcouche de jeu a été allégée sans modifier les systèmes correspondants :
+
+- suppression de la bulle permanente indiquant le mode de caméra ;
+- suppression du panneau central « Guerre en cours » ;
+- suppression de la minimap et de son rendu Canvas à chaque mise à jour ;
+- déplacement du panneau de performances et de diagnostic dans l'ancien
+  emplacement de la minimap, en haut à droite ;
+- conservation de la touche `V` pour changer de caméra et de la notification
+  temporaire associée ;
+- conservation de `F3` pour changer le niveau d'affichage du diagnostic.
+
+Cette modification concerne uniquement la présentation du HUD. La logique de
+caméra, de contrôle territorial et de simulation reste active.
+
 ## Prochaine passe recommandée
 
 - valider visuellement les échelles et l'orientation des huit arbres sur plusieurs biomes ;

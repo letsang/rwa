@@ -23,14 +23,6 @@
 .np-floats { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
 .np-float { font-weight: 700; font-size: 13px; text-shadow: 0 1px 3px #000; }
 
-/* Indicateur de mode caméra */
-#cam-indicator {
-  position: absolute; bottom: 90px; right: 16px;
-  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-  padding: 6px 12px; font-size: 10px; letter-spacing: 1px; color: #9fb0cc; text-align: center;
-}
-#cam-indicator #cam-mode { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 2px; }
-
 /* Menu : races */
 .cosmetic-tag { font-size: 10px; color: #7fd9a0; background: rgba(95,191,95,0.12); padding: 2px 8px; border-radius: 10px; letter-spacing: 0; text-transform: none; margin-left: 6px; }
 .choice-grid { grid-template-columns: repeat(6, 1fr); }
@@ -40,6 +32,6 @@
 .race-hint { grid-column: 1 / -1; color: #93a0b8; font-size: 12px; padding: 6px; }
 
 /* HUD debug V0.4.0 */
-#debug-hud{position:absolute;top:60px;left:12px;margin:0;padding:8px 12px;
+#debug-hud{position:absolute;top:12px;right:12px;margin:0;padding:8px 12px;
   background:rgba(8,10,16,.82);border:1px solid #2c3446;border-radius:8px;
   font:11px/1.5 'Myriad Pro';color:#8fe3b0;white-space:pre;pointer-events:none;z-index:5}
