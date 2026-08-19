@@ -49,8 +49,8 @@ Le texte d'ambiance est centré et masqué au repos, puis apparaît au survol ou
 focus clavier ; l'action `Prêter serment` reste placée sous le panneau.
 L'en-tête du triptyque a ensuite été retiré et les panneaux légèrement réduits.
 Les séparateurs verticaux entre les cartes ont également été supprimés.
-Les panneaux illustrés sont désormais masqués au repos et apparaissent avec le
-texte et l'action lorsque la carte est survolée ou reçoit le focus clavier.
+Les panneaux illustrés restent visibles au repos sous une forme grisée et atténuée, puis
+retrouvent leurs couleurs et leur opacité complètes au survol ou au focus clavier.
 
 La création du personnage reprend une présentation classique : description à
 gauche, modèle GLB en animation `Idle` au centre, races et classes à droite.

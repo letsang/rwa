@@ -259,8 +259,8 @@ caméra, de contrôle territorial et de simulation reste active.
 - suppression de l'en-tête du triptyque et légère réduction des panneaux de royaume
   afin de dégager davantage les trois illustrations de fond ;
 - suppression des bordures verticales entre les trois cartes du triptyque ;
-- panneaux de royaume masqués au repos et révélés au survol ou au focus clavier,
-  comme le texte d'ambiance et l'action de sélection ;
+- panneaux de royaume conservés visibles au repos en niveaux de gris
+  atténués, puis restaurés en couleur et pleine opacité au survol ou au focus ;
 - écran d'introduction remplacé par `title-background2.png`, avec le panneau
   `panel.png` fourni par le projet ; les zones illustrées `JOUER` et `OPTIONS`
   sont de vrais boutons HTML transparents, cliquables et accessibles au clavier ;
