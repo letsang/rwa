@@ -674,15 +674,18 @@ class Game3D {
     window.addEventListener('keydown', e => {
       this.keys.add(e.code);
       if (this.player.dead) return;
-      if (e.code === 'Tab') { e.preventDefault(); if (!e.repeat) this.targetNearestEnemy(); return; }
-      if (e.code === 'KeyV') { e.preventDefault(); this.toggleCamera(); return; }
-      if (e.code === 'F3') { e.preventDefault(); this.toggleDebug(); return; }
-      if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) this.startJump(); return; }
-      if (e.code === 'KeyF') { e.preventDefault(); if (!e.repeat) this.toggleStick(); return; }
+      const action = RWAKeybindings.actionForCode(e.code);
+      if (action === 'targetNearest') { e.preventDefault(); if (!e.repeat) this.targetNearestEnemy(); return; }
+      if (action === 'toggleCamera') { e.preventDefault(); if (!e.repeat) this.toggleCamera(); return; }
+      if (action === 'toggleDebug') { e.preventDefault(); if (!e.repeat) this.toggleDebug(); return; }
+      if (action === 'jump') { e.preventDefault(); if (!e.repeat) this.startJump(); return; }
+      if (action === 'stick') { e.preventDefault(); if (!e.repeat) this.toggleStick(); return; }
       const p = this.player;
-      const skillByCode = { Digit1: p.def.skills[0], Digit2: p.def.skills[1], Digit3: p.def.skills[2], Digit4: p.def.skills[3],
-        KeyR: p.def.realm, ShiftLeft: UNIVERSAL_SKILLS.sprint, ShiftRight: UNIVERSAL_SKILLS.sprint, KeyE: UNIVERSAL_SKILLS.purge };
-      const sk = skillByCode[e.code];
+      const skillByAction = {
+        ability1: p.def.skills[0], ability2: p.def.skills[1], ability3: p.def.skills[2], ability4: p.def.skills[3],
+        realmAbility: p.def.realm, sprint: UNIVERSAL_SKILLS.sprint, purge: UNIVERSAL_SKILLS.purge,
+      };
+      const sk = skillByAction[action];
       if (sk) { e.preventDefault(); this.castPlayerSkill(sk); }
     });
     window.addEventListener('keyup', e => this.keys.delete(e.code));
@@ -868,10 +871,11 @@ class Game3D {
     const p = this.player;
     if (p.dead) return;
     const K = this.keys;
-    const up = K.has('KeyW') || K.has('ArrowUp');
-    const dn = K.has('KeyS') || K.has('ArrowDown');
-    const lf = K.has('KeyA') || K.has('ArrowLeft');
-    const rt = K.has('KeyD') || K.has('ArrowRight');
+    const pressed = actionId => [...K].some(code => RWAKeybindings.matches(actionId, code));
+    const up = pressed('moveForward');
+    const dn = pressed('moveBackward');
+    const lf = pressed('moveLeft');
+    const rt = pressed('moveRight');
     if (!(up || dn || lf || rt)) { if (this.wasdActive) { p.moveTarget = null; this.wasdActive = false; } return; }
     this.clearStick(false);
     // Base caméra RÉELLE (Babylon) projetée au sol -> évite toute désynchro de signe.
@@ -1122,14 +1126,20 @@ class Game3D {
 
   /* Skillbar : rendre les slots cliquables + libellés de touches adaptés */
   patchSkillbar() {
+    const actions = ['ability1', 'ability2', 'ability3', 'ability4', 'realmAbility', 'sprint', 'purge'];
+    const refreshBindings = () => UI.slots.forEach((slot, index) => {
+      const keyEl = slot.el.querySelector('.key');
+      if (keyEl) keyEl.textContent = RWAKeybindings.label(actions[index]);
+    });
     for (const slot of UI.slots) {
       const s = slot.skill;
       slot.el.style.cursor = 'pointer';
       slot.el.onclick = () => { if (!this.player.dead) this.castPlayerSkill(s); };
-      // libellés de touches en 3D
-      const keyEl = slot.el.querySelector('.key');
-      if (s.id === 'sprint') keyEl.textContent = '⇧';
-      else if (s.id === 'purge') keyEl.textContent = 'E';
+    }
+    refreshBindings();
+    if (!this._keybindingUiListener) {
+      this._keybindingUiListener = true;
+      window.addEventListener('rwa-keybindings-changed', refreshBindings);
     }
   }
 }

@@ -26,9 +26,13 @@ au terrain pendant cette passe. Ils restent réservés au prochain Visual Qualit
 - suppression du cercle blanc de sélection et du panneau détaillé de cible placé
   en haut à gauche ; les plaques au-dessus des personnages restent affichées et
   le ciblage ainsi que la fonction Stick restent inchangés ;
-- ajout du ciblage automatique sur `Tab`, qui sélectionne l'ennemi vivant et
+- ajout du ciblage automatique sur `C`, qui sélectionne l'ennemi vivant et
   visible le plus proche, active l'intention d'attaque et conserve la compatibilité
   avec le Stick ;
+- extension de l'écran Options avec la liste complète des commandes clavier et
+  souris ; les seize actions clavier peuvent être réassignées, les doublons sont
+  échangés automatiquement, les choix sont sauvegardés localement et un bouton
+  restaure la configuration par défaut ;
 
 ### 1. Nouveau parcours d'ouverture
 

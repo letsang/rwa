@@ -70,7 +70,7 @@
       <button id="character-back-btn" class="back-btn inline">← Royaumes</button>
       <button id="start-btn" class="medieval-btn primary enter-war" disabled>ENTRER DANS LA GUERRE</button>
     </div>
-    <p class="controls-hint">ZQSD / WASD · déplacement &nbsp;|&nbsp; Tab · cible ennemie proche &nbsp;|&nbsp; Espace · saut &nbsp;|&nbsp; F · stick cible &nbsp;|&nbsp; clic droit · caméra &nbsp;|&nbsp; V · vue tactique</p>
+    <p id="controls-hint" class="controls-hint">ZQSD / WASD · déplacement | C · cible ennemie proche | Espace · saut | F · stick cible | clic droit · caméra | V · vue tactique</p>
   </div>
 </div>
 
@@ -79,11 +79,28 @@
   <div class="options-panel">
     <button id="options-close-btn" class="modal-close" aria-label="Fermer">×</button>
     <p class="eyebrow">Configuration</p>
-    <h2 id="options-title">OPTIONS AUDIO</h2>
-    <label><span>Volume général</span><output id="master-volume-value">80%</output><input id="master-volume" type="range" min="0" max="100" value="80"></label>
-    <label><span>Musique</span><output id="music-volume-value">65%</output><input id="music-volume" type="range" min="0" max="100" value="65"></label>
-    <label><span>Effets</span><output id="sfx-volume-value">80%</output><input id="sfx-volume" type="range" min="0" max="100" value="80"></label>
-    <button id="mute-btn" class="medieval-btn">COUPER LE SON</button>
+    <h2 id="options-title">OPTIONS</h2>
+    <div class="options-columns">
+      <section class="options-section audio-options">
+        <h3>Audio</h3>
+        <label><span>Volume général</span><output id="master-volume-value">80%</output><input id="master-volume" type="range" min="0" max="100" value="80"></label>
+        <label><span>Musique</span><output id="music-volume-value">65%</output><input id="music-volume" type="range" min="0" max="100" value="65"></label>
+        <label><span>Effets</span><output id="sfx-volume-value">80%</output><input id="sfx-volume" type="range" min="0" max="100" value="80"></label>
+        <button id="mute-btn" class="medieval-btn">COUPER LE SON</button>
+        <div class="fixed-controls">
+          <h3>Souris</h3>
+          <div><span>Sélectionner un personnage</span><kbd>CLIC GAUCHE</kbd></div>
+          <div><span>Orienter la caméra</span><kbd>CLIC DROIT</kbd></div>
+          <div><span>Zoomer</span><kbd>MOLETTE</kbd></div>
+        </div>
+      </section>
+      <section class="options-section controls-options">
+        <h3>Commandes</h3>
+        <p class="keybinding-help">Clique sur une touche puis appuie sur le nouveau raccourci. En cas de doublon, les commandes sont échangées.</p>
+        <div id="keybindings-list" class="keybindings-list"></div>
+        <button id="keybindings-reset-btn" class="medieval-btn subtle">RÉTABLIR PAR DÉFAUT</button>
+      </section>
+    </div>
   </div>
 </div>
 
@@ -125,6 +142,7 @@
 <script src="./js/entity.js"></script>
 <script src="./js/combat.js"></script>
 <script src="./js/bots.js"></script>
+<script src="./js/keybindings.js"></script>
 <script src="./js/ui.js"></script>
 <script src="./js/audio.js"></script>
 <script src="./js/animlib.js"></script>

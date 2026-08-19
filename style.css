@@ -136,12 +136,23 @@ html, body {
 .controls-hint { position: relative; margin-top: 18px; color: #696f78; text-align: center; font-size: 11px; letter-spacing: .05em; }
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: rgba(3,5,8,.78); backdrop-filter: blur(8px); }
-.options-panel { position: relative; width: min(480px, 90vw); padding: 34px 38px; border: 1px solid #816d45; background: linear-gradient(145deg, #20252b, #0c1015); box-shadow: 0 25px 80px #000; }
-.options-panel h2 { font-size: 30px; margin-bottom: 26px; }
+.options-panel { position: relative; width: min(920px, 92vw); max-height: 88vh; overflow: auto; padding: 34px 38px; border: 1px solid #816d45; background: linear-gradient(145deg, #20252b, #0c1015); box-shadow: 0 25px 80px #000; }
+.options-panel h2 { font-size: 30px; margin-bottom: 22px; }
+.options-columns { display: grid; grid-template-columns: minmax(250px, .8fr) minmax(360px, 1.2fr); gap: 32px; }
+.options-section h3 { margin: 0 0 14px; color: #c3aa72; font: 700 18px 'Minion Pro'; letter-spacing: .12em; text-transform: uppercase; }
+.controls-options { border-left: 1px solid rgba(181,150,82,.28); padding-left: 32px; }
 .options-panel label { display: grid; grid-template-columns: 1fr auto; gap: 7px; color: #d5cec0; margin: 18px 0; }
 .options-panel output { color: #ba9f62; }
 .options-panel input { grid-column: 1 / -1; width: 100%; accent-color: #b59652; }
 .options-panel .medieval-btn { width: 100%; margin-top: 14px; }
+.keybinding-help { margin: -4px 0 12px; color: #7f8792; font-size: 11px; line-height: 1.4; }
+.keybindings-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; }
+.keybinding-row { display: grid; grid-template-columns: minmax(0,1fr) 92px; align-items: center; gap: 9px; min-height: 34px; color: #d5cec0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.055); }
+.keybinding-btn { height: 26px; border: 1px solid #605333; background: rgba(7,9,12,.72); color: #e2d6bd; font: 600 10px 'Myriad Pro'; letter-spacing: .06em; cursor: pointer; }
+.keybinding-btn:hover, .keybinding-btn.listening { border-color: #b59652; color: #fff; background: rgba(181,150,82,.16); }
+.fixed-controls { margin-top: 28px; }
+.fixed-controls > div { display: flex; justify-content: space-between; gap: 12px; margin: 9px 0; color: #aeb3bb; font-size: 12px; }
+.fixed-controls kbd { color: #d7c59e; font: 600 10px 'Myriad Pro'; }
 .modal-close { position: absolute; top: 10px; right: 14px; border: 0; background: transparent; color: #aaa; font-size: 27px; cursor: pointer; }
 .loading-screen { z-index: 250; flex-direction: column; background: radial-gradient(circle at center, #202731, #07090c 62%); color: #d9cfba; }
 .loading-screen h2 { font: 700 30px 'Minion Pro'; letter-spacing: .18em; margin: 16px 0 20px; }
@@ -159,6 +170,9 @@ html, body {
   .character-options-panel { order: 3; border-left: 0; border-top: 1px solid rgba(190,170,124,.2); }
   .race-preview-stage { min-height: 360px; }
   .race-grid { grid-template-columns: repeat(3, 1fr); }
+  .options-columns { grid-template-columns: 1fr; }
+  .controls-options { border-left: 0; border-top: 1px solid rgba(181,150,82,.28); padding: 24px 0 0; }
+  .keybindings-list { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
