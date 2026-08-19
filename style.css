@@ -16,7 +16,7 @@
   --center:#5fbf5f;  /* Royaume Central (vert) */
   --neutral:#7a7a7a;
   --bg:    #10131a;
-  --panel: rgba(18,22,32,0.85);
+  --panel: rgba(18,22,32,0.58);
   --border:#2c3446;
   --text:  #e8ecf4;
 }
@@ -167,12 +167,12 @@ html, body {
 
 /* Notifications */
 #notifications { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; align-items: center; pointer-events: none; }
-.notif { background: rgba(0,0,0,0.7); border-left: 4px solid #fff; padding: 6px 14px; border-radius: 6px; font-size: 13px; animation: fadeSlide 4s forwards; }
+.notif { background: rgba(0,0,0,0.52); border-left: 4px solid #fff; padding: 6px 14px; border-radius: 6px; font-size: 13px; animation: fadeSlide 4s forwards; }
 @keyframes fadeSlide { 0%{opacity:0; transform:translateY(-8px);} 10%{opacity:1; transform:none;} 80%{opacity:1;} 100%{opacity:0;} }
 
 /* Panneau cible */
 #target-panel {
-  position: absolute; top: 12px; left: 12px; width: 240px;
+  position: absolute; top: 96px; left: 12px; width: 240px;
   background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
 }
 #target-panel .t-name { font-weight: 700; font-size: 14px; }
@@ -191,15 +191,15 @@ html, body {
 .chip.dot{background:#b04f3a;} .chip.buff{background:#3a7fb0;} .chip.immune{background:#cccccc;color:#222;}
 
 /* HUD joueur */
-#player-hud { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-#player-stats { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; width: 320px; }
+#player-hud { position: absolute; inset: 0; pointer-events: none; }
+#player-stats { position: absolute; top: 12px; left: 12px; width: 320px; pointer-events: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; }
 #player-stats .p-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
 #player-stats .p-cast { margin-top: 4px; }
 
-#skillbar { display: flex; gap: 8px; }
+#skillbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto; }
 .skill-slot {
   width: 62px; height: 62px; border: 2px solid var(--border); border-radius: 10px;
-  background: rgba(20,24,34,0.9); position: relative; overflow: hidden; text-align: center;
+  background: rgba(20,24,34,0.62); position: relative; overflow: hidden; text-align: center;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .skill-slot .key { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #9fb0cc; font-weight: 700; }

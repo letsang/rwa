@@ -199,6 +199,12 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
 - suppression de la minimap et de son rendu Canvas à chaque mise à jour ;
 - déplacement du panneau de performances et de diagnostic dans l'ancien
   emplacement de la minimap, en haut à droite ;
+- déplacement du panneau du personnage (PV et ressource) en haut à gauche,
+  tout en conservant la barre de compétences centrée en bas ;
+- placement du panneau de cible sous celui du personnage pour éviter tout
+  chevauchement ;
+- augmentation de la transparence des fonds du HUD : panneaux principaux,
+  diagnostic, notifications et cases de compétences ;
 - conservation de la touche `V` pour changer de caméra et de la notification
   temporaire associée ;
 - conservation de `F3` pour changer le niveau d'affichage du diagnostic.
