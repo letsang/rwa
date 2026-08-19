@@ -35,6 +35,7 @@ const STARTUP_ANIMATION_KEYS = [
 const LOCO_IDLE_SPEED = 12;
 const LOCO_JOG_SPEED = 80;
 const NAMEPLATE_MAX_DISTANCE = 1600; // unités simulation : noms et textes flottants proches uniquement
+const STICK_MAX_DISTANCE = 720; // rupture automatique du suivi, allié comme ennemi
 
 /* GLB par RACE (V0.4.2) : chaque race a son propre modèle, tous au rig Manny
    (161 os, pieds à y≈0) -> RWA Animation Library (retarget par nom d'os).
@@ -676,12 +677,11 @@ class Game3D {
       this.keys.add(e.code);
       if (this.player.dead) return;
       const action = RWAKeybindings.actionForCode(e.code);
-      if (['moveForward', 'moveBackward', 'moveLeft', 'moveRight'].includes(action) && firstPress) this.clearStick(false);
       if (action === 'targetNearest') { e.preventDefault(); if (firstPress) this.targetNearestEnemy(); return; }
       if (action === 'toggleCamera') { e.preventDefault(); if (firstPress) this.toggleCamera(); return; }
       if (action === 'toggleDebug') { e.preventDefault(); if (firstPress) this.toggleDebug(); return; }
       if (action === 'jump') { e.preventDefault(); if (firstPress) this.startJump(); return; }
-      if (action === 'stick') { e.preventDefault(); if (firstPress) this.toggleStick(); return; }
+      if (action === 'stick') { e.preventDefault(); if (firstPress) this.activateStick(); return; }
       const p = this.player;
       const skillByAction = {
         ability1: p.def.skills[0], ability2: p.def.skills[1], ability3: p.def.skills[2], ability4: p.def.skills[3],
@@ -738,13 +738,17 @@ class Game3D {
     return wasActive;
   }
 
-  toggleStick() {
+  activateStick() {
     const p = this.player;
     if (!p) return;
-    if (p._stickActive || p.followTarget) { this.clearStick(true); return; }
     const target = p.target;
     if (!target || target === p || target.dead || !this.isEnemyVisible(target)) {
       UI.notify('Sélectionne un personnage avant d’utiliser Stick.', '#d8c59b');
+      return;
+    }
+    if (p.distanceTo(target) > STICK_MAX_DISTANCE) {
+      this.clearStick(false);
+      UI.notify('Cible trop éloignée pour Stick.', '#d8c59b');
       return;
     }
     p.followTarget = target;
@@ -882,6 +886,7 @@ class Game3D {
     const lf = pressed('moveLeft');
     const rt = pressed('moveRight');
     if (!(up || dn || lf || rt)) { if (this.wasdActive) { p.moveTarget = null; this.wasdActive = false; } return; }
+    this.clearStick(false);
     // Base caméra RÉELLE (Babylon) projetée au sol -> évite toute désynchro de signe.
     // forward = direction où regarde la caméra (Axis.Z) ; right = Axis.X.
     const fwd = this.camera.getDirection(BABYLON.Axis.Z);
@@ -945,10 +950,11 @@ class Game3D {
     this.handleMovement();
     this.updateJump(dt);
 
-    // Une cible morte, devenue invisible ou remplacée met fin au stick.
+    // Une cible morte, devenue invisible, remplacée ou trop éloignée met fin au stick.
     if (this.player._stickActive) {
       const st = this.player.followTarget;
-      if (!st || st.dead || st !== this.player.target || !this.isEnemyVisible(st)) this.clearStick(false);
+      if (!st || st.dead || st !== this.player.target || !this.isEnemyVisible(st)
+        || this.player.distanceTo(st) > STICK_MAX_DISTANCE) this.clearStick(false);
     }
 
     for (const e of this.entities) if (e !== this.player && !e.dead) BotAI.update(e, this, dt);
