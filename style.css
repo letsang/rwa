@@ -78,9 +78,7 @@ html, body {
 
 .selection-screen { overflow: auto; background: #090d12; color: #e7e0d3; }
 .selection-screen::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 0, rgba(90,111,129,.22), transparent 53%); }
-.selection-header { position: absolute; z-index: 2; top: 5vh; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; width: 90%; text-shadow: 0 2px 8px #000; }
-.selection-header h2, .options-panel h2 { font: 700 clamp(28px, 3vw, 48px) 'Minion Pro'; letter-spacing: .12em; margin: 8px 0 4px; }
-.selection-header > p:last-child { color: #a7a9aa; font-family: 'Minion Pro'; font-size: 17px; }
+.options-panel h2 { font: 700 clamp(28px, 3vw, 48px) 'Minion Pro'; letter-spacing: .12em; margin: 8px 0 4px; }
 .realm-split { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; }
 .realm-card { position: relative; padding: 0; cursor: pointer; overflow: hidden; border: 0; border-right: 1px solid rgba(225,211,178,.17); color: #eee7d8; background-color: #111; }
 .realm-card::before { content: ''; position: absolute; inset: -3%; background-position: center; background-size: cover; filter: saturate(.72) brightness(.58); transition: transform .7s, filter .5s; }
@@ -90,7 +88,7 @@ html, body {
 .realm-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(4,6,9,.88), transparent 58%); opacity: .7; }
 .realm-card:hover::before { transform: scale(1.045); filter: saturate(.92) brightness(.72); }
 .realm-card:hover::after { opacity: .48; }
-.realm-card-panel { position: absolute; z-index: 2; left: 50%; bottom: 8vh; display: block; width: min(92%, 520px); height: auto; transform: translateX(-50%); pointer-events: none; }
+.realm-card-panel { position: absolute; z-index: 2; left: 50%; bottom: 8vh; display: block; width: min(84%, 480px); height: auto; transform: translateX(-50%); pointer-events: none; }
 .realm-card .realm-lore { position: absolute; z-index: 3; top: 50%; left: 50%; width: min(78%, 360px); margin: 0; color: #e3e0d8; font: 400 16px/1.5 'Minion Pro'; opacity: 0; visibility: hidden; transform: translate(-50%, calc(-50% + 10px)); transition: opacity .25s, transform .25s, visibility .25s; }
 .realm-card .realm-enter { position: absolute; z-index: 3; left: 50%; bottom: 4.5vh; color: var(--realm-color); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; white-space: nowrap; opacity: 0; transform: translate(-50%, 7px); transition: opacity .25s, transform .25s; }
 .realm-card:hover .realm-lore, .realm-card:focus-visible .realm-lore { opacity: 1; visibility: visible; transform: translate(-50%, -50%); }
@@ -189,8 +187,6 @@ html, body {
 @media (max-width: 760px) {
   .realm-split { grid-template-columns: 1fr; overflow-y: auto; }
   .realm-card { min-height: 55vh; padding-bottom: 5vh; }
-  .selection-header:not(.compact) { position: fixed; top: 16px; }
-  .realm-split { padding-top: 100px; }
   .race-preview-stage { min-height: 330px; }
   .creation-actions { grid-template-columns: 1fr; gap: 18px; }
   .enter-war { grid-column: 1; }
