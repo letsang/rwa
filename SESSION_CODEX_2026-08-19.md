@@ -75,6 +75,9 @@ L'aperçu 3D a ensuite été étendu à toute la surface de l'écran derrière l
 panneaux latéraux de 25 %. Les sous-titres « Peuples du royaume » et « Voies
 disponibles » ont été retirés, et la grille des races utilise désormais les mêmes
 cellules fixes que celle des classes.
+Toutes les cases de race et de classe partagent maintenant exactement la même
+largeur et la même hauteur. L'action `Commencer →` est ancrée au centre inférieur
+du panneau d'options.
 
 ### Répartition canonique actuelle
 
