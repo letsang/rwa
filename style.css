@@ -90,8 +90,6 @@ html, body {
 .character-screen { align-items: flex-start; padding: 5vh 3vw; }
 .character-shell { position: relative; width: min(1380px, 96vw); margin: auto; padding: 24px clamp(20px, 3vw, 42px); border: 1px solid rgba(191,166,112,.35); background: linear-gradient(140deg, rgba(20,25,31,.97), rgba(8,11,15,.98)); box-shadow: 0 24px 80px #000; }
 .character-shell::before { content: ''; position: absolute; inset: 0; opacity: .08; background: url('./assets/ui/title-background.png') center/cover; pointer-events: none; }
-.selection-header.compact { position: relative; top: auto; left: auto; transform: none; width: auto; margin-bottom: 24px; }
-.selection-header.compact h2 { font-size: clamp(30px, 3vw, 44px); }
 .character-creation-layout { position: relative; display: grid; grid-template-columns: minmax(210px, .72fr) minmax(380px, 1.45fr) minmax(300px, 1fr); min-height: 480px; border-top: 1px solid rgba(190,170,124,.2); border-bottom: 1px solid rgba(190,170,124,.2); }
 .character-description-panel, .character-options-panel { padding: 28px 24px; background: rgba(4,7,10,.28); }
 .character-description-panel { border-right: 1px solid rgba(190,170,124,.2); }

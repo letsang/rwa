@@ -244,6 +244,8 @@ caméra, de contrôle territorial et de simulation reste active.
   un écran de création classique : description à gauche, modèle GLB sélectionné
   seul au centre en animation `Idle`, races et classes à droite ; la scène
   d'aperçu est libérée avant l'entrée en jeu ;
+- suppression de l'en-tête redondant « Champion du royaume / Forge ton destin /
+  Royaume » afin de consacrer davantage de hauteur au modèle et aux sélections ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc

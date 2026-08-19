@@ -107,7 +107,6 @@ class Game3D {
     const rsel = document.getElementById('race-select');
     const csel = document.getElementById('class-select');
     const startBtn = document.getElementById('start-btn');
-    const realmLabel = document.getElementById('chosen-realm-label');
     const raceTitle = document.getElementById('selected-race-title');
     const raceDescription = document.getElementById('selected-race-description');
     const raceCaption = document.getElementById('selected-race-caption');
@@ -216,8 +215,6 @@ class Game3D {
       el.innerHTML = `<span class="realm-card-content"><span class="realm-sigil">${R.sigil}</span><h3>${R.name}</h3><p>${R.lore}</p><span class="realm-enter">Prêter serment →</span></span>`;
       el.onclick = () => {
         cf = fid; cr = null; cc = null;
-        realmLabel.textContent = R.name;
-        realmLabel.style.color = R.color;
         buildRaces(); check(); show(characterScreen);
         this.loadRacePreview(fid);
       };
