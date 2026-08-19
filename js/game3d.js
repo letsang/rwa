@@ -112,7 +112,6 @@ class Game3D {
     const startBtn = document.getElementById('start-btn');
     const raceTitle = document.getElementById('selected-race-title');
     const raceDescription = document.getElementById('selected-race-description');
-    const raceCaption = document.getElementById('selected-race-caption');
     const classTitle = document.getElementById('selected-class-title');
     const classDescription = document.getElementById('selected-class-description');
     const show = screen => {
@@ -141,7 +140,6 @@ class Game3D {
     const showRaceDetails = rid => {
       const R = RACES[rid];
       raceTitle.textContent = R ? R.name : 'Race';
-      raceCaption.textContent = R ? R.name : '—';
       raceDescription.textContent = racePresentation[rid] || 'Peuple du royaume.';
     };
     const clearClassDetails = () => {
@@ -157,21 +155,26 @@ class Game3D {
     // ---- Étape 3 : classes autorisées pour la race choisie ----
     const buildClasses = () => {
       csel.innerHTML = ''; cc = null; clearClassDetails();
-      if (!cr) { csel.innerHTML = '<div class="race-hint">Choisis d\'abord une race.</div>'; check(); return; }
-      for (const cid of RACE_CLASSES[cr]) {
+      const availableClasses = cr ? RACE_CLASSES[cr] : [];
+      for (const cid of CLASS_IDS) {
         const C = CLASSES[cid];
+        const available = availableClasses.includes(cid);
         const el = document.createElement('div');
-        el.className = 'choice';
-        el.innerHTML = `<span class="name">${C.name}</span><span class="role">${C.role}</span>`;
-        el.onclick = () => {
-          [...csel.children].forEach(c => c.classList.remove('selected'));
-          el.classList.add('selected');
-          cc = cid;
-          showClassDetails(cid);
-          check();
-        };
+        el.className = 'choice' + (available ? '' : ' unavailable');
+        el.setAttribute('aria-disabled', String(!available));
+        el.innerHTML = `<span class="name">${C.name}</span>`;
+        if (available) {
+          el.onclick = () => {
+            [...csel.children].forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            cc = cid;
+            showClassDetails(cid);
+            check();
+          };
+        }
         csel.appendChild(el);
       }
+      check();
     };
 
     // ---- Étape 2 : races du royaume choisi ----

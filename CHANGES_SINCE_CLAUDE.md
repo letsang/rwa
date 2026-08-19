@@ -270,6 +270,12 @@ caméra, de contrôle territorial et de simulation reste active.
   d'aperçu est libérée avant l'entrée en jeu ;
 - suppression de l'en-tête redondant « Champion du royaume / Forge ton destin /
   Royaume » afin de consacrer davantage de hauteur au modèle et aux sélections ;
+- simplification finale de l'écran de création : suppression des indications de
+  contrôle, sourcils, numéros d'étape, rôles sous les classes, légende de race et
+  de toutes les bordures ; bouton retour replacé en haut à gauche et action
+  `Commencer →` centrée en bas sous forme de texte ;
+- grille de classes fixe présentant les huit classes à chaque sélection de race,
+  avec les classes incompatibles grisées et désactivées ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les

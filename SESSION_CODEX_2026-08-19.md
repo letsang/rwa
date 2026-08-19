@@ -57,6 +57,13 @@ gauche, modèle GLB en animation `Idle` au centre, races et classes à droite.
 L'en-tête redondant « Champion du royaume / Forge ton destin / Royaume » a été
 retiré pour libérer de la hauteur.
 
+L'écran a ensuite été épuré de toutes ses bordures, des indications de contrôle,
+des sourcils, numéros d'étape, rôles sous les classes et de la légende de race.
+Le retour occupe la même position supérieure gauche que sur le triptyque et
+`Commencer →` est une action textuelle centrée en bas. La grille de classes reste
+fixe et affiche les huit classes ; celles qui ne sont pas compatibles avec la race
+sélectionnée sont grisées et désactivées.
+
 ### Répartition canonique actuelle
 
 | Royaume de l'Ouest | Royaume du Nord | Royaume de l'Est |
