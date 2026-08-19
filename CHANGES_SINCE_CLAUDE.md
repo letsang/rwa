@@ -224,6 +224,10 @@ caméra, de contrôle territorial et de simulation reste active.
 - noms ennemis toujours affichés en rouge, y compris lorsque l'ennemi est ciblé ;
 - masquage de la plaque complète au-delà de 1600 unités de simulation : nom,
   PV, incantation, statuts et textes flottants de dégâts/soins ;
+- format uniforme des plaques en `Race_Classe`, avec espaces remplacés par des
+  underscores (par exemple `Dark_Elf_Assassin`) ;
+- remplacement de la jauge de PV des plaques par un trait vert de 5 px, sans
+  fond, bordure ni arrondi ;
 - maintien de `title.mp3` pendant tous les menus et l'écran de chargement ;
 - attente explicite du chargement du visuel du joueur avant de masquer l'écran
   de chargement et de lancer `midplay.mp3` ;

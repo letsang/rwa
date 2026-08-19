@@ -11,8 +11,8 @@
   text-align: center; font-size: 11px; line-height: 1.2; white-space: nowrap;
 }
 .np-name { font-weight: 700; font-size: 12px; text-shadow: 0 1px 3px #000; margin-bottom: 2px; }
-.np-hp { width: 46px; height: 5px; margin: 0 auto; background: #000a; border: 1px solid #0008; border-radius: 3px; overflow: hidden; }
-.np-hp > span { display: block; height: 100%; }
+.np-hp { width: 52px; height: 5px; margin: 2px auto 0; overflow: hidden; }
+.np-hp > span { display: block; height: 100%; background: #4fd36b; }
 .np-cast { width: 46px; height: 3px; margin: 1px auto 0; background: #000a; border-radius: 2px; overflow: hidden; }
 .np-cast > span { display: block; height: 100%; background: #e6d27a; }
 .np-chips { display: flex; gap: 2px; justify-content: center; margin-top: 2px; flex-wrap: wrap; }

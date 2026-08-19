@@ -812,11 +812,13 @@ class Game3D {
       const hpR = Math.max(0, e.hp / e.maxHp);
       const isTarget = (e === p.target);
       const isFocus = (e === p || isTarget);
+      const raceName = e.race && RACES[e.race] ? RACES[e.race].name : '';
+      const plateName = [raceName, e.def.name].filter(Boolean).join('_').replace(/\s+/g, '_');
       // Blanc pour le joueur et ses alliés ; rouge pour tous les ennemis, cible comprise.
       const nameColor = ally ? '#ffffff' : '#ff5a5a';
       let html = '';
-      html += `<div class="np-name" style="color:${nameColor}">${e.def.name}${isFocus && e.race && RACES[e.race] ? ' · ' + RACES[e.race].name : ''}</div>`;
-      html += `<div class="np-hp"><span style="width:${hpR * 100}%;background:${hpR > 0.4 ? '#4fbf6a' : '#d94f4f'}"></span></div>`;
+      html += `<div class="np-name" style="color:${nameColor}">${plateName}</div>`;
+      html += `<div class="np-hp"><span style="width:${hpR * 100}%"></span></div>`;
       if (e.casting) html += `<div class="np-cast"><span style="width:${(1 - e.casting.remaining / e.casting.total) * 100}%"></span></div>`;
       // chips CC (cibles focus)
       if (isFocus) { const chips = EffectSystem.statusChips(e).map(c => `<span class="np-chip ${c.cls}">${c.label}</span>`).join(''); if (chips) html += `<div class="np-chips">${chips}</div>`; }
