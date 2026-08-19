@@ -234,6 +234,12 @@ caméra, de contrôle territorial et de simulation reste active.
 - extension du chargement initial à tous les personnages, aux arbres GLB, aux
   textures/HDRI de la scène et aux animations réellement utilisées, avec un
   premier rendu de chauffe masqué afin d'éviter leur apparition progressive ;
+- nouvelle répartition des races : Ouest (`Human`, `Elf`, `Goblin`), Nord
+  (`Troll`, `Dwarf`, `Drake`) et Est (`Ogre`, `Dark Elf`, `Orc`) ;
+- triptyque réordonné Ouest–Nord–Est et illustré par les trois bannières dédiées,
+  avec zoom au survol mais sans ombre portée ;
+- écran d'introduction remplacé par `title-background2.png`, avec `logo.png`
+  centré dans la partie supérieure et les boutons juste en dessous, sans ombre ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc

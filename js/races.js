@@ -11,15 +11,15 @@
    Matrice (x = autorisé) — 3 races par royaume :
      Royaume   Race        Classes autorisées
      ───────   ─────────   ───────────────────────────────────────────
-     NORD →    Human       Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
-     (CENTER)  Dwarf       Guardian Berserker Skald Ranger Assassin (5)
-               Elf         Sorcerer Mage Cleric Ranger Assassin (5)
-     EST →     Dark Elf    Sorcerer Mage Cleric Ranger Assassin (5)
-     (EAST)    Ogre        Guardian Berserker Sorcerer Cleric Skald (5)
-               Drake       Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
-     OUEST →   Troll       Guardian Berserker Mage Cleric Skald (5)
-     (WEST)    Orc         Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
+     OUEST →   Human       Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
+     (WEST)    Elf         Sorcerer Mage Cleric Ranger Assassin (5)
                Goblin      Sorcerer Mage Cleric Ranger Assassin (5)
+     NORD →    Troll       Guardian Berserker Mage Cleric Skald (5)
+     (CENTER)  Dwarf       Guardian Berserker Skald Ranger Assassin (5)
+               Drake       Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
+     EST →     Ogre        Guardian Berserker Sorcerer Cleric Skald (5)
+     (EAST)    Dark Elf    Sorcerer Mage Cleric Ranger Assassin (5)
+               Orc         Guardian Berserker Sorcerer Mage Cleric Skald Ranger Assassin (8)
 
    Correspondance de nommage interne :
      Mage = RUNEMASTER · Assassin = ROGUE · Drake = DRAKE (fichier Drake.glb).
@@ -44,9 +44,9 @@ const RACES = {
 /* ---------- MATRICE : races disponibles par FACTION (royaume) ---------- */
 // Clés = ids de faction moteur (data.js FACTIONS).
 const FACTION_RACES = {
-  CENTER: ['HUMAN', 'DWARF', 'ELF'],        // Royaume Nord
-  EAST:   ['DARK_ELF', 'OGRE', 'DRAKE'],    // Royaume Est
-  WEST:   ['TROLL', 'ORC', 'GOBLIN'],       // Royaume Ouest
+  WEST:   ['HUMAN', 'ELF', 'GOBLIN'],       // Royaume Ouest
+  CENTER: ['TROLL', 'DWARF', 'DRAKE'],      // Royaume Nord
+  EAST:   ['OGRE', 'DARK_ELF', 'ORC'],      // Royaume Est
 };
 
 /* ---------- ÉCHELLE VISUELLE RACIALE (cosmétique, runtime) ----------

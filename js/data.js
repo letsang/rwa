@@ -8,7 +8,7 @@
 const FACTIONS = {
   EAST:   { id: 'EAST',   name: 'Royaume Est',     color: '#d94f4f', short: 'EST' },
   WEST:   { id: 'WEST',   name: 'Royaume Ouest',   color: '#4f7fd9', short: 'OUEST' },
-  CENTER: { id: 'CENTER', name: 'Royaume Central', color: '#5fbf5f', short: 'CENTRAL' },
+  CENTER: { id: 'CENTER', name: 'Royaume Nord',    color: '#5fbf5f', short: 'NORD' },
 };
 const FACTION_IDS = ['EAST', 'WEST', 'CENTER'];
 

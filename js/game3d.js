@@ -149,7 +149,8 @@ class Game3D {
     };
 
     // ---- Étape 1 : royaumes (écran triptyque) ----
-    ['CENTER', 'WEST', 'EAST'].forEach(fid => {
+    // Ordre visuel du triptyque : Ouest à gauche, Nord au centre, Est à droite.
+    ['WEST', 'CENTER', 'EAST'].forEach(fid => {
       const R = realmPresentation[fid];
       const el = document.createElement('button');
       el.className = 'realm-card';
