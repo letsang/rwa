@@ -71,7 +71,7 @@ const baseline = {
     directionalIntensity: 1, ambientIntensity: 1.08,
     directionalColor: '#ebe5d6', ambientColor: '#b8bfcc', environmentIntensity: 0.62,
   },
-  postProcess: { sharpen: 0, vignette: 2.2, grain: 0 },
+  postProcess: { sharpen: 0, vignette: 2.2, grain: 0, softness: 0 },
 };
 let applied = null;
 let terrainApplied = null;
@@ -89,7 +89,7 @@ const game = {
 
 (async () => {
   const panel = new window.VisualTuningPanel(game);
-  assert.equal(panel.controls.length, 15, 'V1 doit exposer exactement 15 contrôles utiles');
+  assert.equal(panel.controls.length, 16, 'V1 doit exposer exactement 16 contrôles utiles');
   assert.equal(panel.panel.classList.contains('vt-hidden'), true, 'panneau masqué par défaut');
 
   const f8 = { code: 'F8', repeat: false, preventDefault() { this.prevented = true; } };

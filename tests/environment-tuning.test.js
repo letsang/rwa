@@ -28,7 +28,7 @@ assert.deepEqual(baseline, {
     directionalIntensity: 1.3, ambientIntensity: 1.5,
     directionalColor: '#dedede', ambientColor: '#646464', environmentIntensity: 0.2,
   },
-  postProcess: { sharpen: 0, vignette: 0, grain: 0.2 },
+  postProcess: { sharpen: 0, vignette: 0, grain: 0.2, softness: 0 },
 }, 'la calibration validée doit être la baseline Babylon initiale');
 const settings = JSON.parse(JSON.stringify(baseline));
 
@@ -46,6 +46,7 @@ settings.lighting.environmentIntensity = 0.44;
 settings.postProcess.sharpen = 0.23;
 settings.postProcess.vignette = 2.75;
 settings.postProcess.grain = 0.12;
+settings.postProcess.softness = 0.35;
 environment.applyTuning(settings);
 
 assert.equal(scene.fogStart, 75);
@@ -65,6 +66,9 @@ assert.equal(environment.pipeline.sharpenEnabled, true);
 assert.equal(environment.pipeline.sharpen.edgeAmount, 0.23);
 assert.equal(environment.pipeline.grainEnabled, true);
 assert.equal(environment.pipeline.grain.intensity, 6);
+assert.equal(environment.softnessPasses.length, 2);
+assert.ok(Math.abs(environment.softnessPasses[0].kernel - 6.25) < 0.001);
+assert.ok(Math.abs(environment.softnessPasses[1].kernel - 6.25) < 0.001);
 
 global.RWA_ENV = window.RWA_ENV;
 const worldVisualsSource = fs.readFileSync(path.join(__dirname, '../js/worldvisuals.js'), 'utf8');
@@ -98,6 +102,7 @@ environment.applyTuning(baseline);
 assert.equal(scene.imageProcessingConfiguration.colorCurvesEnabled, false, 'CURRENT désactive la saturation ajoutée');
 assert.equal(environment.pipeline.grainEnabled, true, 'CURRENT restaure le grain calibré');
 assert.equal(environment.pipeline.grain.intensity, 10, 'CURRENT restaure exactement le grain 0.2');
+assert.equal(environment.softnessPasses, null, 'CURRENT supprime les passes de flou à la valeur zéro');
 
 worldVisuals.scene.onBeforeRenderObservable.remove(worldVisuals._obs);
 scene.dispose();

@@ -57,6 +57,7 @@ class VisualTuningPanel {
       { section: 'Post Process', path: 'postProcess.sharpen', label: 'Sharpen', min: 0, max: 1, step: 0.01 },
       { section: 'Post Process', path: 'postProcess.vignette', label: 'Vignette Intensity', min: 0, max: 5, step: 0.05 },
       { section: 'Post Process', path: 'postProcess.grain', label: 'Grain Intensity', min: 0, max: 1, step: 0.01 },
+      { section: 'Post Process', path: 'postProcess.softness', label: 'Softness / Blur', min: 0, max: 1, step: 0.01 },
     ];
   }
 
@@ -72,6 +73,7 @@ class VisualTuningPanel {
         'fog.start': 180, 'fog.end': 850,
         'grading.saturation': 1, 'grading.contrast': 1, 'grading.exposure': 1,
         'postProcess.sharpen': 0, 'postProcess.vignette': 0, 'postProcess.grain': 0,
+        'postProcess.softness': 0,
       }),
       FOGGY: preset({
         'fog.start': 70, 'fog.end': 460, 'fog.color': '#87919a',
@@ -107,7 +109,9 @@ class VisualTuningPanel {
   _normalise(settings) {
     for (const control of this.controls) {
       if (control.type === 'color') continue;
-      const value = Number(this._get(settings, control.path));
+      const raw = this._get(settings, control.path);
+      const fallback = this._get(this.baseline, control.path);
+      const value = Number.isFinite(Number(raw)) ? Number(raw) : Number(fallback);
       this._set(settings, control.path, Math.min(control.max, Math.max(control.min, value)));
     }
     if (settings.fog.end <= settings.fog.start + 10) settings.fog.end = Math.min(950, settings.fog.start + 10);

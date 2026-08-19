@@ -48,10 +48,15 @@ grain 0.2, sans sharpen ni vignette, et ombre de contact à 0.5.
 | Post Process | Sharpen | `DefaultRenderingPipeline.sharpen.edgeAmount` |
 | Post Process | Vignette Intensity | `imageProcessingConfiguration.vignetteWeight` |
 | Post Process | Grain Intensity | `DefaultRenderingPipeline.grain.intensity` (échelle Babylon 0–50) |
+| Post Process | Softness / Blur | deux `BlurPostProcess` séparables demi-résolution, kernel 1–16 |
 
 Le pipeline post-process unique est créé à la demande lorsque Sharpen ou Grain
 devient non nul. Il est supprimé lorsque les deux valeurs reviennent à zéro,
 notamment avec `RESET CURRENT`. Aucun bloom n'est activé.
+
+Le contrôle Softness crée une passe horizontale et une passe verticale uniquement
+lorsque sa valeur est non nulle. Les deux passes sont supprimées à zéro. La valeur
+est bornée de 0 à 1 et pilote un kernel Babylon de 1 à 16.
 
 ## Paramètres volontairement absents
 
@@ -73,6 +78,7 @@ notamment avec `RESET CURRENT`. Aucun bloom n'est activé.
 - synchronisation terrain limitée à sept uniforms de shader ;
 - panneau masqué : un listener clavier F8 et aucun autre coût régulier ;
 - pipeline Sharpen/Grain absent tant que ses deux contrôles valent zéro.
+- passes Softness/Blur absentes lorsque le contrôle vaut zéro.
 
 ## Validation automatisée
 

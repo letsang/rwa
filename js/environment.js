@@ -74,6 +74,8 @@ class Environment {
     this._saturation = 1.0;
     this._colorCurves = null;
     this.pipeline = null;
+    this.softnessPasses = null;
+    this._softness = 0;
 
     // Grain fixe issu de la calibration validée (0.2 dans l'UI = 10 chez Babylon).
     this._buildTuningPipeline();
@@ -103,6 +105,38 @@ class Environment {
     p.imageProcessingEnabled = true;
     this.pipeline = p;
     return p;
+  }
+
+  /* Flou de finition séparable, créé uniquement lorsque le contrôle est actif.
+     Deux passes demi-résolution évitent un coût permanent et limitent le coût GPU. */
+  _buildSoftnessPasses() {
+    if (this.softnessPasses || !BABYLON.BlurPostProcess || !this.scene.activeCamera) return this.softnessPasses;
+    const camera = this.scene.activeCamera, engine = this.scene.getEngine();
+    const sampling = BABYLON.Texture.BILINEAR_SAMPLINGMODE;
+    const horizontal = new BABYLON.BlurPostProcess(
+      'rwaSoftnessHorizontal', new BABYLON.Vector2(1, 0), 1, 0.5,
+      camera, sampling, engine, false);
+    const vertical = new BABYLON.BlurPostProcess(
+      'rwaSoftnessVertical', new BABYLON.Vector2(0, 1), 1, 0.5,
+      camera, sampling, engine, false);
+    this.softnessPasses = [horizontal, vertical];
+    return this.softnessPasses;
+  }
+
+  _applySoftness(value) {
+    const softness = Math.max(0, Math.min(1, Number(value) || 0));
+    this._softness = softness;
+    if (softness <= 0.001) {
+      if (this.softnessPasses) {
+        for (const pass of this.softnessPasses) pass.dispose(this.scene.activeCamera);
+        this.softnessPasses = null;
+      }
+      return;
+    }
+    const passes = this._buildSoftnessPasses();
+    if (!passes) return;
+    const kernel = 1 + softness * 15;
+    for (const pass of passes) pass.kernel = kernel;
   }
 
   _hex(color) { return color.toHexString().slice(0, 7).toLowerCase(); }
@@ -138,12 +172,14 @@ class Environment {
         sharpen: this.pipeline && this.pipeline.sharpenEnabled ? this.pipeline.sharpen.edgeAmount : 0,
         vignette: ip.vignetteEnabled ? ip.vignetteWeight : 0,
         grain: this.pipeline && this.pipeline.grainEnabled ? this.pipeline.grain.intensity / 50 : 0,
+        softness: this._softness,
       },
     };
   }
 
   /* Application événementielle : appelée uniquement lorsqu'un contrôle change,
-     lors d'un preset ou d'un reset. Aucune allocation de light ni de pipeline. */
+     lors d'un preset ou d'un reset. Aucune allocation par frame ; les passes de
+     post-process sont créées ou supprimées uniquement aux transitions utiles. */
   applyTuning(settings) {
     const scene = this.scene, ip = scene.imageProcessingConfiguration;
     const fog = settings.fog, grading = settings.grading;
@@ -174,6 +210,7 @@ class Environment {
 
     ip.vignetteEnabled = post.vignette > 0.001;
     ip.vignetteWeight = post.vignette;
+    this._applySoftness(post.softness);
     if ((post.sharpen > 0.001 || post.grain > 0.001) && !this.pipeline) this._buildTuningPipeline();
     if (this.pipeline) {
       const sharpenOn = post.sharpen > 0.001;
