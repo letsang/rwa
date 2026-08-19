@@ -82,6 +82,8 @@ Séquence actuelle :
 
 - les huit WAV de `assets/audio/Intro/` s'enchaînent aléatoirement, sans répétition
   immédiate, pendant l'écran d'accueil, les sélections et tout le chargement ;
+  leur lecture est demandée automatiquement dès le chargement de la page, le
+  premier geste utilisateur ne servant que de secours si le navigateur la bloque ;
 - `assets/audio/Ambient/midplay.mp3` interrompt cette playlist et est joué une
   fois lorsque la scène est prête et affichable ;
 - les quatre variantes `frontiersmusic_bigdrums*.wav` de `assets/audio/Ambient/`

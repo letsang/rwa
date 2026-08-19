@@ -22,6 +22,8 @@ const AUDIO_LIBRARY = {
 class RWAudioManager {
   constructor() {
     this.music = new Audio();
+    this.music.autoplay = true;
+    this.music.playsInline = true;
     this.music.preload = 'auto';
     this.music.loop = false;
     this.musicState = 'idle';

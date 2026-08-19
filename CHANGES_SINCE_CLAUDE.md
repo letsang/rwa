@@ -96,8 +96,9 @@ Le fichier `js/audio.js` a été créé. Il contient `RWAudioManager`, chargé a
 Fonctionnalités ajoutées :
 
 - lecture aléatoire continue des huit WAV de `assets/audio/Intro/` depuis
-  l'écran-titre jusqu'à la fin du chargement, sans répétition immédiate et avec
-  reprise au premier geste utilisateur lorsque l'autoplay est bloqué ;
+  l'écran-titre jusqu'à la fin du chargement, sans répétition immédiate ; la
+  lecture est demandée dès le chargement de la page, avec reprise au premier
+  geste utilisateur uniquement lorsque la politique du navigateur bloque l'autoplay ;
 - lecture unique de `assets/audio/Ambient/midplay.mp3` une fois le chargement
   terminé et le jeu affiché ;
 - lecture aléatoire d'une des quatre variantes `bigdrums` de `assets/audio/Ambient/`
