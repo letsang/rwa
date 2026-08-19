@@ -253,6 +253,9 @@ caméra, de contrôle territorial et de simulation reste active.
   (`Troll`, `Dwarf`, `Drake`) et Est (`Ogre`, `Dark Elf`, `Orc`) ;
 - triptyque réordonné Ouest–Nord–Est et illustré par les trois bannières dédiées,
   avec zoom au survol mais sans ombre portée ;
+- remplacement des anciens sigles et titres HTML du triptyque par trois panneaux
+  illustrés dédiés ; le texte d'ambiance apparaît au centre au survol ou au focus,
+  tandis que l'action `Prêter serment` reste sous le panneau ;
 - écran d'introduction remplacé par `title-background2.png`, avec le panneau
   `panel.png` fourni par le projet ; les zones illustrées `JOUER` et `OPTIONS`
   sont de vrais boutons HTML transparents, cliquables et accessibles au clavier ;

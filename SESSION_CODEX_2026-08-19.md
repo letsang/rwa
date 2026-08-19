@@ -44,6 +44,10 @@ Le triptyque utilise :
 
 Les images n'ont pas d'ombre portée. Un zoom léger reste appliqué au survol.
 
+Les anciens sigles et titres HTML ont été remplacés par trois panneaux illustrés.
+Le texte d'ambiance est centré et masqué au repos, puis apparaît au survol ou au
+focus clavier ; l'action `Prêter serment` reste placée sous le panneau.
+
 La création du personnage reprend une présentation classique : description à
 gauche, modèle GLB en animation `Idle` au centre, races et classes à droite.
 L'en-tête redondant « Champion du royaume / Forge ton destin / Royaume » a été

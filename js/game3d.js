@@ -210,12 +210,17 @@ class Game3D {
     // Ordre visuel du triptyque : Ouest à gauche, Nord au centre, Est à droite.
     ['WEST', 'CENTER', 'EAST'].forEach(fid => {
       const R = realmPresentation[fid];
+      const panel = {
+        WEST: './assets/ui/realm-panel-west.png',
+        CENTER: './assets/ui/realm-panel-north.png',
+        EAST: './assets/ui/realm-panel-east.png',
+      }[fid];
       const el = document.createElement('button');
       el.className = 'realm-card';
       el.dataset.faction = fid;
       el.style.setProperty('--realm-color', R.color);
       el.style.setProperty('--realm-glow', R.glow);
-      el.innerHTML = `<span class="realm-card-content"><span class="realm-sigil">${R.sigil}</span><h3>${R.name}</h3><p>${R.lore}</p><span class="realm-enter">Prêter serment →</span></span>`;
+      el.innerHTML = `<img class="realm-card-panel" src="${panel}" alt="${R.name}"><p class="realm-lore">${R.lore}</p><span class="realm-enter">Prêter serment →</span>`;
       el.onclick = () => {
         cf = fid; cr = null; cc = null;
         buildRaces(); check(); show(characterScreen);
