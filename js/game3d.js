@@ -224,6 +224,7 @@ class Game3D {
     const buildClasses = () => {
       csel.innerHTML = ''; cc = null; clearClassDetails();
       const availableClasses = cr ? RACE_CLASSES[cr] : [];
+      let firstAvailable = null;
       for (const cid of CLASS_IDS) {
         const C = CLASSES[cid];
         const available = availableClasses.includes(cid);
@@ -232,6 +233,7 @@ class Game3D {
         el.setAttribute('aria-disabled', String(!available));
         el.innerHTML = `<span class="name">${C.name}</span>`;
         if (available) {
+          if (!firstAvailable) firstAvailable = { id: cid, element: el };
           el.onclick = () => {
             [...csel.children].forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
@@ -241,6 +243,11 @@ class Game3D {
           };
         }
         csel.appendChild(el);
+      }
+      if (firstAvailable) {
+        cc = firstAvailable.id;
+        firstAvailable.element.classList.add('selected');
+        showClassDetails(cc);
       }
       check();
     };
@@ -267,8 +274,8 @@ class Game3D {
         };
         rsel.appendChild(el);
       }
-      // La première race du royaume est présentée immédiatement, comme dans un
-      // écran de création classique. La classe reste un choix explicite.
+      // La première race du royaume est présentée immédiatement ; buildClasses()
+      // sélectionne ensuite la première classe compatible dans l'ordre canonique.
       cr = realmRaces[0];
       this.menuRace = cr;
       if (rsel.firstElementChild) rsel.firstElementChild.classList.add('selected');

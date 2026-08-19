@@ -92,6 +92,9 @@ Les textes s'appuient sur les pages officielles DAoC `Three Realms`, `Classes &
 Races` et `Class Library`. Les peuples ajoutés par RWA sont explicitement traités
 comme des adaptations afin de ne pas les présenter comme des races jouables
 historiques de DAoC.
+La première race du royaume et la première classe compatible sont sélectionnées
+automatiquement à l'ouverture de l'écran. Un changement de race sélectionne de la
+même manière sa première classe disponible.
 
 ### Répartition canonique actuelle
 

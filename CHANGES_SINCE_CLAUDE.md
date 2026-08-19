@@ -298,6 +298,8 @@ caméra, de contrôle territorial et de simulation reste active.
 - révision de ces textes selon les références officielles DAoC sur les trois
   royaumes, leurs races et leurs voies de classe ; les races propres à RWA sont
   présentées comme des adaptations plutôt que comme des races jouables historiques ;
+- sélection automatique de la première race du royaume et de la première classe
+  compatible lors de l'ouverture de l'écran de création ou d'un changement de race ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
