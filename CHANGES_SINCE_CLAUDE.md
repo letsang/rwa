@@ -246,6 +246,12 @@ caméra, de contrôle territorial et de simulation reste active.
   d'aperçu est libérée avant l'entrée en jeu ;
 - suppression de l'en-tête redondant « Champion du royaume / Forge ton destin /
   Royaume » afin de consacrer davantage de hauteur au modèle et aux sélections ;
+- nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
+  et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
+- ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les
+  coordonnées 2D canoniques ni permettre de contourner les collisions ;
+- ajout du `Stick` sur `F` : suivi rapproché de la cible sélectionnée, annulé par
+  un second appui, un déplacement manuel, une nouvelle cible ou une cible perdue ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc

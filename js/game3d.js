@@ -79,6 +79,8 @@ class Game3D {
     this.started = false;
     this.racePreview = null;
     this.racePreviewToken = 0;
+    this.jumpState = null;
+    this.jumpOffset = 0;
     this._debugMode = 2; // diagnostic masqué par défaut ; F3 l'affiche
     // état caméra : MODE discret + rig sphérique
     this.mode = 'THIRD_PERSON';
@@ -682,9 +684,11 @@ class Game3D {
       if (e.code === 'Tab') { e.preventDefault(); this.cycleTarget(); return; }
       if (e.code === 'KeyV') { e.preventDefault(); this.toggleCamera(); return; }
       if (e.code === 'F3') { e.preventDefault(); this.toggleDebug(); return; }
+      if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) this.startJump(); return; }
+      if (e.code === 'KeyF') { e.preventDefault(); if (!e.repeat) this.toggleStick(); return; }
       const p = this.player;
       const skillByCode = { Digit1: p.def.skills[0], Digit2: p.def.skills[1], Digit3: p.def.skills[2], Digit4: p.def.skills[3],
-        KeyR: p.def.realm, ShiftLeft: UNIVERSAL_SKILLS.sprint, ShiftRight: UNIVERSAL_SKILLS.sprint, KeyF: UNIVERSAL_SKILLS.sprint, KeyE: UNIVERSAL_SKILLS.purge };
+        KeyR: p.def.realm, ShiftLeft: UNIVERSAL_SKILLS.sprint, ShiftRight: UNIVERSAL_SKILLS.sprint, KeyE: UNIVERSAL_SKILLS.purge };
       const sk = skillByCode[e.code];
       if (sk) { e.preventDefault(); this.castPlayerSkill(sk); }
     });
@@ -708,21 +712,65 @@ class Game3D {
     else p.tryCast(skill, p);
   }
 
+  startJump() {
+    const p = this.player;
+    if (!p || p.dead || this.jumpState || p.flags.canMove === false) return;
+    this.jumpState = { elapsed: 0, duration: 0.72, height: 2.25 };
+  }
+
+  updateJump(dt) {
+    const p = this.player;
+    if (!p || p.dead) { this.jumpState = null; this.jumpOffset = 0; return; }
+    const j = this.jumpState;
+    if (!j) { this.jumpOffset = 0; return; }
+    j.elapsed += dt;
+    const t = Math.min(1, j.elapsed / j.duration);
+    this.jumpOffset = 4 * j.height * t * (1 - t);
+    if (t >= 1) { this.jumpState = null; this.jumpOffset = 0; }
+  }
+
+  clearStick(notify) {
+    const p = this.player;
+    if (!p || !p._stickActive) return;
+    p._stickActive = false;
+    p.followTarget = null;
+    if (notify) UI.notify('Stick annulé', '#b8c8d8');
+  }
+
+  toggleStick() {
+    const p = this.player;
+    if (!p) return;
+    if (p._stickActive) { this.clearStick(true); return; }
+    const target = p.target;
+    if (!target || target === p || target.dead || !this.isEnemyVisible(target)) {
+      UI.notify('Sélectionne un personnage avant d’utiliser Stick.', '#d8c59b');
+      return;
+    }
+    p.followTarget = target;
+    p.moveTarget = null;
+    p._stickActive = true;
+    this.wasdActive = false;
+    const raceName = target.race && RACES[target.race] ? RACES[target.race].name : target.def.name;
+    UI.notify('Stick : ' + raceName, '#ffffff');
+  }
+
   cycleTarget() {
     const en = this.entities.filter(e => !e.dead && e.faction !== this.player.faction && this.isEnemyVisible(e))
       .sort((a, b) => this.player.distanceTo(a) - this.player.distanceTo(b));
     if (!en.length) return;
     const i = en.indexOf(this.player.target);
+    this.clearStick(false);
     this.player.target = en[(i + 1) % en.length];
   }
 
   selectAtPointer() {
     const ent = this.pickEntity();
-    if (ent && ent.faction !== this.player.faction && this.isEnemyVisible(ent)) {
-      this.player.target = ent;           // cible ennemie -> l'auto-attaque s'engage quand à portée
-      this.player.attacking = true;       // intention d'attaque (drapeau visuel/état)
-    } else if (ent && ent.faction === this.player.faction) {
-      this.player.target = null;          // clic sur allié : désélectionne la cible
+    if (ent && this.isEnemyVisible(ent)) {
+      if (this.player.followTarget !== ent) this.clearStick(false);
+      this.player.target = ent;
+      // Un allié reste ciblable pour le stick et le retour visuel blanc, mais
+      // l'intention d'auto-attaque ne s'active que contre un ennemi.
+      this.player.attacking = ent.faction !== this.player.faction;
     }
   }
 
@@ -742,7 +790,7 @@ class Game3D {
     this.mouseWorld.x = (ray.origin.x + ray.direction.x * t) / S;
     this.mouseWorld.y = (ray.origin.z + ray.direction.z * t) / S;
   }
-  moveToMouse() { this.updateMouseWorld(); this.player.moveTarget = { x: this.mouseWorld.x, y: this.mouseWorld.y }; this.wasdActive = false; }
+  moveToMouse() { this.updateMouseWorld(); this.clearStick(false); this.player.moveTarget = { x: this.mouseWorld.x, y: this.mouseWorld.y }; this.wasdActive = false; }
 
   /* HUD debug (V0.4.0) : position monde, chunk, compteurs, estimation de trajet. */
   updateDebugHUD() {
@@ -820,6 +868,7 @@ class Game3D {
     const lf = K.has('KeyA') || K.has('ArrowLeft');
     const rt = K.has('KeyD') || K.has('ArrowRight');
     if (!(up || dn || lf || rt)) { if (this.wasdActive) { p.moveTarget = null; this.wasdActive = false; } return; }
+    this.clearStick(false);
     // Base caméra RÉELLE (Babylon) projetée au sol -> évite toute désynchro de signe.
     // forward = direction où regarde la caméra (Axis.Z) ; right = Axis.X.
     const fwd = this.camera.getDirection(BABYLON.Axis.Z);
@@ -881,6 +930,13 @@ class Game3D {
     this.focusTimer -= dt;
     if (this.focusTimer <= 0) { this.focusTimer = 3; this.recomputeFocus(); }
     this.handleMovement();
+    this.updateJump(dt);
+
+    // Une cible morte, devenue invisible ou remplacée met fin au stick.
+    if (this.player._stickActive) {
+      const st = this.player.followTarget;
+      if (!st || st.dead || st !== this.player.target || !this.isEnemyVisible(st)) this.clearStick(false);
+    }
 
     for (const e of this.entities) if (e !== this.player && !e.dead) BotAI.update(e, this, dt);
     for (const e of this.entities) e.update(dt);
@@ -908,8 +964,13 @@ class Game3D {
     // La direction de déplacement (WASD relatif caméra) reste indépendante ->
     // strafe, recul et diagonales possibles sans rotation artificielle du modèle.
     if (this.player && !this.player.dead) {
-      const f = this.camera.getDirection(BABYLON.Axis.Z);   // avant caméra (dans l'écran)
-      this.player.facing = Math.atan2(f.z, f.x);            // (X->sim x, Z->sim y)
+      if (this.player._stickActive && this.player.followTarget) {
+        const st = this.player.followTarget;
+        this.player.facing = Math.atan2(st.y - this.player.y, st.x - this.player.x);
+      } else {
+        const f = this.camera.getDirection(BABYLON.Axis.Z); // avant caméra (dans l'écran)
+        this.player.facing = Math.atan2(f.z, f.x);          // (X->sim x, Z->sim y)
+      }
     }
 
     // STREAMING du terrain autour du joueur (chunks)
@@ -936,7 +997,7 @@ class Game3D {
     c.dist += (c.tDist - c.dist) * k;
 
     const p = this.player;
-    const target = this.wpos(p.x, p.y, this.getTerrainHeight(p.x, p.y) + 3.0);
+    const target = this.wpos(p.x, p.y, this.getTerrainHeight(p.x, p.y) + 3.0 + this.jumpOffset);
     const dir = new BABYLON.Vector3(
       Math.cos(c.pitch) * Math.sin(c.yaw),
       Math.sin(c.pitch),
@@ -968,7 +1029,8 @@ class Game3D {
       const visible = !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
       v.setEnabled(visible);
       if (!visible) continue;
-      v.setTransform(e.x * S, this.getTerrainHeight(e.x, e.y), e.y * S, Math.PI / 2 - e.facing);
+      const jumpY = e === p ? this.jumpOffset : 0;
+      v.setTransform(e.x * S, this.getTerrainHeight(e.x, e.y) + jumpY, e.y * S, Math.PI / 2 - e.facing);
       const ally = e.faction === p.faction;
       v.setFactionRing(ally ? '#3fbf6a' : '#d94f4f', ally);
       // stealth / camouflage : appliqué à TOUT le modèle (corps + tête + accessoires)
@@ -1024,7 +1086,8 @@ class Game3D {
       if (!visible) { plate.style.display = 'none'; continue; }
       const dx = e.x - p.x, dy = e.y - p.y;
       if (dx * dx + dy * dy > NAMEPLATE_MAX_DISTANCE * NAMEPLATE_MAX_DISTANCE) { plate.style.display = 'none'; continue; }
-      const wp = new BABYLON.Vector3(e.x * S, this.getTerrainHeight(e.x, e.y) + e._bodyTopY, e.y * S);
+      const jumpY = e === p ? this.jumpOffset : 0;
+      const wp = new BABYLON.Vector3(e.x * S, this.getTerrainHeight(e.x, e.y) + e._bodyTopY + jumpY, e.y * S);
       // cull derrière la caméra
       if (this._camDir && BABYLON.Vector3.Dot(wp.subtract(camPos), this._camDir) < 0.5) { plate.style.display = 'none'; continue; }
       const sp = BABYLON.Vector3.Project(wp, BABYLON.Matrix.Identity(), tmat, vp);
@@ -1039,8 +1102,9 @@ class Game3D {
       const isFocus = (e === p || isTarget);
       const raceName = e.race && RACES[e.race] ? RACES[e.race].name : '';
       const plateName = [raceName, e.def.name].filter(Boolean).join('_').replace(/\s+/g, '_');
-      // Blanc pour le joueur et ses alliés ; rouge pour tous les ennemis, cible comprise.
-      const nameColor = ally ? '#ffffff' : '#ff5a5a';
+      // Gris-bleu clair pour les alliés, rouge pour les ennemis ; la cible active
+      // devient blanche quelle que soit sa faction.
+      const nameColor = isTarget ? '#ffffff' : (ally ? '#b8c8d8' : '#ff5a5a');
       let html = '';
       html += `<div class="np-name" style="color:${nameColor}">${plateName}</div>`;
       html += `<div class="np-hp"><span style="width:${hpR * 100}%"></span></div>`;

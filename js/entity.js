@@ -267,7 +267,11 @@ class Entity {
 
     const dx = tx - this.x, dy = ty - this.y;
     const d = Math.hypot(dx, dy);
-    const stopDist = this.followTarget ? (this.def.attackRange > 200 ? 300 : 42) : 6;
+    // Le stick joueur colle réellement au personnage suivi. Le follow des bots
+    // conserve sa distance tactique historique (mêlée ou portée).
+    const stopDist = this.followTarget
+      ? (this._stickActive ? this.radius + this.followTarget.radius + 8 : (this.def.attackRange > 200 ? 300 : 42))
+      : 6;
     if (d <= stopDist) { if (!this.followTarget) this.moveTarget = null; return; }
 
     this.facing = Math.atan2(dy, dx);
