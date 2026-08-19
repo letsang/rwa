@@ -26,6 +26,9 @@ au terrain pendant cette passe. Ils restent réservés au prochain Visual Qualit
 - suppression du cercle blanc de sélection et du panneau détaillé de cible placé
   en haut à gauche ; les plaques au-dessus des personnages restent affichées et
   le ciblage ainsi que la fonction Stick restent inchangés ;
+- ajout du ciblage automatique sur `Tab`, qui sélectionne l'ennemi vivant et
+  visible le plus proche, active l'intention d'attaque et conserve la compatibilité
+  avec le Stick ;
 
 ### 1. Nouveau parcours d'ouverture
 

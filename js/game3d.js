@@ -674,7 +674,7 @@ class Game3D {
     window.addEventListener('keydown', e => {
       this.keys.add(e.code);
       if (this.player.dead) return;
-      if (e.code === 'Tab') { e.preventDefault(); this.cycleTarget(); return; }
+      if (e.code === 'Tab') { e.preventDefault(); if (!e.repeat) this.targetNearestEnemy(); return; }
       if (e.code === 'KeyV') { e.preventDefault(); this.toggleCamera(); return; }
       if (e.code === 'F3') { e.preventDefault(); this.toggleDebug(); return; }
       if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) this.startJump(); return; }
@@ -747,13 +747,25 @@ class Game3D {
     UI.notify('Stick : ' + raceName, '#ffffff');
   }
 
-  cycleTarget() {
-    const en = this.entities.filter(e => !e.dead && e.faction !== this.player.faction && this.isEnemyVisible(e))
-      .sort((a, b) => this.player.distanceTo(a) - this.player.distanceTo(b));
-    if (!en.length) return;
-    const i = en.indexOf(this.player.target);
-    this.clearStick(false);
-    this.player.target = en[(i + 1) % en.length];
+  targetNearestEnemy() {
+    const p = this.player;
+    let nearest = null;
+    let nearestDistance = Infinity;
+    for (const e of this.entities) {
+      if (e === p || e.dead || e.faction === p.faction || !this.isEnemyVisible(e)) continue;
+      const distance = p.distanceTo(e);
+      if (distance < nearestDistance) { nearest = e; nearestDistance = distance; }
+    }
+    if (!nearest) {
+      UI.notify('Aucune cible ennemie visible à proximité.', '#d8c59b');
+      return;
+    }
+    if (p.followTarget !== nearest) this.clearStick(false);
+    p.target = nearest;
+    p.attacking = true;
+    const raceName = nearest.race && RACES[nearest.race] ? RACES[nearest.race].name : '';
+    const targetName = [raceName, nearest.def.name].filter(Boolean).join('_').replace(/\s+/g, '_');
+    UI.notify('Cible : ' + targetName, '#ffffff');
   }
 
   selectAtPointer() {
