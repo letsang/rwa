@@ -304,6 +304,11 @@ caméra, de contrôle territorial et de simulation reste active.
   dans la colonne d'options de l'écran de création ;
 - remplacement du fond de chargement par `title-background3.png` et simplification
   de son en-tête en un unique libellé `Chargement`, sans diamant décoratif ;
+- ajout de `title-background1.png` comme variante visuelle non active et mise à
+  jour des versions LFS de l'albedo d'herbe, du fond d'accueil
+  `title-background2.png` et de la carte d'herbe alpha ;
+- retrait du script `auto_rig_meshy.py` et de son guide local, sortis du dépôt
+  après confirmation que ce pipeline externe n'était plus requis par le jeu ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges

@@ -338,16 +338,61 @@ statiques et HTTP ont été réalisées en remplacement.
 | `fa40a3e` | Key bindings configurables |
 | `dd5977f` | Itération transitoire sur le Stick en toggle |
 | `a024e2e` | Comportement final idempotent du Stick |
+| `e6ece5e` | Documentation consolidée de la session Codex |
+| `9d202a6` | Playlists d'introduction et de proximité des forts |
+| `f66a84b` | Panneau illustré interactif sur l'écran-titre |
+| `157d782` | Première réduction du panneau de titre |
+| `06735a1` | Centrage supérieur du panneau de titre |
+| `9015610` | Redimensionnement et abaissement du panneau de titre |
+| `8810d02` | Centrage du panneau avec décalage vertical |
+| `99879e6` | Remontée du panneau centré |
+| `104d96e` | Ajustement vertical final du panneau de titre |
+| `de43b4d` | Lecture automatique de l'introduction et footer V0.4.7 |
+| `68489a7` | Panneaux illustrés des trois royaumes |
+| `4b59596` | Simplification de la composition du choix de royaume |
+| `f49c863` | Suppression des séparateurs entre royaumes |
+| `a1ba57e` | Révélation des panneaux de royaume au survol |
+| `0a67232` | Simplification de l'écran de création |
+| `7c03d12` | Extension et recadrage de la sélection du personnage |
+| `a56d70f` | Répartition initiale des colonnes de création |
+| `b00cfe3` | Aperçu 3D étendu derrière les panneaux latéraux |
+| `3c7a0fa` | Alignement des choix et de l'action Commencer |
+| `707b100` | Itération transitoire sur les colonnes de création |
+| `3d0bdf8` | Annulation de cette répartition transitoire |
+| `2d05532` | Première grille de races sur trois colonnes |
+| `ccd1124` | Normalisation de la taille des cellules de choix |
+| `b6ae289` | Renommage Runemaster en Mage et alignement des cellules |
+| `93e5d6c` | Grille commune à quatre colonnes |
+| `068a09a` | Dimensionnement explicite des grilles Race et Classe |
+| `6e15181` | Grille Race finale sur la structure 4 × 2 |
+| `fa44a09` | Réutilisation exacte de la structure de grille Classe |
+| `6bd7c2f` | Panneaux de royaume visibles et grisés au repos |
+| `6c52618` | Textes de races et classes alignés sur le lore DAoC |
+| `747f47d` | Première race et première classe compatibles présélectionnées |
+| `11d8e74` | Titres Race et Classe remplacés par des panneaux illustrés |
+| `4f1559b` | Réduction de 40 % des panneaux Race et Classe |
+| `6f2ed80` | Nouveau fond illustré et libellé simplifié du chargement |
 
 Les commits transitoires sont conservés dans l'historique pour traçabilité ; les
 sections précédentes décrivent toujours l'état final attendu.
 
-## 12. État local non inclus
+## 12. Finalisation de l'état local
 
-Des suppressions locales préexistantes concernant les outils d'auto-rig et quelques
-fichiers audio sont restées hors des commits Codex. Elles appartiennent à l'état de
-travail de l'utilisateur et ne sont pas restaurées, supprimées ou publiées par cette
-documentation.
+À la demande de publication globale, les derniers éléments auparavant conservés
+hors des commits fonctionnels sont intégrés à l'état final :
+
+- suppression de `auto_rig_meshy.py` et de
+  `README_RWA_Character_Pipeline.md`, sortis du projet car le pipeline local
+  d'auto-rig n'est plus nécessaire dans le dépôt du jeu ;
+- remplacement des versions LFS de `assets/terrain/grass_albedo.jpg`,
+  `assets/ui/title-background2.png` et
+  `assets/vegetation/grass/vegetation_grass_card_03.png` par les fichiers fournis
+  et optimisés présents dans le workspace ;
+- ajout de `assets/ui/title-background1.png` comme variante visuelle conservée.
+
+Ces éléments sont publiés avec l'ensemble des commits de la journée. Le runtime
+continue d'utiliser `title-background2.png` pour l'accueil et
+`title-background3.png` pour le chargement.
 
 ## 13. Suite recommandée
 
