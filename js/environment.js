@@ -21,6 +21,7 @@ const RWA_ENV = {
   ambDown:    [0.26, 0.27, 0.26],   // sol (hémisphérique bas)
   fogStart:   140,                  // unités RENDU (fog LINÉAIRE)
   fogEnd:     760,
+  skySize:    800,                  // reste dans le far clip caméra (maxZ 950)
   // palette de terrain (sert à générer les textures procédurales)
   colGrass:  [0.34, 0.42, 0.26],
   colDirt:   [0.40, 0.34, 0.25],
@@ -144,7 +145,7 @@ class Environment {
 
   _buildSkyDome() {
     const scene = this.scene, E = RWA_ENV;
-    const dome = BABYLON.MeshBuilder.CreateSphere('rwaSky', { diameter: 9000, segments: 16, sideOrientation: BABYLON.Mesh.BACKSIDE }, scene);
+    const dome = BABYLON.MeshBuilder.CreateSphere('rwaSky', { diameter: E.skySize, segments: 16, sideOrientation: BABYLON.Mesh.BACKSIDE }, scene);
     dome.infiniteDistance = true;        // suit la caméra -> ciel “à l'infini”
     dome.isPickable = false;
     dome.applyFog = false;
@@ -153,7 +154,7 @@ class Environment {
     const n = pos.length / 3, col = new Float32Array(n * 4);
     for (let i = 0; i < n; i++) {
       const y = pos[i * 3 + 1];
-      const t = Math.max(0, Math.min(1, (y / 4500) * 0.5 + 0.5)); // -1..1 -> 0..1
+      const t = Math.max(0, Math.min(1, (y / (E.skySize * 0.5)) * 0.5 + 0.5)); // -1..1 -> 0..1
       const up = E.skyTop, ho = E.skyHorizon;
       const k = Math.pow(t, 0.75);
       col[i * 4] = ho[0] + (up[0] - ho[0]) * k;
@@ -181,7 +182,7 @@ class Environment {
     scene.environmentTexture = hdri;
     scene.environmentIntensity = 0.62;
 
-    const sky = BABYLON.MeshBuilder.CreateBox('rwaHDRSky', { size: 9000 }, scene);
+    const sky = BABYLON.MeshBuilder.CreateBox('rwaHDRSky', { size: RWA_ENV.skySize }, scene);
     sky.infiniteDistance = true; sky.isPickable = false; sky.applyFog = false;
     const skyTex = hdri.clone();
     skyTex.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;

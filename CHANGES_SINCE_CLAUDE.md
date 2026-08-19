@@ -233,6 +233,19 @@ La correction comprend :
 La peinture des poids, les biomes, les routes, la génération canonique et le
 renderer par chunks ne sont pas modifiés.
 
+## Correction du ciel gris
+
+Le HDRI `golden_gate_hills_1k.hdr` a été contrôlé contre l'API Poly Haven :
+sa taille et son MD5 correspondent exactement au fichier officiel. Le problème
+venait de la géométrie du ciel, dimensionnée à 9000 unités alors que le plan de
+clipping lointain de la caméra est fixé à 950. Le skybox HDRI et son dôme de
+secours se trouvaient donc hors de la zone rendue, laissant apparaître surtout la
+couleur de fond gris-brume.
+
+Les deux ciels utilisent maintenant une taille de 800 unités, compatible avec la
+caméra, et le gradient du dôme de secours est recalculé sur ce nouveau rayon. La
+distance de vue, le fog du terrain et le gameplay restent inchangés.
+
 ## Prochaine passe recommandée
 
 - valider visuellement les échelles et l'orientation des huit arbres sur plusieurs biomes ;
