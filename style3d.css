@@ -32,6 +32,6 @@
 .race-hint { grid-column: 1 / -1; color: #93a0b8; font-size: 12px; padding: 6px; }
 
 /* HUD debug V0.4.0 */
-#debug-hud{position:absolute;top:12px;right:12px;margin:0;padding:8px 12px;
+#debug-hud{display:none;position:absolute;top:12px;right:12px;margin:0;padding:8px 12px;
   background:rgba(8,10,16,.58);border:1px solid #2c3446;border-radius:8px;
   font:11px/1.5 'Myriad Pro';color:#8fe3b0;white-space:pre;pointer-events:none;z-index:5}

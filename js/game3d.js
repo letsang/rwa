@@ -70,6 +70,7 @@ class Game3D {
     this.matCache = {};
     this.audio = new RWAudioManager();
     this.started = false;
+    this._debugMode = 2; // diagnostic masqué par défaut ; F3 l'affiche
     // état caméra : MODE discret + rig sphérique
     this.mode = 'THIRD_PERSON';
     const M = CAM_MODES.THIRD_PERSON;
@@ -322,7 +323,7 @@ class Game3D {
 
     // Streaming du terrain autour du joueur — remplace le Ground unique.
     this.chunkManager = new WorldChunkManager(scene, {
-      S, radius: CHUNK_RADIUS, chunkSize: CHUNK_SIZE, seed: WORLD_SEED, bounds: WORLD_BOUNDS, showDebug: true,
+      S, radius: CHUNK_RADIUS, chunkSize: CHUNK_SIZE, seed: WORLD_SEED, bounds: WORLD_BOUNDS, showDebug: false,
       vegetation: this.vegetation, worldvisuals: this.worldvisuals, water: this.water,
     });
 

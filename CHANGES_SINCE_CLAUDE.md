@@ -208,7 +208,9 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
   diagnostic, notifications et cases de compétences ;
 - conservation de la touche `V` pour changer de caméra et de la notification
   temporaire associée ;
-- conservation de `F3` pour changer le niveau d'affichage du diagnostic.
+- conservation de `F3` pour changer le niveau d'affichage du diagnostic ;
+- diagnostic de performances et bordures de chunks masqués par défaut au
+  lancement ; le premier appui sur `F3` les affiche.
 
 Cette modification concerne uniquement la présentation du HUD. La logique de
 caméra, de contrôle territorial et de simulation reste active.
