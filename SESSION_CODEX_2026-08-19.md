@@ -48,6 +48,7 @@ Les anciens sigles et titres HTML ont été remplacés par trois panneaux illust
 Le texte d'ambiance est centré et masqué au repos, puis apparaît au survol ou au
 focus clavier ; l'action `Prêter serment` reste placée sous le panneau.
 L'en-tête du triptyque a ensuite été retiré et les panneaux légèrement réduits.
+Les séparateurs verticaux entre les cartes ont également été supprimés.
 
 La création du personnage reprend une présentation classique : description à
 gauche, modèle GLB en animation `Idle` au centre, races et classes à droite.

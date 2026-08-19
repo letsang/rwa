@@ -80,7 +80,7 @@ html, body {
 .selection-screen::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 0, rgba(90,111,129,.22), transparent 53%); }
 .options-panel h2 { font: 700 clamp(28px, 3vw, 48px) 'Minion Pro'; letter-spacing: .12em; margin: 8px 0 4px; }
 .realm-split { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; }
-.realm-card { position: relative; padding: 0; cursor: pointer; overflow: hidden; border: 0; border-right: 1px solid rgba(225,211,178,.17); color: #eee7d8; background-color: #111; }
+.realm-card { position: relative; padding: 0; cursor: pointer; overflow: hidden; border: 0; color: #eee7d8; background-color: #111; }
 .realm-card::before { content: ''; position: absolute; inset: -3%; background-position: center; background-size: cover; filter: saturate(.72) brightness(.58); transition: transform .7s, filter .5s; }
 .realm-card[data-faction="WEST"]::before { background-image: url('./assets/ui/West_banner.png'); }
 .realm-card[data-faction="CENTER"]::before { background-image: url('./assets/ui/North_banner.png'); }

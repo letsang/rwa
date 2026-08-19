@@ -258,6 +258,7 @@ caméra, de contrôle territorial et de simulation reste active.
   tandis que l'action `Prêter serment` reste sous le panneau ;
 - suppression de l'en-tête du triptyque et légère réduction des panneaux de royaume
   afin de dégager davantage les trois illustrations de fond ;
+- suppression des bordures verticales entre les trois cartes du triptyque ;
 - écran d'introduction remplacé par `title-background2.png`, avec le panneau
   `panel.png` fourni par le projet ; les zones illustrées `JOUER` et `OPTIONS`
   sont de vrais boutons HTML transparents, cliquables et accessibles au clavier ;
