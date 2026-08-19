@@ -88,10 +88,11 @@ html, body {
 .realm-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(4,6,9,.88), transparent 58%); opacity: .7; }
 .realm-card:hover::before { transform: scale(1.045); filter: saturate(.92) brightness(.72); }
 .realm-card:hover::after { opacity: .48; }
-.realm-card-panel { position: absolute; z-index: 2; left: 50%; bottom: 8vh; display: block; width: min(84%, 480px); height: auto; transform: translateX(-50%); pointer-events: none; }
+.realm-card-panel { position: absolute; z-index: 2; left: 50%; bottom: 8vh; display: block; width: min(84%, 480px); height: auto; opacity: 0; visibility: hidden; transform: translate(-50%, 7px); transition: opacity .25s, transform .25s, visibility .25s; pointer-events: none; }
 .realm-card .realm-lore { position: absolute; z-index: 3; top: 50%; left: 50%; width: min(78%, 360px); margin: 0; color: #e3e0d8; font: 400 16px/1.5 'Minion Pro'; opacity: 0; visibility: hidden; transform: translate(-50%, calc(-50% + 10px)); transition: opacity .25s, transform .25s, visibility .25s; }
 .realm-card .realm-enter { position: absolute; z-index: 3; left: 50%; bottom: 4.5vh; color: var(--realm-color); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; white-space: nowrap; opacity: 0; transform: translate(-50%, 7px); transition: opacity .25s, transform .25s; }
 .realm-card:hover .realm-lore, .realm-card:focus-visible .realm-lore { opacity: 1; visibility: visible; transform: translate(-50%, -50%); }
+.realm-card:hover .realm-card-panel, .realm-card:focus-visible .realm-card-panel { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 .realm-card:hover .realm-enter, .realm-card:focus-visible .realm-enter { opacity: 1; transform: translate(-50%, 0); }
 .back-btn { position: absolute; z-index: 5; left: 24px; top: 22px; border: 0; background: transparent; color: #bbb3a4; cursor: pointer; font: 600 12px 'Myriad Pro'; letter-spacing: .15em; text-transform: uppercase; }
 .back-btn:hover { color: #f0d998; }
