@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Realm Warfare Arena</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style3d.css">
+</head>
+<body>
+
+<!-- ================= OUVERTURE ================= -->
+<div id="title-screen" class="screen cinematic-screen">
+  <div class="title-vignette"></div>
+  <div class="title-content">
+    <p class="title-kicker">Les trois royaumes appellent leurs champions</p>
+    <h1>REALM<br><span>WARFARE</span></h1>
+    <div class="title-rule"><i></i><b>◆</b><i></i></div>
+    <p class="title-subtitle">ARENA</p>
+    <div class="title-actions">
+      <button id="play-btn" class="medieval-btn primary">JOUER</button>
+      <button id="options-btn" class="medieval-btn">OPTIONS</button>
+    </div>
+  </div>
+  <p class="build-mark">V0.4.6.1 · PROTOTYPE OFFLINE</p>
+</div>
+
+<!-- ================= CHOIX DU ROYAUME ================= -->
+<div id="realm-screen" class="screen selection-screen hidden">
+  <header class="selection-header">
+    <p class="eyebrow">I · Serment d'allégeance</p>
+    <h2>CHOISIS TON ROYAUME</h2>
+    <p>Trois couronnes. Une seule guerre.</p>
+  </header>
+  <div id="faction-select" class="realm-split"></div>
+  <button id="realm-back-btn" class="back-btn">← Retour</button>
+</div>
+
+<!-- ================= CHOIX DU PERSONNAGE ================= -->
+<div id="menu" class="screen selection-screen character-screen hidden">
+  <div class="character-shell">
+    <header class="selection-header compact">
+      <p class="eyebrow">II · Champion du royaume</p>
+      <h2>FORGE TON DESTIN</h2>
+      <p id="chosen-realm-label"></p>
+    </header>
+    <section class="creation-step">
+      <div class="step-heading"><span>01</span><div><h3>Choisis ta race</h3><p>Chaque peuple possède sa propre silhouette.</p></div></div>
+      <div id="race-select" class="choice-grid race-grid"></div>
+    </section>
+    <section class="creation-step">
+      <div class="step-heading"><span>02</span><div><h3>Choisis ta classe</h3><p>Les voies disponibles dépendent de ta race.</p></div></div>
+      <div id="class-select" class="choice-grid class-grid"></div>
+    </section>
+    <div class="creation-actions">
+      <button id="character-back-btn" class="back-btn inline">← Royaumes</button>
+      <button id="start-btn" class="medieval-btn primary enter-war" disabled>ENTRER DANS LA GUERRE</button>
+    </div>
+    <p class="controls-hint">ZQSD / WASD · déplacement &nbsp;|&nbsp; clic droit · caméra &nbsp;|&nbsp; V · vue tactique</p>
+  </div>
+</div>
+
+<!-- ================= OPTIONS ================= -->
+<div id="options-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="options-title">
+  <div class="options-panel">
+    <button id="options-close-btn" class="modal-close" aria-label="Fermer">×</button>
+    <p class="eyebrow">Configuration</p>
+    <h2 id="options-title">OPTIONS AUDIO</h2>
+    <label><span>Volume général</span><output id="master-volume-value">80%</output><input id="master-volume" type="range" min="0" max="100" value="80"></label>
+    <label><span>Musique</span><output id="music-volume-value">65%</output><input id="music-volume" type="range" min="0" max="100" value="65"></label>
+    <label><span>Effets</span><output id="sfx-volume-value">80%</output><input id="sfx-volume" type="range" min="0" max="100" value="80"></label>
+    <button id="mute-btn" class="medieval-btn">COUPER LE SON</button>
+  </div>
+</div>
+
+<!-- ================= CHARGEMENT ================= -->
+<div id="loading-screen" class="screen loading-screen hidden">
+  <div class="loading-sigil">◆</div>
+  <h2>LE ROYAUME T'ATTEND</h2>
+  <div class="loading-bar"><span></span></div>
+  <p>Préparation du champ de bataille…</p>
+</div>
+
+<!-- ================= JEU ================= -->
+<div id="game-root" class="hidden">
+  <canvas id="render-canvas"></canvas>
+  <div id="overlay3d"></div>
+  <div id="cam-indicator">CAMERA<br><span id="cam-mode">THIRD PERSON</span></div>
+  <pre id="debug-hud"></pre>
+  <div id="war-status"></div>
+  <div id="notifications"></div>
+  <canvas id="minimap" width="200" height="200"></canvas>
+  <div id="target-panel" class="hidden"></div>
+  <div id="player-hud">
+    <div id="player-stats"></div>
+    <div id="skillbar"></div>
+  </div>
+  <div id="respawn-overlay" class="hidden">
+    <div class="respawn-box">
+      <h2>VOUS ÊTES TOMBÉ</h2>
+      <p>Respawn dans <span id="respawn-timer">5</span>s…</p>
+      <p class="respawn-loc" id="respawn-loc"></p>
+    </div>
+  </div>
+  <div id="combat-log"></div>
+</div>
+
+<!-- Babylon.js + glTF loader — LOCAL (offline, aucune connexion requise) -->
+<script src="./lib/babylon.js"></script>
+<script src="./lib/babylonjs.loaders.min.js"></script>
+
+<!-- Simulation (INCHANGÉE) + rendu 3D -->
+<script src="./js/data.js"></script>
+<script src="./js/races.js"></script>
+<script src="./js/world.js"></script>
+<script src="./js/effects.js"></script>
+<script src="./js/map.js"></script>
+<script src="./js/entity.js"></script>
+<script src="./js/combat.js"></script>
+<script src="./js/bots.js"></script>
+<script src="./js/ui.js"></script>
+<script src="./js/audio.js"></script>
+<script src="./js/animlib.js"></script>
+<script src="./js/terrain.js"></script>
+<script src="./js/biome.js"></script>
+<script src="./js/environment.js"></script>
+<script src="./js/worldvisuals.js"></script>
+<script src="./js/chunks.js"></script>
+<script src="./js/vegetation.js"></script>
+<script src="./js/water.js"></script>
+<script src="./js/visual.js"></script>
+<script src="./js/game3d.js"></script>
+</body>
+</html>
