@@ -3,6 +3,10 @@
 Cette note décrit exclusivement les changements réalisés par Codex à partir de l'état
 du projet trouvé le 19 août 2026 dans `realm-warfare-v0.3.1-light`.
 
+Le compte rendu consolidé et l'état final de la session sont disponibles dans
+`SESSION_CODEX_2026-08-19.md`. En cas de formulation historique devenue obsolète
+après une itération, ce compte rendu consolidé fait référence.
+
 ## État de référence laissé par Claude
 
 La version de départ disposait déjà des éléments suivants :
@@ -43,7 +47,7 @@ au terrain pendant cette passe. Ils restent réservés au prochain Visual Qualit
 Le menu unique a été remplacé par une séquence en plusieurs écrans :
 
 1. écran-titre cinématique ;
-2. choix du royaume dans un triptyque Nord / Ouest / Est ;
+2. choix du royaume dans un triptyque Ouest / Nord / Est ;
 3. choix de la race, filtré par le royaume ;
 4. choix de la classe, filtré par la race ;
 5. écran de chargement ;
@@ -61,12 +65,13 @@ Fichiers concernés :
 
 ### 2. Illustration d'ouverture
 
-L'image fournie par l'utilisateur a été intégrée sous :
+La première image fournie par l'utilisateur a été intégrée sous :
 
 - `assets/ui/title-background.png`
 
-Elle sert à l'écran-titre et aux trois volets du choix de royaume. Des cadrages,
-dégradés et teintes différents distinguent chaque volet sans générer d'autres images.
+Elle a servi à la première version de l'écran-titre. L'état final utilise
+`assets/ui/title-background2.png`, tandis que les trois volets du choix de royaume
+utilisent les bannières Ouest, Nord et Est dédiées.
 
 ### 3. Typographies
 
@@ -117,7 +122,7 @@ ne relance pas continuellement le son : il faut entrer dans une nouvelle zone.
 
 Les dossiers suivants ont été copiés dans le build offline :
 
-- `assets/audio/Intro/` : 3 fichiers ;
+- `assets/audio/Intro/` : 2 fichiers (`title.mp3` et `midplay.mp3`) ;
 - `assets/audio/Ambient/` : 159 fichiers ;
 - `assets/audio/Zone/` : 16 fichiers.
 
@@ -133,6 +138,8 @@ Le bouton Options ouvre une fenêtre modale contenant :
 - bouton couper/réactiver le son.
 
 La fenêtre se ferme par son bouton, un clic sur l'arrière-plan ou la touche Échap.
+Elle contient également les seize actions clavier configurables, les trois contrôles
+souris fixes et un bouton de restauration des raccourcis par défaut.
 
 ### 7. Intégration dans la boucle de jeu
 
@@ -217,8 +224,8 @@ La surcouche de jeu a été allégée sans modifier les systèmes correspondants
   emplacement de la minimap, en haut à droite ;
 - suppression finale du panneau du personnage (PV et ressource), après un
   premier repositionnement temporaire en haut à gauche ;
-- retour du panneau de cible en haut à gauche et conservation de la barre de
-  compétences centrée en bas ;
+- suppression finale du panneau détaillé de cible en haut à gauche et conservation
+  de la barre de compétences centrée en bas ;
 - augmentation de la transparence des fonds du HUD : panneaux principaux,
   diagnostic, notifications et cases de compétences ;
 - conservation de la touche `V` pour changer de caméra et de la notification
@@ -235,8 +242,8 @@ caméra, de contrôle territorial et de simulation reste active.
 - suppression des icônes de classe dans le choix de classe, le panneau de cible
   et les plaques au-dessus des personnages ;
 - conservation des icônes de compétences dans la barre d'actions ;
-- noms du joueur et des alliés affichés en blanc ;
-- noms ennemis toujours affichés en rouge, y compris lorsque l'ennemi est ciblé ;
+- noms du joueur et des alliés affichés en gris-bleu clair ;
+- noms ennemis affichés en rouge et cible active affichée en blanc ;
 - masquage de la plaque complète au-delà de 1600 unités de simulation : nom,
   PV, incantation, statuts et textes flottants de dégâts/soins ;
 - format uniforme des plaques en `Race_Classe`, avec espaces remplacés par des
@@ -265,8 +272,9 @@ caméra, de contrôle territorial et de simulation reste active.
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les
   coordonnées 2D canoniques ni permettre de contourner les collisions ;
-- ajout du `Stick` sur `F` : suivi rapproché de la cible sélectionnée, annulé par
-  un second appui, un déplacement manuel, une nouvelle cible ou une cible perdue ;
+- ajout du `Stick` sur `F` : action de suivi idempotente, jamais annulée par un
+  nouvel appui, mais interrompue par un déplacement manuel, une cible perdue,
+  remplacée ou éloignée de plus de 720 unités de simulation ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc
