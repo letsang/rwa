@@ -45,7 +45,7 @@ html, body {
   background: #080b10 url('./assets/ui/title-background2.png') center center / cover no-repeat;
   color: #efe5cc;
 }
-.title-content { position: absolute; top: 5vh; left: 50%; width: min(650px, 61.1vw, 108.6vh); transform: translateX(-50%); text-align: center; }
+.title-content { position: absolute; top: 25vh; left: 50%; width: min(748px, 70.3vw, 124.9vh); transform: translateX(-50%); text-align: center; }
 .title-logo { display: block; width: 100%; height: auto; object-fit: contain; pointer-events: none; }
 .title-actions { position: absolute; inset: 0; }
 .title-hitbox {
