@@ -77,6 +77,8 @@ class Game3D {
     this.matCache = {};
     this.audio = new RWAudioManager();
     this.started = false;
+    this.racePreview = null;
+    this.racePreviewToken = 0;
     this._debugMode = 2; // diagnostic masqué par défaut ; F3 l'affiche
     // état caméra : MODE discret + rig sphérique
     this.mode = 'THIRD_PERSON';
@@ -142,7 +144,14 @@ class Game3D {
         const el = document.createElement('div');
         el.className = 'choice race-choice';
         el.innerHTML = `<span class="name">${R.name}</span>`;
-        el.onclick = () => { [...rsel.children].forEach(c => c.classList.remove('selected')); el.classList.add('selected'); cr = rid; buildClasses(); check(); };
+        el.onclick = () => {
+          [...rsel.children].forEach(c => c.classList.remove('selected'));
+          el.classList.add('selected');
+          cr = rid;
+          this.selectRacePreview(rid);
+          buildClasses();
+          check();
+        };
         rsel.appendChild(el);
       }
       buildClasses();
@@ -163,6 +172,7 @@ class Game3D {
         realmLabel.textContent = R.name;
         realmLabel.style.color = R.color;
         buildRaces(); check(); show(characterScreen);
+        this.loadRacePreview(fid);
       };
       fsel.appendChild(el);
     });
@@ -174,12 +184,16 @@ class Game3D {
     document.getElementById('realm-back-btn').onclick = () => {
       show(titleScreen);
     };
-    document.getElementById('character-back-btn').onclick = () => show(realmScreen);
+    document.getElementById('character-back-btn').onclick = () => {
+      this.disposeRacePreview();
+      show(realmScreen);
+    };
 
     startBtn.onclick = () => {
       if (!cf || !cr || !cc || this.started) return;
       this.started = true;
       show(loadingScreen);
+      this.disposeRacePreview();
       // Laisse le navigateur peindre l'écran de chargement avant l'initialisation 3D.
       requestAnimationFrame(() => setTimeout(async () => {
         document.getElementById('game-root').classList.remove('hidden');
@@ -191,6 +205,142 @@ class Game3D {
     };
 
     this.audio.playTitle();
+  }
+
+  /* ================= APERÇU 3D DES RACES =================
+     Une seule scène Babylon rend les trois races du royaume. Elle est totalement
+     séparée du monde de jeu et détruite avant start() pour ne laisser aucun moteur,
+     mesh ou observateur d'animation en arrière-plan. */
+  async loadRacePreview(faction) {
+    this.disposeRacePreview();
+    const token = ++this.racePreviewToken;
+    const stage = document.getElementById('race-preview-stage');
+    const canvas = document.getElementById('race-preview-canvas');
+    const status = document.getElementById('race-preview-status');
+    const raceSelect = document.getElementById('race-select');
+    if (!stage || !canvas || !status || !raceSelect) return;
+    stage.classList.remove('ready');
+    raceSelect.classList.add('preview-loading');
+    status.textContent = 'Chargement des champions…';
+
+    const engine = new BABYLON.Engine(canvas, true, {
+      adaptToDeviceRatio: true, alpha: true, premultipliedAlpha: false, stencil: false,
+    });
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+    scene.autoClearDepthAndStencil = true;
+    const camera = new BABYLON.UniversalCamera('racePreviewCamera', new BABYLON.Vector3(0, 3.3, -18), scene);
+    camera.fov = 0.58;
+    camera.minZ = 0.1;
+    camera.maxZ = 80;
+    camera.setTarget(new BABYLON.Vector3(0, 2.7, 0));
+    scene.activeCamera = camera;
+    const hemi = new BABYLON.HemisphericLight('racePreviewHemi', new BABYLON.Vector3(0, 1, -0.4), scene);
+    hemi.diffuse = new BABYLON.Color3(0.82, 0.85, 0.92);
+    hemi.groundColor = new BABYLON.Color3(0.20, 0.22, 0.25);
+    hemi.intensity = 1.15;
+    const key = new BABYLON.DirectionalLight('racePreviewKey', new BABYLON.Vector3(-0.45, -0.8, 0.55), scene);
+    key.diffuse = new BABYLON.Color3(0.92, 0.84, 0.70);
+    key.intensity = 1.25;
+
+    const animLib = new AnimationLibrary(scene, './assets/animations/');
+    const materialCache = {};
+    const previewGame = {
+      scene, animLib,
+      mat: (name, hex) => {
+        if (materialCache[name]) return materialCache[name];
+        const m = new BABYLON.StandardMaterial('preview_' + name, scene);
+        m.diffuseColor = BABYLON.Color3.FromHexString(hex || '#888888');
+        m.specularColor = BABYLON.Color3.Black();
+        materialCache[name] = m;
+        return m;
+      },
+    };
+    const preview = { token, engine, scene, animLib, visuals: new Map(), selectedRace: null, ring: null };
+    this.racePreview = preview;
+    engine.runRenderLoop(() => { if (!scene.isDisposed) scene.render(); });
+
+    const resize = () => { if (this.racePreview === preview) engine.resize(); };
+    preview.resize = resize;
+    window.addEventListener('resize', resize);
+
+    const races = FACTION_RACES[faction] || [];
+    const xPositions = [-4.8, 0, 4.8];
+    try {
+      await animLib.ensure('Idle');
+      if (this.racePreview !== preview || token !== this.racePreviewToken) return;
+      await Promise.all(races.map(async (race, index) => {
+        const asset = GLB_ASSETS[race];
+        const entity = { id: 'preview_' + token + '_' + race, race, faction, classId: RACE_CLASSES[race][0] };
+        let visual;
+        try {
+          const vs = (typeof RACE_VISUAL_SCALE !== 'undefined' && RACE_VISUAL_SCALE[race]) || 1;
+          visual = await CharacterVisual.loadModel(previewGame, entity, asset.url,
+            Object.assign({}, asset, { scale: asset.scale * vs }));
+        } catch (err) {
+          console.warn('[RWA Preview] modèle indisponible pour ' + race + ', placeholder utilisé :', err);
+          visual = new CharacterVisual(previewGame, entity).build();
+        }
+        if (this.racePreview !== preview || token !== this.racePreviewToken) {
+          if (visual.animator) visual.animator.dispose();
+          visual.dispose();
+          return;
+        }
+        visual.setTransform(xPositions[index], 0, 0, Math.PI);
+        visual.playAnim('idle');
+        preview.visuals.set(race, visual);
+      }));
+
+      if (this.racePreview !== preview || token !== this.racePreviewToken) return;
+      const ring = BABYLON.MeshBuilder.CreateTorus('racePreviewSelection', { diameter: 3.4, thickness: 0.08, tessellation: 48 }, scene);
+      ring.position.y = 0.05;
+      const ringMat = new BABYLON.StandardMaterial('racePreviewSelectionMat', scene);
+      ringMat.diffuseColor = new BABYLON.Color3(0.78, 0.64, 0.34);
+      ringMat.emissiveColor = new BABYLON.Color3(0.24, 0.16, 0.05);
+      ring.material = ringMat;
+      ring.isPickable = false;
+      ring.setEnabled(false);
+      preview.ring = ring;
+      preview.races = races;
+      preview.xPositions = xPositions;
+      stage.classList.add('ready');
+    } catch (err) {
+      if (this.racePreview === preview) {
+        status.textContent = 'Aperçu 3D indisponible';
+        console.warn('[RWA Preview] échec de la scène de sélection :', err);
+      }
+    } finally {
+      if (this.racePreview === preview) raceSelect.classList.remove('preview-loading');
+    }
+  }
+
+  selectRacePreview(race) {
+    const p = this.racePreview;
+    if (!p || !p.ring || !p.races) return;
+    const index = p.races.indexOf(race);
+    if (index < 0) return;
+    p.selectedRace = race;
+    p.ring.position.x = p.xPositions[index];
+    p.ring.setEnabled(true);
+  }
+
+  disposeRacePreview() {
+    this.racePreviewToken++;
+    const p = this.racePreview;
+    this.racePreview = null;
+    if (!p) return;
+    if (p.resize) window.removeEventListener('resize', p.resize);
+    for (const visual of p.visuals.values()) {
+      if (visual.animator) visual.animator.dispose();
+      visual.dispose();
+    }
+    p.visuals.clear();
+    if (p.scene && !p.scene.isDisposed) p.scene.dispose();
+    if (p.engine) p.engine.dispose();
+    const stage = document.getElementById('race-preview-stage');
+    if (stage) stage.classList.remove('ready');
+    const raceSelect = document.getElementById('race-select');
+    if (raceSelect) raceSelect.classList.remove('preview-loading');
   }
 
   /* ================= START ================= */

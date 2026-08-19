@@ -240,6 +240,9 @@ caméra, de contrôle territorial et de simulation reste active.
   avec zoom au survol mais sans ombre portée ;
 - écran d'introduction remplacé par `title-background2.png`, avec `logo.png`
   centré dans la partie supérieure et les boutons juste en dessous, sans ombre ;
+- ajout d'un stage Babylon dédié dans la création du personnage : les trois races
+  du royaume sont présentées côte à côte avec leur modèle GLB et leur animation
+  `Idle`, puis la scène d'aperçu est libérée avant l'entrée en jeu ;
 - suppression du morceau intermédiaire `play.mp3` et de son code de transition.
 
 ## Correction du terrain blanc
