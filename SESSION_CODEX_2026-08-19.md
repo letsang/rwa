@@ -28,8 +28,9 @@ significatif ou résolution géométrique proche insuffisante.
 Le lancement du jeu suit maintenant ce parcours :
 
 1. écran-titre avec `title-background2.png` ;
-2. logo centré dans la partie supérieure ;
-3. boutons `JOUER` et `OPTIONS` sous le logo ;
+2. panneau-titre `panel.png` centré dans la partie supérieure ;
+3. zones `JOUER` et `OPTIONS` de l'illustration rendues cliquables par des
+   boutons HTML transparents et accessibles au clavier ;
 4. choix du royaume dans un triptyque Ouest–Nord–Est ;
 5. choix de la race et de la classe autour d'un aperçu 3D central ;
 6. écran de chargement prolongé jusqu'à disponibilité des assets visibles ;

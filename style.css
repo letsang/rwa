@@ -45,10 +45,22 @@ html, body {
   background: #080b10 url('./assets/ui/title-background2.png') center center / cover no-repeat;
   color: #efe5cc;
 }
-.title-content { position: absolute; top: 3vh; left: 50%; width: min(760px, 88vw); transform: translateX(-50%); text-align: center; }
-.title-logo { display: block; width: 100%; height: auto; object-fit: contain; }
-.title-actions { display: grid; gap: 8px; width: min(300px, 78vw); margin: -2vh auto 0; }
-.title-actions .medieval-btn { box-shadow: none; }
+.title-content { position: absolute; top: 1vh; left: 50%; width: min(1000px, 94vw, 167vh); transform: translateX(-50%); text-align: center; }
+.title-logo { display: block; width: 100%; height: auto; object-fit: contain; pointer-events: none; }
+.title-actions { position: absolute; inset: 0; }
+.title-hitbox {
+  position: absolute;
+  top: 79.2%;
+  height: 12%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.title-hitbox-play { left: 24.2%; width: 24.2%; }
+.title-hitbox-options { left: 51.1%; width: 24.4%; }
+.title-hitbox:hover { background: rgba(216, 179, 102, .08); }
+.title-hitbox:focus-visible { outline: 3px solid #e5c376; outline-offset: -5px; }
 .eyebrow { color: #c8ad72; font-size: 12px; letter-spacing: .32em; text-transform: uppercase; }
 .build-mark { position: absolute; right: 22px; bottom: 16px; color: rgba(231,225,207,.55); font-size: 10px; letter-spacing: .16em; }
 

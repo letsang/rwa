@@ -252,8 +252,9 @@ caméra, de contrôle territorial et de simulation reste active.
   (`Troll`, `Dwarf`, `Drake`) et Est (`Ogre`, `Dark Elf`, `Orc`) ;
 - triptyque réordonné Ouest–Nord–Est et illustré par les trois bannières dédiées,
   avec zoom au survol mais sans ombre portée ;
-- écran d'introduction remplacé par `title-background2.png`, avec `logo.png`
-  centré dans la partie supérieure et les boutons juste en dessous, sans ombre ;
+- écran d'introduction remplacé par `title-background2.png`, avec le panneau
+  `panel.png` fourni par le projet ; les zones illustrées `JOUER` et `OPTIONS`
+  sont de vrais boutons HTML transparents, cliquables et accessibles au clavier ;
 - ajout d'un stage Babylon dédié dans la création du personnage, réorganisé comme
   un écran de création classique : description à gauche, modèle GLB sélectionné
   seul au centre en animation `Idle`, races et classes à droite ; la scène
