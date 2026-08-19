@@ -79,9 +79,9 @@ Toutes les cases de race et de classe partagent la même hauteur. L'action
 `Commencer →` est ancrée au centre inférieur du panneau d'options.
 La grille des races a ensuite été réorganisée en trois colonnes sur une seule ligne.
 La classe d'artillerie est désormais nommée `MAGE` dans toute la logique et
-l'interface. Les structures sont contraintes à `3 × 1` pour les races et `4 × 2`
-pour les classes. Une largeur commune est calculée directement depuis les 25 % du
-panneau Options, après déduction de ses paddings et des trois espacements.
+l'interface. Les grilles de races et de classes utilisent toutes deux une structure
+`4 × 2` sur 100 % de la largeur du panneau. Les trois races occupent les trois
+premières cellules ; les autres emplacements restent vides.
 
 ### Répartition canonique actuelle
 

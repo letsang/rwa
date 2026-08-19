@@ -103,7 +103,7 @@ html, body {
 .character-creation-layout { position: relative; width: 100%; height: 100%; min-height: 0; }
 .character-description-panel, .character-options-panel { position: absolute; z-index: 2; top: 0; width: 25%; height: 100%; padding: 72px 24px 64px; background: transparent; }
 .character-description-panel { left: 0; }
-.character-options-panel { --choice-cell-width: calc(6.25vw - 18px); right: 0; }
+.character-options-panel { right: 0; }
 .character-description-panel h3 { margin: 9px 0 8px; color: #e0d4bc; font: 700 24px 'Minion Pro'; letter-spacing: .05em; }
 .character-description-panel #selected-class-title { margin-top: 36px; }
 .character-description-panel > p:not(.eyebrow) { color: #9fa2a5; font: 400 14px/1.55 'Minion Pro'; }
@@ -113,8 +113,7 @@ html, body {
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
 .step-heading h3 { font: 700 20px 'Minion Pro'; letter-spacing: .06em; text-transform: uppercase; }
 .choice-grid { --choice-gap: 8px; display: grid; gap: var(--choice-gap); }
-.race-grid { grid-template-columns: repeat(3, var(--choice-cell-width)); grid-template-rows: 44px; }
-.class-grid.large { grid-template-columns: repeat(4, var(--choice-cell-width)); grid-template-rows: repeat(2, 44px); grid-auto-flow: row; }
+.race-grid, .class-grid.large { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, 44px); grid-auto-flow: row; }
 .race-grid .choice, .class-grid.large .choice { display: grid; place-items: center; width: 100%; height: 44px; }
 .race-preview-stage { position: relative; width: 100%; height: 100%; flex: 1; min-height: 0; overflow: hidden; background: transparent; }
 #race-preview-canvas { display: block; width: 100%; height: 100%; outline: 0; touch-action: none; }
@@ -175,7 +174,7 @@ html, body {
   .character-description-panel, .character-options-panel { position: relative; width: 100%; height: auto; }
   .character-description-panel { order: 2; }
   .character-model-panel { position: relative; order: 1; width: 100%; height: 100vh; }
-  .character-options-panel { --choice-cell-width: calc(25vw - 18px); order: 3; }
+  .character-options-panel { order: 3; }
   .race-preview-stage { min-height: 360px; }
   .options-columns { grid-template-columns: 1fr; }
   .controls-options { border-left: 0; border-top: 1px solid rgba(181,150,82,.28); padding: 24px 0 0; }

@@ -287,9 +287,9 @@ caméra, de contrôle territorial et de simulation reste active.
 - hauteur des cases de race et de classe unifiée, et action `Commencer →`
   déplacée au centre inférieur du panneau d'options ;
 - grille des trois races réorganisée sur une seule ligne de trois colonnes ;
-- structures finalement contraintes explicitement à `3 × 1` pour les races et
-  `4 × 2` pour les classes ; une variable commune calcule chaque largeur depuis
-  les 25 % du panneau Options, après retrait des paddings et des espacements ;
+- grilles de races et de classes finalement contraintes à la même structure
+  `4 × 2` occupant 100 % du panneau ; les trois races remplissent les trois
+  premières cellules et les autres emplacements restent vides ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
