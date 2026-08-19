@@ -49,31 +49,8 @@ const UI = {
     setTimeout(() => el.remove(), 6000);
   },
 
-  bar(cls, ratio, text) {
-    return `<div class="bar ${cls}"><span style="width:${Math.max(0, Math.min(100, ratio * 100))}%"></span><span class="bar-txt">${text}</span></div>`;
-  },
-
   update(game) {
     const p = game.player;
-
-    /* Target panel */
-    const tp = document.getElementById('target-panel');
-    const t = p.target;
-    if (t && !t.dead) {
-      tp.classList.remove('hidden');
-      const tf = FACTIONS[t.faction];
-      const targetNameColor = t.faction === p.faction ? '#ffffff' : '#ff5a5a';
-      const chips = EffectSystem.statusChips(t).map(c => `<span class="chip ${c.cls}">${c.label}</span>`).join('');
-      let tcast = t.casting ? this.bar('cast', 1 - t.casting.remaining / t.casting.total, t.casting.skill.name + '…') : '';
-      tp.innerHTML =
-        `<div class="t-name" style="color:${targetNameColor}">${t.def.name}</div>
-         <div class="t-sub">${t.def.role} — ${tf.name}</div>` +
-        this.bar('hp', t.hp / t.maxHp, `HP ${Math.max(0, Math.round(t.hp))}/${t.maxHp}`) +
-        tcast +
-        `<div class="status-icons">${chips}</div>`;
-    } else {
-      tp.classList.add('hidden');
-    }
 
     /* Skillbar cooldowns */
     if (this.built) {

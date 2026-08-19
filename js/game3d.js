@@ -34,6 +34,7 @@ const STARTUP_ANIMATION_KEYS = [
 // La MARCHE (Walk) est réservée aux ralentissements (snare -> ~40-60 < seuil).
 const LOCO_IDLE_SPEED = 12;
 const LOCO_JOG_SPEED = 80;
+const NAMEPLATE_MAX_DISTANCE = 1600; // unités simulation : noms et textes flottants proches uniquement
 
 /* GLB par RACE (V0.4.2) : chaque race a son propre modèle, tous au rig Manny
    (161 os, pieds à y≈0) -> RWA Animation Library (retarget par nom d'os).
@@ -458,6 +459,7 @@ class Game3D {
       if (!dt || dt > 0.1) dt = Math.min(dt || 0.016, 0.05);
       this.update(dt);
       this.scene.render();
+      this.renderOverlay();
       UI.update(this);
     });
     window.addEventListener('resize', () => eng.resize());
@@ -587,6 +589,10 @@ class Game3D {
      Rendu délégué à CharacterVisual. V0.3 : Human+Guardian => GLB (async),
      toutes les autres combinaisons => placeholder capsule. */
   buildUnit(e) {
+    const div = document.createElement('div'); div.className = 'nameplate';
+    document.getElementById('overlay3d').appendChild(div);
+    e._plate = div;
+
     const glb = this.glbFor(e);
     if (glb) {
       // Échelle finale = base canonique GLB × échelle visuelle raciale (cosmétique).
@@ -596,14 +602,16 @@ class Game3D {
       // Chargement ASYNCHRONE : toutes les promesses sont agrégées par start(), qui
       // conserve l'écran de chargement jusqu'à ce que chaque personnage soit prêt.
       return CharacterVisual.loadModel(this, e, glb.url, opts)
-        .then(cv => { e.visual = cv; this.logGlbAnimsOnce(cv); })
+        .then(cv => { e.visual = cv; e._bodyTopY = cv.bodyTopY; this.logGlbAnimsOnce(cv); })
         .catch(err => {
           console.warn('[RWA] Échec du chargement ' + glb.url + ' → fallback placeholder pour '
             + e.def.name + ' (' + (e.race || '?') + ') : ' + ((err && err.message) || err));
           e.visual = new CharacterVisual(this, e).build();
+          e._bodyTopY = e.visual.bodyTopY;
         });
     } else {
       e.visual = new CharacterVisual(this, e).build();
+      e._bodyTopY = e.visual.bodyTopY;
       return Promise.resolve(e.visual);
     }
   }
@@ -1042,6 +1050,62 @@ class Game3D {
     // (V0.4.0 : landmarks statiques colorés par type — pas de recolor par propriétaire)
     // hit fx
     if (this._fx) { for (const s of this._fx) { s._life -= dt; s.scaling.setAll(1 + (0.22 - s._life) * 4); s.material.alpha = Math.max(0, s._life / 0.22); } this._fx = this._fx.filter(s => { if (s._life <= 0) { s.dispose(); return false; } return true; }); }
+  }
+
+  /* ================= OVERLAY DOM (HP / texte flottant) ================= */
+  renderOverlay() {
+    const eng = this.engine;
+    const w = eng.getRenderWidth(), h = eng.getRenderHeight();
+    const vp = this.camera.viewport.toGlobal(w, h);
+    const tmat = this.scene.getTransformMatrix();
+    const camPos = this.camera.position;
+    const p = this.player;
+    // Project() renvoie des pixels du BACKBUFFER (× device pixel ratio car
+    // adaptToDeviceRatio:true). L'overlay est en pixels CSS -> on convertit,
+    // sinon la plaque se décale de la tête sur les écrans HiDPI.
+    const cvs = this.canvas;
+    const sx = w ? (cvs.clientWidth / w) : 1;
+    const sy = h ? (cvs.clientHeight / h) : 1;
+    for (const e of this.entities) {
+      const plate = e._plate; if (!plate) continue;
+      // modèle GLB pas encore chargé (async) : pas de plaque tant que le visuel n'existe pas
+      if (!e.visual || e._bodyTopY == null) { plate.style.display = 'none'; continue; }
+      const visible = !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
+      if (!visible) { plate.style.display = 'none'; continue; }
+      const dx = e.x - p.x, dy = e.y - p.y;
+      if (dx * dx + dy * dy > NAMEPLATE_MAX_DISTANCE * NAMEPLATE_MAX_DISTANCE) { plate.style.display = 'none'; continue; }
+      const jumpY = e === p ? this.jumpOffset : 0;
+      const wp = new BABYLON.Vector3(e.x * S, this.getTerrainHeight(e.x, e.y) + e._bodyTopY + jumpY, e.y * S);
+      // cull derrière la caméra
+      if (this._camDir && BABYLON.Vector3.Dot(wp.subtract(camPos), this._camDir) < 0.5) { plate.style.display = 'none'; continue; }
+      const sp = BABYLON.Vector3.Project(wp, BABYLON.Matrix.Identity(), tmat, vp);
+      plate.style.display = 'block';
+      plate.style.left = (sp.x * sx) + 'px';
+      plate.style.top = (sp.y * sy) + 'px';
+
+      const ally = e.faction === p.faction;
+      const hpR = Math.max(0, e.hp / e.maxHp);
+      const enduR = Math.max(0, e.endurance / e.maxEndurance);
+      const isTarget = (e === p.target);
+      const isFocus = (e === p || isTarget);
+      const raceName = e.race && RACES[e.race] ? RACES[e.race].name : '';
+      const plateName = [raceName, e.def.name].filter(Boolean).join('_').replace(/\s+/g, '_');
+      // Gris-bleu clair pour les alliés, rouge pour les ennemis ; la cible active
+      // devient blanche quelle que soit sa faction.
+      const nameColor = isTarget ? '#ffffff' : (ally ? '#b8c8d8' : '#ff5a5a');
+      let html = '';
+      html += `<div class="np-name" style="color:${nameColor}">${plateName}</div>`;
+      html += `<div class="np-hp"><span style="width:${hpR * 100}%"></span></div>`;
+      html += `<div class="np-endu"><span style="width:${enduR * 100}%"></span></div>`;
+      if (e.casting) html += `<div class="np-cast"><span style="width:${(1 - e.casting.remaining / e.casting.total) * 100}%"></span></div>`;
+      // chips CC (cibles focus)
+      if (isFocus) { const chips = EffectSystem.statusChips(e).map(c => `<span class="np-chip ${c.cls}">${c.label}</span>`).join(''); if (chips) html += `<div class="np-chips">${chips}</div>`; }
+      // textes flottants
+      let ft = '';
+      for (const f of e.floats) ft += `<span class="np-float" style="color:${f.color};opacity:${Math.max(0, f.life)};transform:translateY(${f.y}px)">${f.text}</span>`;
+      if (ft) html += `<div class="np-floats">${ft}</div>`;
+      plate.innerHTML = html;
+    }
   }
 
   /* Skillbar : rendre les slots cliquables + libellés de touches adaptés */

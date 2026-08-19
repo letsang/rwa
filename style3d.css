@@ -4,6 +4,28 @@
 
 #render-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
 
+/* Overlay projeté depuis la 3D (plaques HP / textes flottants) */
+#overlay3d { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.nameplate {
+  position: absolute; transform: translate(-50%, -100%);
+  text-align: center; font-size: 11px; line-height: 1.2; white-space: nowrap;
+}
+.np-name { font-weight: 700; font-size: 12px; text-shadow: 0 1px 3px #000; margin-bottom: 2px; }
+.np-hp, .np-endu { width: 52px; height: 3px; overflow: hidden; }
+.np-hp { margin: 2px auto 0; }
+.np-endu { margin: 1px auto 0; }
+.np-hp > span { display: block; height: 100%; background: #4fd36b; }
+.np-endu > span { display: block; height: 100%; background: #d9b24f; }
+.np-cast { width: 46px; height: 3px; margin: 1px auto 0; background: #000a; border-radius: 2px; overflow: hidden; }
+.np-cast > span { display: block; height: 100%; background: #e6d27a; }
+.np-chips { display: flex; gap: 2px; justify-content: center; margin-top: 2px; flex-wrap: wrap; }
+.np-chip { font-size: 8px; padding: 0 4px; border-radius: 6px; font-weight: 700; }
+.np-chip.mez{background:#8a4fd9;} .np-chip.root{background:#4f8a6a;} .np-chip.stun{background:#d9d94f;color:#222;}
+.np-chip.snare{background:#5f7f9a;} .np-chip.disease{background:#6a8a3a;} .np-chip.nearsight{background:#9a5f8a;}
+.np-chip.dot{background:#b04f3a;} .np-chip.buff{background:#3a7fb0;} .np-chip.immune{background:#ccc;color:#222;}
+.np-floats { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+.np-float { font-weight: 700; font-size: 13px; text-shadow: 0 1px 3px #000; }
+
 /* Menu : races */
 .cosmetic-tag { font-size: 10px; color: #7fd9a0; background: rgba(95,191,95,0.12); padding: 2px 8px; border-radius: 10px; letter-spacing: 0; text-transform: none; margin-left: 6px; }
 .choice-grid { grid-template-columns: repeat(6, 1fr); }

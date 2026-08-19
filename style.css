@@ -181,26 +181,6 @@ html, body {
 .notif { background: rgba(0,0,0,0.52); border-left: 4px solid #fff; padding: 6px 14px; border-radius: 6px; font-size: 13px; animation: fadeSlide 4s forwards; }
 @keyframes fadeSlide { 0%{opacity:0; transform:translateY(-8px);} 10%{opacity:1; transform:none;} 80%{opacity:1;} 100%{opacity:0;} }
 
-/* Panneau cible */
-#target-panel {
-  position: absolute; top: 12px; left: 12px; width: 240px;
-  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
-}
-#target-panel .t-name { font-weight: 700; font-size: 14px; }
-#target-panel .t-sub { font-size: 11px; color: #93a0b8; margin-bottom: 6px; }
-.bar { height: 14px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; margin: 4px 0; position: relative; }
-.bar > span { display: block; height: 100%; }
-.bar .bar-txt { position: absolute; inset: 0; font-size: 10px; text-align: center; line-height: 14px; color: #fff; text-shadow: 0 1px 2px #000; }
-.hp   > span { background: linear-gradient(90deg,#3fbf5f,#2e8f47); }
-.mana > span { background: linear-gradient(90deg,#4f7fd9,#3a5fa8); }
-.endu > span { background: linear-gradient(90deg,#d9b24f,#a8863a); }
-.cast > span { background: linear-gradient(90deg,#c9a24f,#e6d27a); }
-.status-icons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.chip { font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 700; letter-spacing: .5px; }
-.chip.mez{background:#8a4fd9;} .chip.root{background:#4f8a6a;} .chip.stun{background:#d9d94f;color:#222;}
-.chip.snare{background:#5f7f9a;} .chip.disease{background:#6a8a3a;} .chip.nearsight{background:#9a5f8a;}
-.chip.dot{background:#b04f3a;} .chip.buff{background:#3a7fb0;} .chip.immune{background:#cccccc;color:#222;}
-
 #skillbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: auto; }
 .skill-slot {
   width: 62px; height: 62px; border: 2px solid var(--border); border-radius: 10px;
