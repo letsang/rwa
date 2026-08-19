@@ -276,6 +276,9 @@ caméra, de contrôle territorial et de simulation reste active.
   `Commencer →` centrée en bas sous forme de texte ;
 - grille de classes fixe présentant les huit classes à chaque sélection de race,
   avec les classes incompatibles grisées et désactivées ;
+- écran de création étendu en plein écran, panneaux latéraux rendus transparents
+  et aperçu 3D porté à toute la hauteur ; caméra rapprochée dynamiquement sur la
+  tête et le torse selon la hauteur réelle du modèle sélectionné ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les

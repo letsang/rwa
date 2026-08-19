@@ -97,15 +97,15 @@ html, body {
 .back-btn { position: absolute; z-index: 5; left: 24px; top: 22px; border: 0; background: transparent; color: #bbb3a4; cursor: pointer; font: 600 12px 'Myriad Pro'; letter-spacing: .15em; text-transform: uppercase; }
 .back-btn:hover { color: #f0d998; }
 
-.character-screen { align-items: flex-start; padding: 5vh 3vw; }
-.character-shell { position: relative; width: min(1380px, 96vw); margin: auto; padding: 24px clamp(20px, 3vw, 42px); background: linear-gradient(140deg, rgba(20,25,31,.97), rgba(8,11,15,.98)); box-shadow: 0 24px 80px #000; }
+.character-screen { align-items: stretch; padding: 0; }
+.character-shell { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: linear-gradient(140deg, rgba(20,25,31,.97), rgba(8,11,15,.98)); }
 .character-shell::before { content: ''; position: absolute; inset: 0; opacity: .08; background: url('./assets/ui/title-background.png') center/cover; pointer-events: none; }
-.character-creation-layout { position: relative; display: grid; grid-template-columns: minmax(210px, .72fr) minmax(380px, 1.45fr) minmax(300px, 1fr); min-height: 480px; }
-.character-description-panel, .character-options-panel { padding: 28px 24px; background: rgba(4,7,10,.28); }
+.character-creation-layout { position: relative; display: grid; grid-template-columns: minmax(210px, .72fr) minmax(380px, 1.45fr) minmax(300px, 1fr); width: 100%; height: 100%; min-height: 0; }
+.character-description-panel, .character-options-panel { padding: 72px 24px 64px; background: transparent; }
 .character-description-panel h3 { margin: 9px 0 8px; color: #e0d4bc; font: 700 24px 'Minion Pro'; letter-spacing: .05em; }
 .character-description-panel #selected-class-title { margin-top: 36px; }
 .character-description-panel > p:not(.eyebrow) { color: #9fa2a5; font: 400 14px/1.55 'Minion Pro'; }
-.character-model-panel { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: stretch; background: radial-gradient(circle at 50% 38%, rgba(76,86,98,.24), rgba(5,8,11,.15) 64%); }
+.character-model-panel { position: relative; min-width: 0; height: 100vh; display: flex; flex-direction: column; align-items: stretch; background: radial-gradient(circle at 50% 38%, rgba(76,86,98,.24), rgba(5,8,11,.15) 64%); }
 .creation-step { position: relative; padding: 19px 0 10px; }
 .character-options-panel .creation-step:first-child { padding-top: 0; }
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
@@ -114,7 +114,7 @@ html, body {
 .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .race-grid { grid-template-columns: 1fr; }
 .class-grid.large { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 44px; }
-.race-preview-stage { position: relative; width: 100%; flex: 1; min-height: 430px; overflow: hidden; background: transparent; }
+.race-preview-stage { position: relative; width: 100%; height: 100%; flex: 1; min-height: 0; overflow: hidden; background: transparent; }
 #race-preview-canvas { display: block; width: 100%; height: 100%; outline: 0; touch-action: none; }
 #race-preview-status { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); color: #b8aa8d; font: 600 12px 'Myriad Pro'; letter-spacing: .14em; text-transform: uppercase; pointer-events: none; }
 .race-preview-stage.ready #race-preview-status { display: none; }

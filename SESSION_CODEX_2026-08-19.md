@@ -64,6 +64,11 @@ Le retour occupe la même position supérieure gauche que sur le triptyque et
 fixe et affiche les huit classes ; celles qui ne sont pas compatibles avec la race
 sélectionnée sont grisées et désactivées.
 
+Le conteneur de création occupe désormais tout l'écran. Les panneaux de description
+et d'options n'ont plus de fond, tandis que le panneau du modèle occupe toute la
+hauteur. La caméra adapte sa distance à la taille du modèle et cadre sa tête et son
+torse plutôt que sa silhouette complète.
+
 ### Répartition canonique actuelle
 
 | Royaume de l'Ouest | Royaume du Nord | Royaume de l'Est |

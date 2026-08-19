@@ -368,8 +368,9 @@ class Game3D {
     for (const [rid, visual] of p.visuals) visual.setEnabled(rid === race);
     const visual = p.visuals.get(race);
     const height = Math.max(2, visual.modelHeight || visual.bodyTopY || 4);
-    p.camera.position.set(0, height * 0.52, -Math.max(7, height * 2.15));
-    p.camera.setTarget(new BABYLON.Vector3(0, height * 0.50, 0));
+    const upperBodyY = height * 0.72;
+    p.camera.position.set(0, upperBodyY, -Math.max(3, height * 1.05));
+    p.camera.setTarget(new BABYLON.Vector3(0, upperBodyY, 0));
   }
 
   disposeRacePreview() {
