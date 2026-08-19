@@ -95,36 +95,27 @@ Le fichier `js/audio.js` a été créé. Il contient `RWAudioManager`, chargé a
 
 Fonctionnalités ajoutées :
 
-- lecture en boucle de `title.mp3` depuis l'écran-titre jusqu'à la fin du
-  chargement du monde et du personnage joueur, avec reprise au premier geste
-  utilisateur lorsque l'autoplay du navigateur est bloqué ;
-- suppression de l'étape et du fichier `play.mp3` ;
-- lecture de `midplay.mp3` une fois le chargement terminé et le jeu affiché ;
-- démarrage automatique de l'ambiance du royaume après `midplay` ;
-- playlists aléatoires sans répétition immédiate ;
+- lecture aléatoire continue des huit WAV de `assets/audio/Intro/` depuis
+  l'écran-titre jusqu'à la fin du chargement, sans répétition immédiate et avec
+  reprise au premier geste utilisateur lorsque l'autoplay est bloqué ;
+- lecture unique de `assets/audio/Ambient/midplay.mp3` une fois le chargement
+  terminé et le jeu affiché ;
+- lecture aléatoire d'une des quatre variantes `bigdrums` de `assets/audio/Ambient/`
+  lors de l'approche d'un fort ;
 - volume général, musique, effets et mute ;
 - sauvegarde locale des réglages dans la clé `localStorage` `rwa-audio`.
 
-Répartition des ambiances intégrées :
-
-- royaume Est : 15 segments ;
-- royaume du Nord (faction moteur `CENTER`) : 44 segments ;
-- royaume Ouest : 100 segments ;
-- total : 159 segments d'ambiance.
-
-Les 16 sons de `assets/audio/Zone/` sont utilisés comme effets de proximité des
-forts. Un son est choisi aléatoirement à l'entrée dans un rayon de 1 500 unités de
-simulation autour d'un fort ou de la forteresse neutre. Une temporisation globale de
-30 secondes empêche les déclenchements rapprochés. Rester à l'intérieur d'une zone
-ne relance pas continuellement le son : il faut entrer dans une nouvelle zone.
+Les big drums sont choisis à l'entrée dans un rayon de 1 500 unités de simulation
+autour d'un fort ou de la forteresse neutre. Une temporisation globale de 30 secondes
+empêche les déclenchements rapprochés. Rester à l'intérieur d'une zone ne relance pas
+continuellement le son : il faut entrer dans une nouvelle zone.
 
 ### 5. Assets audio intégrés
 
 Les dossiers suivants ont été copiés dans le build offline :
 
-- `assets/audio/Intro/` : 2 fichiers (`title.mp3` et `midplay.mp3`) ;
-- `assets/audio/Ambient/` : 159 fichiers ;
-- `assets/audio/Zone/` : 16 fichiers.
+- `assets/audio/Intro/` : 8 WAV de boucle aléatoire des menus ;
+- `assets/audio/Ambient/` : `midplay.mp3` et 4 WAV `bigdrums` de proximité.
 
 Le jeu ne dépend d'aucun service audio externe.
 
@@ -250,7 +241,8 @@ caméra, de contrôle territorial et de simulation reste active.
   underscores (par exemple `Dark_Elf_Assassin`) ;
 - remplacement des jauges de plaque par deux traits de 3 px, sans fond, bordure
   ni arrondi : PV en vert puis endurance en jaune-or juste en dessous ;
-- maintien de `title.mp3` pendant tous les menus et l'écran de chargement ;
+- maintien de la playlist WAV aléatoire `Intro` pendant tous les menus et l'écran
+  de chargement ;
 - attente explicite du chargement du visuel du joueur avant de masquer l'écran
   de chargement et de lancer `midplay.mp3` ;
 - extension du chargement initial à tous les personnages, aux arbres GLB, aux

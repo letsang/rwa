@@ -79,18 +79,21 @@ options audio.
 
 Séquence actuelle :
 
-- `title.mp3` démarre sur l'écran d'accueil et continue pendant tous les menus et
-  tout le chargement ;
-- `play.mp3` a été retiré du flux et du build ;
-- `midplay.mp3` démarre uniquement lorsque la scène est prête et affichable ;
-- l'ambiance du royaume commence après `midplay` ;
-- les playlists sont aléatoires sans répétition immédiate ;
-- les sons de `assets/audio/Zone/` se déclenchent aléatoirement à proximité des
-  forts, avec temporisation pour éviter les répétitions.
+- les huit WAV de `assets/audio/Intro/` s'enchaînent aléatoirement, sans répétition
+  immédiate, pendant l'écran d'accueil, les sélections et tout le chargement ;
+- `assets/audio/Ambient/midplay.mp3` interrompt cette playlist et est joué une
+  fois lorsque la scène est prête et affichable ;
+- les quatre variantes `frontiersmusic_bigdrums*.wav` de `assets/audio/Ambient/`
+  sont utilisées aléatoirement à l'approche d'un fort ;
+- les big drums utilisent le canal d'effets et peuvent donc se superposer à
+  `midplay` ;
+- le rayon de proximité reste fixé à 1 500 unités de simulation et la temporisation
+  globale à 30 secondes ; il faut quitter puis entrer dans une zone pour rejouer
+  un effet.
 
-Le dépôt publié contient 159 segments d'ambiance : Est 15, Nord 44 et Ouest 100,
-ainsi que 16 sons de zone. Les réglages audio sont sauvegardés dans
-`localStorage` sous la clé `rwa-audio`.
+Les anciennes playlists par royaume, `title.mp3` et le dossier `Zone` ont été
+retirés lors de la réorganisation finale des musiques. Les réglages audio restent
+sauvegardés dans `localStorage` sous la clé `rwa-audio`.
 
 ## 5. Visual Quality Pass
 
