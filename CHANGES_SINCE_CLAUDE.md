@@ -284,8 +284,9 @@ caméra, de contrôle territorial et de simulation reste active.
 - aperçu 3D finalement étendu en plein écran derrière les panneaux latéraux,
   ceux-ci conservant chacun 25 % de largeur ; retrait des sous-titres de race et
   de classe, et grille des races alignée sur les cellules fixes des classes ;
-- dimensions des cases de race et de classe unifiées, et action `Commencer →`
+- hauteur des cases de race et de classe unifiée, et action `Commencer →`
   déplacée au centre inférieur du panneau d'options ;
+- grille des trois races réorganisée sur une seule ligne de trois colonnes ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
   et cible active blanche, y compris lorsqu'un allié est ciblé au clic gauche ;
 - ajout du saut sur `Espace`, avec trajectoire verticale visuelle sans altérer les
