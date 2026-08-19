@@ -4,9 +4,9 @@
    COUCHE VISUELLE, LECTURE SEULE (TerrainGenerator, BiomeSystem, TERRAIN_GEO).
    Ne recalcule ni ne modifie JAMAIS la géographie.
 
-   V0.4.6.1 — passe de QUALITÉ à hauteur de personnage :
-   - Densité de texel : tuile de détail fine (crisp au sol) + tuile macro (anti-tiling).
-   - Normal map procédurale : le relief micro est révélé par la lumière (subtil).
+   V0.4.7 — matériaux PBR CC0 à hauteur de personnage :
+   - 4 surfaces Poly Haven (grass/dirt/rock/mud), chacune albedo+normal+roughness.
+   - Densité de texel : tuile de détail fine + tuile macro (anti-tiling).
    - Blending riche : pente/altitude/humidité/biome + macro-noise (poches de dirt
      naturelles dans le grass, rock progressif sur les pentes).
    - Routes cassées : gravier, plaques d'herbe, ornières, bords bruités (plus de bande).
@@ -22,7 +22,7 @@ const WV_CONFIG = {
   rockSlopeA: 10, rockSlopeB: 20, rockSlopeC: 36, rockAltA: 0.62, rockAltB: 0.88,
   wetRiverR: 2100,
   roadVisW0: 140, roadVisW1: 860,
-  texSize: 512,
+  textureRoot: './assets/terrain/',
 };
 
 /* --- bruit --- */
@@ -38,18 +38,6 @@ function _wvClamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 function _wvSmooth(e0, e1, x) { const t = _wvClamp((x - e0) / (e1 - e0 || 1e-9), 0, 1); return t * t * (3 - 2 * t); }
 function _distSegW(px, py, ax, ay, bx, by) { const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy || 1e-9; let t = _wvClamp(((px - ax) * dx + (py - ay) * dy) / l2, 0, 1); return Math.hypot(px - (ax + t * dx), py - (ay + t * dy)); }
 function _distPolysW(x, y, polys) { let m = Infinity; for (const l of polys) for (let i = 0; i < l.length - 1; i++) { const d = _distSegW(x, y, l[i].x, l[i].y, l[i + 1].x, l[i + 1].y); if (d < m) m = d; } return m; }
-// fbm périodique (pour textures tileables)
-function _fbmP(x, y, P, seed, oct) {
-  let v = 0, a = 0.5, f = 1; oct = oct || 4;
-  for (let o = 0; o < oct; o++) {
-    const per = P * f, xi = x * f, yi = y * f, x0 = Math.floor(xi), y0 = Math.floor(yi), xf = xi - x0, yf = yi - y0;
-    const h = (ix, iy) => _wvHash(((ix % per) + per) % per, ((iy % per) + per) % per, seed + o * 17);
-    const u = _wvFade(xf), vv = _wvFade(yf);
-    v += ((1 - vv) * ((1 - u) * h(x0, y0) + u * h(x0 + 1, y0)) + vv * ((1 - u) * h(x0, y0 + 1) + u * h(x0 + 1, y0 + 1))) * a; a *= 0.5; f *= 2;
-  }
-  return v;
-}
-
 /* Poids de surface [grass,dirt,rock,wet] — blending riche (réutilisé par validation). */
 function terrainWeights(x, z, altN, slopeDeg, seed) {
   const C = WV_CONFIG;
@@ -108,52 +96,27 @@ class WorldVisualsSystem {
   }
   _col(a) { return new BABYLON.Color3(a[0], a[1], a[2]); }
 
-  _makeTex(name, base, kind) {
-    const size = WV_CONFIG.texSize, P = 16;
-    const t = new BABYLON.DynamicTexture(name, { width: size, height: size }, this.scene, true);
-    const ctx = t.getContext(), img = ctx.createImageData(size, size);
-    for (let j = 0; j < size; j++) for (let i = 0; i < size; i++) {
-      const u = i / size * P, v = j / size * P;
-      const n = _fbmP(u, v, P, this.seed + kind * 131, 4);
-      const fine = _fbmP(u * 3.1, v * 3.1, P * 3, this.seed + 700 + kind, 3);
-      let rr = base[0], gg = base[1], bb = base[2];
-      if (kind === 0) { const bl = 0.66 + 0.55 * n + 0.18 * fine; rr *= bl; gg *= (0.78 + 0.5 * n + 0.15 * fine); bb *= bl * 0.95;
-        if (fine > 0.7) { gg *= 1.12; } }                                    // brins plus clairs
-      else if (kind === 1) { const bl = 0.68 + 0.5 * n + 0.2 * fine; rr *= bl; gg *= bl; bb *= bl * 0.95;
-        if (_fbmP(u * 4.2, v * 4.2, P * 4, this.seed + 500, 2) > 0.74) { rr *= 1.3; gg *= 1.25; bb *= 1.18; } } // cailloux
-      else if (kind === 2) { const bl = 0.6 + 0.55 * n + 0.15 * fine; rr *= bl; gg *= bl; bb *= bl;
-        const cr = _fbmP(u * 2.0, v * 2.0, P * 2, this.seed + 900, 3); if (cr < 0.30) { rr *= 0.55; gg *= 0.55; bb *= 0.58; } } // fissures
-      else { const bl = 0.55 + 0.45 * n + 0.12 * fine; rr *= bl; gg *= (0.66 + 0.45 * n); bb *= (0.72 + 0.42 * n); }
-      const o = (j * size + i) * 4;
-      img.data[o] = _wvClamp(rr, 0, 1) * 255; img.data[o + 1] = _wvClamp(gg, 0, 1) * 255; img.data[o + 2] = _wvClamp(bb, 0, 1) * 255; img.data[o + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0); t.update(); t.wrapU = t.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE; return t;
-  }
-
-  _makeNormal(name) {
-    const size = WV_CONFIG.texSize, P = 16, seed = this.seed + 4242;
-    const H = new Float32Array(size * size);
-    for (let j = 0; j < size; j++) for (let i = 0; i < size; i++) H[j * size + i] = _fbmP(i / size * P, j / size * P, P, seed, 4) * 0.6 + _fbmP(i / size * P * 3, j / size * P * 3, P * 3, seed + 9, 3) * 0.4;
-    const t = new BABYLON.DynamicTexture(name, { width: size, height: size }, this.scene, false);
-    const ctx = t.getContext(), img = ctx.createImageData(size, size), str = 2.6;
-    for (let j = 0; j < size; j++) for (let i = 0; i < size; i++) {
-      const l = H[j * size + ((i - 1 + size) % size)], rgt = H[j * size + ((i + 1) % size)];
-      const up = H[((j - 1 + size) % size) * size + i], dn = H[((j + 1) % size) * size + i];
-      let nx = (l - rgt) * str, ny = (up - dn) * str, nz = 1;
-      const len = Math.hypot(nx, ny, nz) || 1; nx /= len; ny /= len; nz /= len;
-      const o = (j * size + i) * 4;
-      img.data[o] = (nx * 0.5 + 0.5) * 255; img.data[o + 1] = (ny * 0.5 + 0.5) * 255; img.data[o + 2] = (nz * 0.5 + 0.5) * 255; img.data[o + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0); t.update(); t.wrapU = t.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE; return t;
+  _texture(name, file, linear) {
+    const t = new BABYLON.Texture(WV_CONFIG.textureRoot + file, this.scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE);
+    t.name = name; t.wrapU = t.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+    t.anisotropicFilteringLevel = 8;
+    if (linear) t.gammaSpace = false;
+    return t;
   }
 
   _buildTextures() {
-    const E = RWA_ENV;
-    this.texGrass = this._makeTex('rwaGrass', E.colGrass, 0);
-    this.texDirt = this._makeTex('rwaDirt', E.colDirt, 1);
-    this.texRock = this._makeTex('rwaRock', E.colRock, 2);
-    this.texWet = this._makeTex('rwaWet', E.colWet, 3);
-    this.texNorm = this._makeNormal('rwaNorm');
+    this.texGrass = this._texture('rwaGrassAlbedo', 'grass_albedo.png', false);
+    this.texDirt = this._texture('rwaDirtAlbedo', 'dirt_albedo.png', false);
+    this.texRock = this._texture('rwaRockAlbedo', 'rock_albedo.png', false);
+    this.texWet = this._texture('rwaMudAlbedo', 'mud_albedo.png', false);
+    this.normGrass = this._texture('rwaGrassNormal', 'grass_normal.jpg', true);
+    this.normDirt = this._texture('rwaDirtNormal', 'dirt_normal.jpg', true);
+    this.normRock = this._texture('rwaRockNormal', 'rock_normal.jpg', true);
+    this.normWet = this._texture('rwaMudNormal', 'mud_normal.jpg', true);
+    this.roughGrass = this._texture('rwaGrassRoughness', 'grass_rough.png', true);
+    this.roughDirt = this._texture('rwaDirtRoughness', 'dirt_rough.png', true);
+    this.roughRock = this._texture('rwaRockRoughness', 'rock_rough.jpg', true);
+    this.roughWet = this._texture('rwaMudRoughness', 'mud_rough.jpg', true);
   }
 
   _registerShaders() {
@@ -166,7 +129,9 @@ void main(void){ vec4 wp = world*vec4(position,1.0); vPosW=wp.xyz; vNormalW=norm
     BABYLON.Effect.ShadersStore['rwaTerrainFragmentShader'] = `
 precision highp float;
 varying vec2 vUV; varying vec4 vW; varying vec3 vNormalW; varying vec3 vPosW;
-uniform sampler2D grassTex; uniform sampler2D dirtTex; uniform sampler2D rockTex; uniform sampler2D wetTex; uniform sampler2D normTex;
+uniform sampler2D grassTex; uniform sampler2D dirtTex; uniform sampler2D rockTex; uniform sampler2D wetTex;
+uniform sampler2D grassNormTex; uniform sampler2D dirtNormTex; uniform sampler2D rockNormTex; uniform sampler2D wetNormTex;
+uniform sampler2D grassRoughTex; uniform sampler2D dirtRoughTex; uniform sampler2D rockRoughTex; uniform sampler2D wetRoughTex;
 uniform vec3 sunDir; uniform vec3 sunColor; uniform vec3 ambUp; uniform vec3 ambDown;
 uniform vec3 fogColor; uniform vec2 fogRange; uniform vec3 camPos; uniform float uDebug; uniform float macroScale;
 // double-échelle : détail (uv) modulé par macro (uv*macroScale)
@@ -175,6 +140,7 @@ vec3 sampAlb(sampler2D s, vec2 uv){
   float m = texture2D(s, uv*macroScale).r;         // grande variation
   return det * mix(0.82, 1.20, m);
 }
+vec3 unpackNormal(sampler2D s, vec2 uv){ return texture2D(s, uv).rgb*2.0-1.0; }
 void main(void){
   vec4 w = vW; float s = max(w.r+w.g+w.b+w.a, 0.0001); w /= s;
   vec2 uv = vUV;
@@ -182,11 +148,9 @@ void main(void){
   // variation couleur micro
   float cv = 0.90 + 0.18 * texture2D(dirtTex, vPosW.xz*0.02).g;
   albedo *= cv;
-  // NORMAL detail : perturbe la normale géométrique (tangent X, bitangent Z)
-  vec3 nT = texture2D(normTex, uv).rgb*2.0-1.0;
-  vec3 nT2 = texture2D(normTex, uv*0.31).rgb*2.0-1.0;
-  vec3 nrm = normalize(nT + nT2*0.6);
-  float nStrength = 0.35 + 0.55*w.b;               // rock plus marqué
+  // Normales PBR mélangées avec les mêmes poids que l'albedo.
+  vec3 nrm = normalize(unpackNormal(grassNormTex,uv)*w.r + unpackNormal(dirtNormTex,uv)*w.g + unpackNormal(rockNormTex,uv)*w.b + unpackNormal(wetNormTex,uv)*w.a);
+  float nStrength = 0.42 + 0.48*w.b;               // rock plus marqué
   vec3 Ng = normalize(vNormalW);
   vec3 N = normalize(Ng + vec3(1.0,0.0,0.0)*nrm.x*nStrength + vec3(0.0,0.0,1.0)*nrm.y*nStrength);
   // éclairage
@@ -195,10 +159,13 @@ void main(void){
   float hemi = 0.5 + 0.5*N.y;
   vec3 amb = mix(ambDown, ambUp, hemi);
   vec3 lit = albedo * (amb + sunColor*ndl);
-  // spéculaire léger : surtout wet, un peu rock
+  // Roughness PBR : contrôle conjoint de la largeur et de l'intensité spéculaire.
+  float roughness = texture2D(grassRoughTex,uv).r*w.r + texture2D(dirtRoughTex,uv).r*w.g + texture2D(rockRoughTex,uv).r*w.b + texture2D(wetRoughTex,uv).r*w.a;
   vec3 V = normalize(camPos - vPosW);
   vec3 Hh = normalize(Ld + V);
-  float spec = pow(max(dot(N,Hh),0.0), 32.0) * (w.a*0.5 + w.b*0.10);
+  float specPower = mix(72.0, 9.0, roughness);
+  float specAmount = mix(0.34, 0.025, roughness) * (0.55 + w.a*0.45);
+  float spec = pow(max(dot(N,Hh),0.0), specPower) * specAmount;
   lit += sunColor * spec;
   // fog
   float dist = distance(vPosW, camPos);
@@ -215,9 +182,11 @@ void main(void){
     const m = new BABYLON.ShaderMaterial('rwaTerrain', scene, { vertex: 'rwaTerrain', fragment: 'rwaTerrain' }, {
       attributes: ['position', 'normal', 'uv', 'color'],
       uniforms: ['worldViewProjection', 'world', 'sunDir', 'sunColor', 'ambUp', 'ambDown', 'fogColor', 'fogRange', 'camPos', 'uDebug', 'macroScale'],
-      samplers: ['grassTex', 'dirtTex', 'rockTex', 'wetTex', 'normTex'],
+      samplers: ['grassTex', 'dirtTex', 'rockTex', 'wetTex', 'grassNormTex', 'dirtNormTex', 'rockNormTex', 'wetNormTex', 'grassRoughTex', 'dirtRoughTex', 'rockRoughTex', 'wetRoughTex'],
     });
-    m.setTexture('grassTex', this.texGrass); m.setTexture('dirtTex', this.texDirt); m.setTexture('rockTex', this.texRock); m.setTexture('wetTex', this.texWet); m.setTexture('normTex', this.texNorm);
+    m.setTexture('grassTex', this.texGrass); m.setTexture('dirtTex', this.texDirt); m.setTexture('rockTex', this.texRock); m.setTexture('wetTex', this.texWet);
+    m.setTexture('grassNormTex', this.normGrass); m.setTexture('dirtNormTex', this.normDirt); m.setTexture('rockNormTex', this.normRock); m.setTexture('wetNormTex', this.normWet);
+    m.setTexture('grassRoughTex', this.roughGrass); m.setTexture('dirtRoughTex', this.roughDirt); m.setTexture('rockRoughTex', this.roughRock); m.setTexture('wetRoughTex', this.roughWet);
     m.setVector3('sunDir', new BABYLON.Vector3(E.sunDir[0], E.sunDir[1], E.sunDir[2]));
     m.setColor3('sunColor', this._col(E.sunColor)); m.setColor3('ambUp', this._col(E.ambUp)); m.setColor3('ambDown', this._col(E.ambDown));
     m.setColor3('fogColor', this._col(E.fogColor)); m.setVector2('fogRange', new BABYLON.Vector2(E.fogStart, E.fogEnd));

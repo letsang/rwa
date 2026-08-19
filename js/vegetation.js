@@ -1,5 +1,5 @@
 /* ============================================================
-   vegetation.js — Chunked Vegetation + LOD (V0.4.5c)
+   vegetation.js — Chunked Vegetation + LOD (V0.4.7 assets)
 
    Industrialisation du prototype 4.5b. Objectif : densités crédibles SANS
    dette de perf. Reste COSMÉTIQUE PUR (isPickable=false, aucune collision,
@@ -70,6 +70,7 @@ class VegetationSystem {
     this._counts = { tree: 0, rock: 0, bush: 0, grass: 0 };
     this._rebuilds = 0;   // debug : nb de reconstructions de buffer (doit rester bas)
     this.families = this._buildBases();
+    this.treeAssetsReady = this._loadTreeAssets();
   }
   key(cx, cy) { return cx + ',' + cy; }
 
@@ -103,6 +104,68 @@ class VegetationSystem {
     { const tr = this._cyl(s, 's1t', 2.2, 0.4, 0.7, 1.1, bark); const bl = this._sph(s, 's1a', 3.4, 3.4, leaf); bl.scaling.y = 0.85; V.push(BABYLON.Mesh.MergeMeshes([tr, bl], true, true, undefined, false, true)); }
     return V;
   }
+
+  _configureTreeMaterial(mat) {
+    if (!mat) return;
+    if (mat.subMaterials) { mat.subMaterials.forEach(m => this._configureTreeMaterial(m)); return; }
+    mat.backFaceCulling = false; mat.twoSidedLighting = true;
+    if (mat.albedoTexture) {
+      mat.albedoTexture.updateSamplingMode(BABYLON.Texture.NEAREST_SAMPLINGMODE);
+      mat.albedoTexture.anisotropicFilteringLevel = 1;
+    }
+    if (mat.diffuseTexture) {
+      mat.diffuseTexture.updateSamplingMode(BABYLON.Texture.NEAREST_SAMPLINGMODE);
+      mat.diffuseTexture.anisotropicFilteringLevel = 1;
+    }
+    if (mat.metallic != null) mat.metallic = 0;
+    if (mat.roughness != null) mat.roughness = Math.max(0.78, mat.roughness || 0);
+  }
+
+  async _loadTreeAsset(def, index) {
+    const root = './assets/vegetation/trees/';
+    const result = await BABYLON.SceneLoader.ImportMeshAsync('', root, def.file, this.scene, undefined, '.glb');
+    const meshes = result.meshes.filter(m => m.getTotalVertices && m.getTotalVertices() > 0);
+    if (!meshes.length) throw new Error('Aucune géométrie dans ' + def.file);
+    for (const mesh of meshes) {
+      mesh.setEnabled(false);
+      // Préserve la rotation +90° X fournie par le pack et la conversion glTF du loader.
+      const importedWorld = mesh.computeWorldMatrix(true).clone();
+      mesh.parent = null; mesh.bakeTransformIntoVertices(importedWorld);
+      mesh.position.set(0, 0, 0); mesh.rotationQuaternion = null; mesh.rotation.set(0, 0, 0); mesh.scaling.setAll(def.scale);
+      mesh.bakeCurrentTransformIntoVertices();
+      mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); mesh.scaling.setAll(1);
+      this._configureTreeMaterial(mesh.material);
+    }
+    let mesh = meshes[0];
+    if (meshes.length > 1) mesh = BABYLON.Mesh.MergeMeshes(meshes, true, true, undefined, true, true);
+    for (const extra of result.meshes) if (extra !== mesh && meshes.indexOf(extra) < 0 && !extra.isDisposed()) extra.dispose();
+    if (!mesh) throw new Error('Fusion impossible pour ' + def.file);
+    mesh.name = 'veg_tree_asset_' + index; mesh.isPickable = false; mesh.checkCollisions = false;
+    mesh.alwaysSelectAsActiveMesh = true; mesh.setEnabled(false); mesh.thinInstanceCount = 0;
+    this._configureTreeMaterial(mesh.material);
+    return mesh;
+  }
+
+  async _loadTreeAssets() {
+    const defs = [
+      { file: 'tree_rt_1.glb', scale: 3.55 }, { file: 'tree_rt_2.glb', scale: 1.80 },
+      { file: 'tree_rt_2_1.glb', scale: 1.75 }, { file: 'tree_rt_3.glb', scale: 2.20 },
+      { file: 'tree_rt_4.glb', scale: 1.65 }, { file: 'dead_tree_rt_1.glb', scale: 1.35 },
+      { file: 'dead_tree_rt_2.glb', scale: 2.40 }, { file: 'small_tree_rt_1.glb', scale: 4.20 },
+    ];
+    try {
+      const meshes = await Promise.all(defs.map((d, i) => this._loadTreeAsset(d, i)));
+      const old = this.families.tree.variants;
+      this.families.tree = { variants: meshes.map(mesh => ({ mesh })) };
+      old.forEach(v => v.mesh.dispose());
+      this.dirty.tree = true;
+      console.log('[RWA Vegetation] Retro Tree Pack chargé : ' + meshes.length + ' variantes GLB.');
+      return true;
+    } catch (err) {
+      console.warn('[RWA Vegetation] GLB indisponibles, placeholders conservés :', err);
+      return false;
+    }
+  }
   _rockVariants(s) {
     // boulders trapus, gris froid SOMBRE, icosaèdres irréguliers (pas de pyramide/cube),
     // partiellement ENFONCÉS dans le sol (y bas), asymétriques.
@@ -122,16 +185,23 @@ class VegetationSystem {
     ];
   }
   _grassVariants(s) {
-    const mk = (name, hex, w, h) => {
+    const tex = new BABYLON.Texture('./assets/vegetation/grass/vegetation_grass_card_03.png', s, false, true, BABYLON.Texture.TRILINEAR_SAMPLINGMODE);
+    tex.hasAlpha = true; tex.wrapU = tex.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE; tex.anisotropicFilteringLevel = 4;
+    const grassMat = new BABYLON.StandardMaterial('veg_grass_card', s);
+    grassMat.diffuseTexture = tex; grassMat.useAlphaFromDiffuseTexture = true;
+    grassMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHATEST; grassMat.alphaCutOff = 0.38;
+    grassMat.diffuseColor = new BABYLON.Color3(0.72, 0.80, 0.62);
+    grassMat.specularColor = new BABYLON.Color3(0, 0, 0); grassMat.backFaceCulling = false; grassMat.twoSidedLighting = true;
+    const mk = (name, w, h) => {
       const g1 = BABYLON.MeshBuilder.CreatePlane(name + 'a', { width: w, height: h, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, s); g1.position.y = h / 2;
       const g2 = BABYLON.MeshBuilder.CreatePlane(name + 'b', { width: w, height: h, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, s); g2.position.y = h / 2; g2.rotation.y = Math.PI / 2;
-      const m = BABYLON.Mesh.MergeMeshes([g1, g2], true, true, undefined, false, false); m.material = this._mat('grass_' + name, hex); return m;
+      const m = BABYLON.Mesh.MergeMeshes([g1, g2], true, true, undefined, false, false); m.material = grassMat; return m;
     };
-    return [mk('g0', '#5c7a48', 1.1, 1.3), mk('g1', '#6a7d50', 0.9, 1.0), mk('g2', '#4f6f42', 1.2, 1.5)];
+    return [mk('g0', 1.7, 1.3), mk('g1', 1.35, 1.0), mk('g2', 1.9, 1.5)];
   }
 
   _pickVariant(fam, type, h) {
-    if (fam === 'tree') { const D = { FOREST: [2, 2, 0, 1, 4], HIGHLAND: [0, 1, 3, 3, 4], WETLAND: [4, 4, 3, 2, 0], BARREN: [3, 3, 3, 4, 0], GRASSLAND: [2, 4, 2, 0, 4] }; const t = D[type] || D.GRASSLAND; return t[Math.min(t.length - 1, Math.floor(h * t.length))]; }
+    if (fam === 'tree') { const D = { FOREST: [0, 1, 2, 3, 4, 7], HIGHLAND: [1, 3, 5, 6, 7], WETLAND: [2, 7, 6, 0, 3], BARREN: [5, 6, 6, 7], GRASSLAND: [0, 1, 3, 7, 2] }; const t = D[type] || D.GRASSLAND; return t[Math.min(t.length - 1, Math.floor(h * t.length))]; }
     if (fam === 'rock') return Math.min(2, Math.floor(h * 3));
     if (fam === 'bush') return (type === 'WETLAND' || type === 'BARREN') ? (h < 0.7 ? 1 : 0) : (h < 0.15 ? 1 : 0);
     return Math.min(2, Math.floor(h * 3)); // grass

@@ -175,14 +175,26 @@ La validation visuelle automatisée dans le navigateur intégré n'a pas pu dém
 cause d'une restriction Windows sur le runtime du navigateur. Les vérifications
 statiques et HTTP ont néanmoins toutes réussi.
 
+## Visual Quality Pass CC0 — terrain, ciel et végétation
+
+Ajouts postérieurs à la première passe Codex :
+
+- remplacement des quatre textures procédurales du shader terrain par 12 cartes
+  Poly Haven CC0 : albedo, normal et roughness pour grass/dirt/rock/mud ;
+- conservation des masques vertex, des routes, du blending biome et de l'anti-tiling ;
+- ajout du HDRI Golden Gate Hills CC0 comme ciel et environnement de réflexion,
+  avec l'ancien dôme gradient conservé uniquement comme fallback de chargement ;
+- remplacement des cartes d'herbe unies par la texture alpha CC0 OpenGameArt ;
+- chargement asynchrone de huit arbres GLB du Retro Tree Pack, puis remplacement
+  des placeholders sans changer les transforms, positions, rangs ou bandes LOD ;
+- ajout de `assets/SOURCES.txt` et d'une notice locale transparente pour le pack
+  d'arbres, dont l'archive fournie ne contenait pas de licence autonome.
+
 ## Prochaine passe recommandée
 
-Reprendre le Visual Quality Pass prévu par Claude :
-
-- auditer les matériaux terrain CC0 présents dans `assets-incoming` ;
-- intégrer les vrais arbres, rochers, buissons et textures correctement licenciés ;
+- valider visuellement les échelles et l'orientation des huit arbres sur plusieurs biomes ;
+- ajuster le tiling, la force des normales et la roughness après comparaison en jeu ;
+- intégrer les rochers et buissons correctement licenciés encore en attente ;
 - conserver la génération, les biomes et le LOD existants ;
-- utiliser le procédural pour le blending, l'anti-tiling et les variations, pas pour
-  remplacer des assets visuels de meilleure qualité ;
 - garder DynamicTerrain / Ring LOD en roadmap uniquement jusqu'à ce qu'un besoin
   mesuré justifie un prototype.

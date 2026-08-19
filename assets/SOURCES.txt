@@ -1,0 +1,49 @@
+RWA PRODUCTION ASSET SOURCES
+============================
+
+Last verified: 2026-08-19
+
+TERRAIN PBR — POLY HAVEN (CC0)
+Runtime directory: assets/terrain/
+
+grass_albedo.png / grass_normal.jpg / grass_rough.png
+Source: Poly Haven — Leafy Grass
+License: CC0
+
+dirt_albedo.png / dirt_normal.jpg / dirt_rough.png
+Source: Poly Haven — Dirt Floor
+License: CC0
+
+rock_albedo.png / rock_normal.jpg / rock_rough.jpg
+Source: Poly Haven — Rock Ground
+License: CC0
+
+mud_albedo.png / mud_normal.jpg / mud_rough.jpg
+Source: Poly Haven — Brown Mud
+License: CC0
+
+ENVIRONMENT HDRI — POLY HAVEN (CC0)
+Runtime file: assets/environment/golden_gate_hills_1k.hdr
+Source: Poly Haven — Golden Gate Hills
+Original URL: https://polyhaven.com/a/golden_gate_hills
+License: CC0
+
+GRASS ALPHA CARD — OPENGAMEART (CC0)
+Runtime file: assets/vegetation/grass/vegetation_grass_card_03.png
+Source: OpenGameArt — Grass Blades Alpha Card Texture (Side View)
+Original URL: https://opengameart.org/content/grass-blades-alpha-card-texture-side-view
+License: CC0
+
+TREES — PIZZA DOGGY RETRO TREE PACK
+Runtime directory: assets/vegetation/trees/
+Source: Pizza Doggy — Retro Tree Pack v1.0
+Original URL: https://pizzadoggy.itch.io/retro-tree-pack
+Status shown on official page: Royalty Free
+Author credit: Pizza Doggy
+Technical notes from the official page: point/nearest filtering and double-sided foliage.
+See: assets/vegetation/trees/LICENSE_RETRO_TREE_PACK.txt
+
+IMPORTANT: the supplied tree archive did not contain a standalone publisher license
+file. The local notice records the official page status and provenance; it must not
+be presented as a replacement for a more detailed publisher license. If the original
+download contains a license file elsewhere, add it unchanged beside the notice.

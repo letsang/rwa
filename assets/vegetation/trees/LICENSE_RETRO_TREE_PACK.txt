@@ -1,0 +1,28 @@
+RETRO TREE PACK — SOURCE AND LICENSE NOTICE
+===========================================
+
+Asset: Retro Tree Pack v1.0
+Author: Pizza Doggy
+Official page: https://pizzadoggy.itch.io/retro-tree-pack
+Page verified: 2026-08-19
+
+The official itch.io page labels the pack "Royalty Free". It states compatibility
+with common engines and recommends nearest filtering plus double-sided rendering.
+In a public reply on the same page, the author indicates that project-page credit
+is optional.
+
+The files supplied to this workspace did not include a separate license text.
+This notice preserves the available provenance and public usage designation; it
+does not invent or replace publisher terms. If a standalone license was included
+with another copy of the original archive, keep that original file unchanged in
+this directory.
+
+Runtime files derived from the supplied pack:
+- tree_rt_1.glb
+- tree_rt_2.glb
+- tree_rt_2_1.glb
+- tree_rt_3.glb
+- tree_rt_4.glb
+- dead_tree_rt_1.glb
+- dead_tree_rt_2.glb
+- small_tree_rt_1.glb

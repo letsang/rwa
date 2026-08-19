@@ -1,5 +1,5 @@
 /* ============================================================
-   environment.js — Sky / Fog / Lighting + palette RWA (V0.4.6e)
+   environment.js — Sky HDRI / Fog / Lighting + palette RWA (V0.4.7)
 
    Couche ATMOSPHÈRE. LECTURE SEULE du monde ; ne touche ni la géographie
    ni le gameplay. Fournit une CONFIG PARTAGÉE (RWA_ENV) que le shader de
@@ -54,8 +54,9 @@ class Environment {
     this.sun.specular = new BABYLON.Color3(0.05, 0.05, 0.05);
     this.sun.intensity = 1.0;
 
-    // --- SKY : grand dôme à gradient (couvert, froid). Pas de skybox photo. ---
+    // --- SKY : gradient de secours, remplacé par le HDRI CC0 après chargement. ---
     this._buildSkyDome();
+    this._buildHDRISky();
 
     // --- IMAGE PROCESSING : finition légère (pas pour cacher un mauvais matériau) ---
     const ip = scene.imageProcessingConfiguration;
@@ -170,6 +171,34 @@ class Environment {
     m.specularColor = new BABYLON.Color3(0, 0, 0);
     dome.material = m;
     this.skyDome = dome;
+  }
+
+  _buildHDRISky() {
+    if (!BABYLON.HDRCubeTexture) return;
+    const scene = this.scene;
+    const hdri = new BABYLON.HDRCubeTexture('./assets/environment/golden_gate_hills_1k.hdr', scene, 256, false, true, false, true);
+    hdri.name = 'rwaGoldenGateHillsHDR';
+    scene.environmentTexture = hdri;
+    scene.environmentIntensity = 0.62;
+
+    const sky = BABYLON.MeshBuilder.CreateBox('rwaHDRSky', { size: 9000 }, scene);
+    sky.infiniteDistance = true; sky.isPickable = false; sky.applyFog = false;
+    const skyTex = hdri.clone();
+    skyTex.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyTex.level = 0.82;
+    const mat = new BABYLON.StandardMaterial('rwaHDRSkyMat', scene);
+    mat.backFaceCulling = false; mat.disableLighting = true;
+    mat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    mat.specularColor = new BABYLON.Color3(0, 0, 0);
+    mat.reflectionTexture = skyTex;
+    sky.material = mat; sky.setEnabled(false);
+
+    // Le dôme froid reste visible pendant le chargement et sert de fallback offline.
+    hdri.onLoadObservable.addOnce(() => {
+      sky.setEnabled(true);
+      if (this.skyDome) this.skyDome.setEnabled(false);
+    });
+    this.hdri = hdri; this.hdriSky = sky;
   }
 }
 
