@@ -371,3 +371,20 @@ chargement.
 - conserver la génération, les biomes et le LOD existants ;
 - garder DynamicTerrain / Ring LOD en roadmap uniquement jusqu'à ce qu'un besoin
   mesuré justifie un prototype.
+
+## Visual Tuning Panel V1
+
+- ajout de `js/visualtuning.js`, outil DEV indépendant ouvrable avec `F8` ;
+- quinze contrôles live réellement reliés au fog linéaire, au color grading, aux
+  lumières existantes, à l'environnement HDRI, à l'ombre blob et au post-process ;
+- synchronisation du fog et de l'éclairage du shader terrain par uniforms, sans
+  recalcul de géométrie, biome, route, rivière, données de chunk ou végétation ;
+- presets `CURRENT`, `NEUTRAL`, `FOGGY`, `OVERCAST`, `DARK`, sauvegarde locale
+  nommée, export JSON par presse-papiers et reset exact de la baseline ;
+- pipeline Sharpen/Grain unique créé uniquement à la demande et supprimé au retour
+  à zéro ; aucun bloom ni polling régulier ;
+- absence volontaire des faux contrôles Fog Density, ShadowGenerator, terrain
+  brightness et vegetation sway, incompatibles avec les systèmes réellement actifs ;
+- ajout de tests Node sans dépendance pour les propriétés Babylon, les uniforms,
+  F8, les presets, SAVE, COPY et RESET ;
+- procédure complète consignée dans `VISUAL_TUNING.md`.

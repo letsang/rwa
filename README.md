@@ -2,6 +2,7 @@
 
 > Passation détaillée : [modifications depuis la dernière version de Claude](./CHANGES_SINCE_CLAUDE.md).
 > Sources et licences des assets : [assets/SOURCES.txt](./assets/SOURCES.txt).
+> Calibration visuelle live : [Visual Tuning Panel V1](./VISUAL_TUNING.md).
 
 Prototype MMOBA, rendu Babylon.js **offline**. V0.3.1 branche la **RWA Animation Library**
 (rig Manny partagé, retarget par nom de bone) dans le vrai jeu.

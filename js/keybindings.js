@@ -111,6 +111,9 @@ class RWAKeybindingManager {
     event.preventDefault();
     event.stopImmediatePropagation();
     if (event.code === 'Escape') { this.listeningAction = null; this.render(); return; }
+    // F8 reste réservé au Visual Tuning Panel DEV et ne peut pas devenir une
+    // commande de gameplay configurable.
+    if (event.code === 'F8') { this.listeningAction = null; this.render(); return; }
     const actionId = this.listeningAction;
     const oldCode = this.bindings[actionId];
     const conflict = this.actions.find(action => action.id !== actionId && this.matches(action.id, event.code));

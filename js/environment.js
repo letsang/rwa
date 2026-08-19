@@ -68,9 +68,120 @@ class Environment {
     ip.vignetteEnabled = true;
     ip.vignetteWeight = 2.2;
     ip.vignetteColor = new BABYLON.Color4(0.05, 0.06, 0.09, 0);
+    this._saturation = 1.0;
+    this._colorCurves = null;
+    this.pipeline = null;
 
     // --- LANDMARKS (V0.4.6f) : orientation + identité de royaume, déterministes ---
     this.buildLandmarks();
+  }
+
+  /* Pipeline unique partagé par le rendu et le Visual Tuning Panel.
+     Sharpen et Grain restent réellement désactivés tant que leur valeur vaut 0. */
+  _buildTuningPipeline() {
+    if (this.pipeline || !BABYLON.DefaultRenderingPipeline || !this.scene.activeCamera) return this.pipeline;
+    const p = new BABYLON.DefaultRenderingPipeline(
+      'rwaDefaultPipeline', false, this.scene, [this.scene.activeCamera], true);
+    p.fxaaEnabled = false;
+    p.bloomEnabled = false;
+    p.depthOfFieldEnabled = false;
+    p.chromaticAberrationEnabled = false;
+    p.glowLayerEnabled = false;
+    p.sharpenEnabled = false;
+    p.grainEnabled = false;
+    p.imageProcessingEnabled = true;
+    this.pipeline = p;
+    return p;
+  }
+
+  _hex(color) { return color.toHexString().slice(0, 7).toLowerCase(); }
+  _copyHex(target, hex) {
+    if (typeof hex !== 'string') return;
+    target.copyFrom(BABYLON.Color3.FromHexString(hex));
+  }
+
+  /* Valeurs visuelles effectivement utilisées par Babylon. Cette API ne connaît
+     ni la simulation ni la génération du monde. */
+  captureTuning() {
+    const scene = this.scene, ip = scene.imageProcessingConfiguration;
+    return {
+      fog: {
+        mode: 'linear',
+        start: scene.fogStart,
+        end: scene.fogEnd,
+        color: this._hex(scene.fogColor),
+      },
+      grading: {
+        saturation: this._saturation,
+        contrast: ip.contrast,
+        exposure: ip.exposure,
+      },
+      lighting: {
+        directionalIntensity: this.sun.intensity,
+        ambientIntensity: this.hemi.intensity,
+        directionalColor: this._hex(this.sun.diffuse),
+        ambientColor: this._hex(this.hemi.diffuse),
+        environmentIntensity: scene.environmentIntensity,
+      },
+      postProcess: {
+        sharpen: this.pipeline && this.pipeline.sharpenEnabled ? this.pipeline.sharpen.edgeAmount : 0,
+        vignette: ip.vignetteEnabled ? ip.vignetteWeight : 0,
+        grain: this.pipeline && this.pipeline.grainEnabled ? this.pipeline.grain.intensity / 50 : 0,
+      },
+    };
+  }
+
+  /* Application événementielle : appelée uniquement lorsqu'un contrôle change,
+     lors d'un preset ou d'un reset. Aucune allocation de light ni de pipeline. */
+  applyTuning(settings) {
+    const scene = this.scene, ip = scene.imageProcessingConfiguration;
+    const fog = settings.fog, grading = settings.grading;
+    const lighting = settings.lighting, post = settings.postProcess;
+
+    scene.fogStart = fog.start;
+    scene.fogEnd = fog.end;
+    this._copyHex(scene.fogColor, fog.color);
+
+    ip.contrast = grading.contrast;
+    ip.exposure = grading.exposure;
+    this._saturation = grading.saturation;
+    const saturationDelta = (grading.saturation - 1) * 100;
+    if (Math.abs(saturationDelta) < 0.001) {
+      ip.colorCurvesEnabled = false;
+    } else {
+      if (!this._colorCurves) this._colorCurves = new BABYLON.ColorCurves();
+      this._colorCurves.globalSaturation = saturationDelta;
+      ip.colorCurves = this._colorCurves;
+      ip.colorCurvesEnabled = true;
+    }
+
+    this.sun.intensity = lighting.directionalIntensity;
+    this.hemi.intensity = lighting.ambientIntensity;
+    this._copyHex(this.sun.diffuse, lighting.directionalColor);
+    this._copyHex(this.hemi.diffuse, lighting.ambientColor);
+    scene.environmentIntensity = lighting.environmentIntensity;
+
+    ip.vignetteEnabled = post.vignette > 0.001;
+    ip.vignetteWeight = post.vignette;
+    if ((post.sharpen > 0.001 || post.grain > 0.001) && !this.pipeline) this._buildTuningPipeline();
+    if (this.pipeline) {
+      const sharpenOn = post.sharpen > 0.001;
+      this.pipeline.sharpenEnabled = sharpenOn;
+      if (sharpenOn) {
+        this.pipeline.sharpen.edgeAmount = post.sharpen;
+        this.pipeline.sharpen.colorAmount = 1;
+      }
+      const grainOn = post.grain > 0.001;
+      this.pipeline.grainEnabled = grainOn;
+      if (grainOn) {
+        this.pipeline.grain.intensity = post.grain * 50;
+        this.pipeline.grain.animated = false;
+      }
+      if (!sharpenOn && !grainOn) {
+        this.pipeline.dispose();
+        this.pipeline = null;
+      }
+    }
   }
 
   _stoneMat(name, a) { const m = new BABYLON.StandardMaterial('lm_' + name, this.scene); m.diffuseColor = new BABYLON.Color3(a[0], a[1], a[2]); m.specularColor = new BABYLON.Color3(0.03, 0.03, 0.03); return m; }

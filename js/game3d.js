@@ -641,6 +641,10 @@ class Game3D {
     // Ombre de contact (blob) sous le joueur — grounding peu coûteux (V0.4.6.1).
     this._playerShadow = this._makeBlobShadow(scene, 4.2);
 
+    // Outil DEV indépendant : lit et pilote uniquement les objets visuels existants.
+    this.visualTuning = (typeof VisualTuningPanel !== 'undefined' && this.environment)
+      ? new VisualTuningPanel(this) : null;
+
     // Landmarks (objectifs) : DONNÉES du monde, en coords globales, indépendants des chunks.
     this.buildLandmarks();
 

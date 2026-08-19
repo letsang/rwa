@@ -402,3 +402,27 @@ continue d'utiliser `title-background2.png` pour l'accueil et
 - ajouter des tests automatisés d'entrée pour ciblage, Stick et key bindings ;
 - conserver DynamicTerrain/Ring LOD en roadmap jusqu'à apparition d'un besoin
   mesuré.
+
+## 14. Visual Tuning Panel V1
+
+Un outil DEV live indépendant a été ajouté dans `js/visualtuning.js`. Il est masqué
+par défaut et s'ouvre avec `F8` pendant une partie. Il capture la baseline visuelle
+réelle de la scène sous le preset `CURRENT`, puis applique les changements uniquement
+sur événement, sans boucle de polling.
+
+La V1 expose quinze paramètres : Fog Start/End/Color, Saturation, Contrast,
+Exposure, intensités et couleurs directionnelle/ambiante, Environment Intensity,
+opacité de l'ombre de contact, Sharpen, Vignette et Grain. `worldvisuals.js` reçoit
+uniquement les uniforms de fog et lumière nécessaires pour rester cohérent avec les
+matériaux Babylon ; aucune donnée canonique n'est recalculée.
+
+Les presets intégrés sont `CURRENT`, `NEUTRAL`, `FOGGY`, `OVERCAST` et `DARK`.
+Les presets nommés sont conservés localement, `COPY SETTINGS` exporte un JSON propre
+et `RESET CURRENT` restaure exactement la baseline. Le pipeline Sharpen/Grain est
+créé uniquement quand l'un de ces effets dépasse zéro, puis supprimé à leur
+désactivation.
+
+Fog Density n'est pas proposé car le fog est linéaire. Bias, normalBias et filtering
+ne sont pas proposés car aucun `ShadowGenerator` n'existe. Les réglages terrain par
+surface et le sway ne sont pas inventés en l'absence d'interfaces runtime réelles.
+La procédure et le mapping Babylon complet sont détaillés dans `VISUAL_TUNING.md`.

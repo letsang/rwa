@@ -133,6 +133,7 @@ uniform sampler2D grassTex; uniform sampler2D dirtTex; uniform sampler2D rockTex
 uniform sampler2D grassNormTex; uniform sampler2D dirtNormTex; uniform sampler2D rockNormTex; uniform sampler2D wetNormTex;
 uniform sampler2D grassRoughTex; uniform sampler2D dirtRoughTex; uniform sampler2D rockRoughTex; uniform sampler2D wetRoughTex;
 uniform vec3 sunDir; uniform vec3 sunColor; uniform vec3 ambUp; uniform vec3 ambDown;
+uniform float sunIntensity; uniform float ambIntensity;
 uniform vec3 fogColor; uniform vec2 fogRange; uniform vec3 camPos; uniform float uDebug; uniform float macroScale;
 // double-échelle : détail (uv) modulé par macro (uv*macroScale)
 vec3 sampAlb(sampler2D s, vec2 uv){
@@ -159,7 +160,7 @@ void main(void){
   float hemi = 0.5 + 0.5*N.y;
   vec3 amb = mix(ambDown, ambUp, hemi);
   // Budget lumineux borné : empêche ambiance + soleil de clipper les albedos clairs.
-  vec3 lit = albedo * (amb*0.68 + sunColor*ndl*0.58);
+  vec3 lit = albedo * (amb*0.68*ambIntensity + sunColor*ndl*0.58*sunIntensity);
   // Roughness PBR : contrôle conjoint de la largeur et de l'intensité spéculaire.
   float roughness = texture2D(grassRoughTex,uv).r*w.r + texture2D(dirtRoughTex,uv).r*w.g + texture2D(rockRoughTex,uv).r*w.b + texture2D(wetRoughTex,uv).r*w.a;
   vec3 V = normalize(camPos - vPosW);
@@ -182,7 +183,7 @@ void main(void){
     const E = RWA_ENV, scene = this.scene;
     const m = new BABYLON.ShaderMaterial('rwaTerrain', scene, { vertex: 'rwaTerrain', fragment: 'rwaTerrain' }, {
       attributes: ['position', 'normal', 'uv', 'color'],
-      uniforms: ['worldViewProjection', 'world', 'sunDir', 'sunColor', 'ambUp', 'ambDown', 'fogColor', 'fogRange', 'camPos', 'uDebug', 'macroScale'],
+      uniforms: ['worldViewProjection', 'world', 'sunDir', 'sunColor', 'ambUp', 'ambDown', 'sunIntensity', 'ambIntensity', 'fogColor', 'fogRange', 'camPos', 'uDebug', 'macroScale'],
       samplers: ['grassTex', 'dirtTex', 'rockTex', 'wetTex', 'grassNormTex', 'dirtNormTex', 'rockNormTex', 'wetNormTex', 'grassRoughTex', 'dirtRoughTex', 'rockRoughTex', 'wetRoughTex'],
     });
     m.setTexture('grassTex', this.texGrass); m.setTexture('dirtTex', this.texDirt); m.setTexture('rockTex', this.texRock); m.setTexture('wetTex', this.texWet);
@@ -190,10 +191,37 @@ void main(void){
     m.setTexture('grassRoughTex', this.roughGrass); m.setTexture('dirtRoughTex', this.roughDirt); m.setTexture('rockRoughTex', this.roughRock); m.setTexture('wetRoughTex', this.roughWet);
     m.setVector3('sunDir', new BABYLON.Vector3(E.sunDir[0], E.sunDir[1], E.sunDir[2]));
     m.setColor3('sunColor', this._col(E.sunColor)); m.setColor3('ambUp', this._col(E.ambUp)); m.setColor3('ambDown', this._col(E.ambDown));
+    m.setFloat('sunIntensity', 1); m.setFloat('ambIntensity', 1);
     m.setColor3('fogColor', this._col(E.fogColor)); m.setVector2('fogRange', new BABYLON.Vector2(E.fogStart, E.fogEnd));
     m.setVector3('camPos', new BABYLON.Vector3(0, 0, 0)); m.setFloat('uDebug', 0);
     m.setFloat('macroScale', WV_CONFIG.tileDetail / WV_CONFIG.tileMacro);
+    this._tuningBaseline = {
+      sunColor: E.sunColor.slice(), ambUp: E.ambUp.slice(), ambDown: E.ambDown.slice(),
+    };
     m.backFaceCulling = false; this.mat = m;
+  }
+
+  /* Synchronise uniquement les uniforms d'apparence avec Environment.
+     Aucun poids de biome, vertex, chunk ou donnée canonique n'est recalculé. */
+  applyVisualTuning(settings, baseline) {
+    if (!settings || !baseline || !this.mat) return;
+    const fog = settings.fog, light = settings.lighting;
+    const baseLight = baseline.lighting, B = this._tuningBaseline;
+    const sunColor = BABYLON.Color3.FromHexString(light.directionalColor);
+    const ambientColor = BABYLON.Color3.FromHexString(light.ambientColor);
+    const baseAmbient = BABYLON.Color3.FromHexString(baseLight.ambientColor);
+    const scale = [
+      ambientColor.r / Math.max(baseAmbient.r, 0.001),
+      ambientColor.g / Math.max(baseAmbient.g, 0.001),
+      ambientColor.b / Math.max(baseAmbient.b, 0.001),
+    ];
+    this.mat.setColor3('fogColor', BABYLON.Color3.FromHexString(fog.color));
+    this.mat.setVector2('fogRange', new BABYLON.Vector2(fog.start, fog.end));
+    this.mat.setColor3('sunColor', sunColor);
+    this.mat.setFloat('sunIntensity', light.directionalIntensity / Math.max(baseLight.directionalIntensity, 0.001));
+    this.mat.setColor3('ambUp', this._col(B.ambUp.map((v, i) => v * scale[i])));
+    this.mat.setColor3('ambDown', this._col(B.ambDown.map((v, i) => v * scale[i])));
+    this.mat.setFloat('ambIntensity', light.ambientIntensity / Math.max(baseLight.ambientIntensity, 0.001));
   }
 
   setDebug(v) { this.debug = v | 0; this.mat.setFloat('uDebug', this.debug); }

@@ -166,6 +166,26 @@ html, body {
 .loading-bar span { display: block; height: 100%; width: 38%; background: #c1a158; animation: loadingSweep 1.2s ease-in-out infinite; }
 @keyframes loadingSweep { from { transform: translateX(-105%); } to { transform: translateX(270%); } }
 
+/* ---------- VISUAL TUNING DEV (F8) ---------- */
+.visual-tuning-panel { position: fixed; z-index: 500; top: 12px; right: 12px; width: min(310px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow-y: auto; padding: 12px; border: 1px solid rgba(166,181,198,.3); background: rgba(8,12,17,.92); color: #d4d9df; box-shadow: 0 8px 28px rgba(0,0,0,.38); font: 12px 'Myriad Pro', sans-serif; pointer-events: auto; scrollbar-width: thin; }
+.visual-tuning-panel.vt-hidden { display: none; }
+.visual-tuning-panel header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; color: #eef2f5; letter-spacing: .12em; }
+.visual-tuning-panel header span { color: #8291a2; font-size: 10px; }
+.vt-preset-row select { width: 100%; height: 30px; border: 1px solid #485464; background: #10161e; color: #e1e6eb; font: 11px 'Myriad Pro'; }
+.vt-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 7px; }
+.vt-actions button { min-height: 32px; padding: 4px; border: 1px solid #465262; background: #141c25; color: #bec8d2; font: 600 9px 'Myriad Pro'; cursor: pointer; }
+.vt-actions button:hover { border-color: #8fa4bb; color: #fff; }
+.vt-status { min-height: 15px; margin: 7px 0 2px; color: #8fb5a0; font-size: 10px; line-height: 1.35; }
+.vt-status.error { color: #df8585; }
+.visual-tuning-panel details { border-top: 1px solid rgba(255,255,255,.09); }
+.visual-tuning-panel summary { padding: 8px 0 6px; color: #b9c6d3; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.vt-section-body { padding: 0 1px 7px; }
+.vt-section-body small { display: block; margin: 0 0 7px; color: #778493; font-size: 9px; line-height: 1.3; }
+.vt-control { display: grid; grid-template-columns: minmax(0, 1fr) 62px; align-items: center; gap: 3px 8px; margin: 7px 0; color: #c4cbd2; }
+.vt-control output { color: #91abc2; text-align: right; font-variant-numeric: tabular-nums; }
+.vt-control input { grid-column: 1 / -1; width: 100%; margin: 0; accent-color: #7795af; }
+.vt-control input[type='color'] { height: 24px; padding: 1px; border: 1px solid #465262; background: #10161e; cursor: pointer; }
+
 @media (max-width: 860px) {
   .character-screen { overflow-y: auto; }
   .character-shell { position: relative; height: auto; min-height: 100%; }
