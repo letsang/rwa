@@ -64,7 +64,9 @@ Les quatre polices fournies dans `C:\RWA\fonts-incoming` ont été copiées sous
 - Myriad Pro Semibold.
 
 Minion Pro est utilisée pour les titres et l'identité médiévale. Myriad Pro est
-utilisée pour l'interface, les boutons et les informations de jeu.
+utilisée pour l'interface, les boutons, les informations de jeu, le HUD de debug et
+l'ancien renderer Canvas. Aucune déclaration active ne demande encore Segoe UI,
+Consolas, Courier New ou une famille générique seule.
 
 ### 4. Nouveau système audio
 

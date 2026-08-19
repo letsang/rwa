@@ -25,7 +25,7 @@ html, body {
   width: 100%; height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Myriad Pro', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Myriad Pro';
   overflow: hidden;
   user-select: none;
 }
@@ -53,20 +53,20 @@ html, body {
 .title-vignette { position: absolute; inset: 0; box-shadow: inset 0 0 18vw 4vw rgba(0,0,0,.75); pointer-events: none; }
 .title-content { position: relative; text-align: center; margin-top: -4vh; filter: drop-shadow(0 4px 14px #000); }
 .title-kicker, .eyebrow { color: #c8ad72; font-size: 12px; letter-spacing: .32em; text-transform: uppercase; }
-.title-content h1 { font-family: 'Minion Pro', Georgia, serif; font-size: clamp(58px, 7.2vw, 112px); line-height: .72; letter-spacing: .055em; font-weight: 700; text-shadow: 0 2px 0 #15100a, 0 0 32px rgba(0,0,0,.9); }
+.title-content h1 { font-family: 'Minion Pro'; font-size: clamp(58px, 7.2vw, 112px); line-height: .72; letter-spacing: .055em; font-weight: 700; text-shadow: 0 2px 0 #15100a, 0 0 32px rgba(0,0,0,.9); }
 .title-content h1 span { font-size: .67em; letter-spacing: .19em; margin-left: .19em; color: #d4c3a0; }
 .title-rule { display: flex; align-items: center; gap: 12px; width: 240px; margin: 23px auto 5px; color: #9a793d; }
 .title-rule i { height: 1px; flex: 1; background: linear-gradient(90deg, transparent, #aa8a4a); }
 .title-rule i:last-child { transform: scaleX(-1); }
 .title-rule b { font-size: 10px; }
-.title-subtitle { font-family: 'Minion Pro', Georgia, serif; color: #bda77a; letter-spacing: .8em; margin-left: .8em; font-size: 14px; }
+.title-subtitle { font-family: 'Minion Pro'; color: #bda77a; letter-spacing: .8em; margin-left: .8em; font-size: 14px; }
 .title-actions { display: grid; gap: 10px; width: min(300px, 78vw); margin: 44px auto 0; }
 .build-mark { position: absolute; right: 22px; bottom: 16px; color: rgba(231,225,207,.55); font-size: 10px; letter-spacing: .16em; }
 
 .medieval-btn {
   min-height: 48px; padding: 12px 24px; cursor: pointer; color: #d9d1c0;
   border: 1px solid #7c6a47; background: linear-gradient(#272a2c, #121518);
-  font: 600 13px 'Myriad Pro', sans-serif; letter-spacing: .24em;
+  font: 600 13px 'Myriad Pro'; letter-spacing: .24em;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 5px 18px rgba(0,0,0,.5);
   transition: border-color .18s, color .18s, transform .18s, background .18s;
 }
@@ -78,8 +78,8 @@ html, body {
 .selection-screen { overflow: auto; background: #090d12; color: #e7e0d3; }
 .selection-screen::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 0, rgba(90,111,129,.22), transparent 53%); }
 .selection-header { position: absolute; z-index: 2; top: 5vh; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; width: 90%; text-shadow: 0 2px 8px #000; }
-.selection-header h2, .options-panel h2 { font: 700 clamp(28px, 3vw, 48px) 'Minion Pro', Georgia, serif; letter-spacing: .12em; margin: 8px 0 4px; }
-.selection-header > p:last-child { color: #a7a9aa; font-family: 'Minion Pro', Georgia, serif; font-size: 17px; }
+.selection-header h2, .options-panel h2 { font: 700 clamp(28px, 3vw, 48px) 'Minion Pro'; letter-spacing: .12em; margin: 8px 0 4px; }
+.selection-header > p:last-child { color: #a7a9aa; font-family: 'Minion Pro'; font-size: 17px; }
 .realm-split { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; }
 .realm-card { position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 0 3vw 10vh; cursor: pointer; overflow: hidden; border: 0; border-right: 1px solid rgba(225,211,178,.17); color: #eee7d8; background-color: #111; }
 .realm-card::before { content: ''; position: absolute; inset: -3%; background-image: url('./assets/ui/title-background.png'); background-size: auto 112%; filter: saturate(.62) brightness(.42); transition: transform .7s, filter .5s; }
@@ -90,8 +90,8 @@ html, body {
 .realm-card:hover::before { transform: scale(1.045); filter: saturate(.9) brightness(.62); }
 .realm-card:hover::after { opacity: .4; }
 .realm-card-content { position: relative; z-index: 1; text-align: center; max-width: 310px; }
-.realm-sigil { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 16px; border: 1px solid currentColor; border-radius: 50%; color: var(--realm-color); font: 700 25px 'Minion Pro', serif; box-shadow: 0 0 24px var(--realm-glow); }
-.realm-card h3 { font: 700 clamp(26px, 2.6vw, 42px) 'Minion Pro', Georgia, serif; letter-spacing: .12em; }
+.realm-sigil { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 16px; border: 1px solid currentColor; border-radius: 50%; color: var(--realm-color); font: 700 25px 'Minion Pro'; box-shadow: 0 0 24px var(--realm-glow); }
+.realm-card h3 { font: 700 clamp(26px, 2.6vw, 42px) 'Minion Pro'; letter-spacing: .12em; }
 .realm-card p { margin-top: 8px; color: #b4b2ad; line-height: 1.45; }
 .realm-card .realm-enter { display: block; margin-top: 20px; color: var(--realm-color); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; opacity: 0; transform: translateY(7px); transition: .25s; }
 .realm-card:hover .realm-enter { opacity: 1; transform: none; }
@@ -105,8 +105,8 @@ html, body {
 .selection-header.compact h2 { font-size: clamp(30px, 3vw, 44px); }
 .creation-step { position: relative; padding: 19px 0 10px; border-top: 1px solid rgba(190,170,124,.2); }
 .step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 13px; }
-.step-heading > span { color: #8f743d; font: 700 28px 'Minion Pro', serif; }
-.step-heading h3 { font: 700 20px 'Minion Pro', serif; letter-spacing: .06em; text-transform: uppercase; }
+.step-heading > span { color: #8f743d; font: 700 28px 'Minion Pro'; }
+.step-heading h3 { font: 700 20px 'Minion Pro'; letter-spacing: .06em; text-transform: uppercase; }
 .step-heading p { color: #858a91; font-size: 12px; margin-top: 2px; }
 .choice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .race-grid { grid-template-columns: repeat(3, 1fr); }
@@ -142,7 +142,7 @@ html, body {
 .options-panel .medieval-btn { width: 100%; margin-top: 14px; }
 .modal-close { position: absolute; top: 10px; right: 14px; border: 0; background: transparent; color: #aaa; font-size: 27px; cursor: pointer; }
 .loading-screen { z-index: 250; flex-direction: column; background: radial-gradient(circle at center, #202731, #07090c 62%); color: #d9cfba; }
-.loading-screen h2 { font: 700 30px 'Minion Pro', serif; letter-spacing: .18em; margin: 16px 0 20px; }
+.loading-screen h2 { font: 700 30px 'Minion Pro'; letter-spacing: .18em; margin: 16px 0 20px; }
 .loading-screen p { color: #858b91; letter-spacing: .08em; }
 .loading-sigil { color: #c4a45f; font-size: 32px; animation: sigilPulse 1.3s ease-in-out infinite; }
 .loading-bar { width: min(380px, 70vw); height: 2px; background: #272c32; margin-bottom: 13px; overflow: hidden; }

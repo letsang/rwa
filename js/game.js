@@ -384,9 +384,9 @@ class Game {
     }
 
     // label
-    ctx.fillStyle = '#e8ecf4'; ctx.font = 'bold 13px Segoe UI'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#e8ecf4'; ctx.font = 'bold 13px "Myriad Pro"'; ctx.textAlign = 'center';
     ctx.fillText((t.base ? '★ ' : '') + t.name, t.x, t.y - R - 8);
-    ctx.font = '11px Segoe UI';
+    ctx.font = '11px "Myriad Pro"';
     ctx.fillStyle = '#c8d2e6';
     ctx.fillText(t.owner ? FACTIONS[t.owner].short : 'NEUTRE', t.x, t.y + 4);
   }
@@ -413,7 +413,7 @@ class Game {
 
     // icône de classe
     ctx.globalAlpha = 1;
-    ctx.font = '16px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '16px "Myriad Pro"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(e.def.icon, e.x, e.y);
 
     // anneau CC
@@ -451,12 +451,12 @@ class Game {
 
     // nom (joueur / cible)
     if (e === this.player || e === this.player.target) {
-      ctx.fillStyle = '#fff'; ctx.font = '10px Segoe UI';
+      ctx.fillStyle = '#fff'; ctx.font = '10px "Myriad Pro"';
       ctx.fillText(e.def.name, e.x, by - (e.casting ? 14 : 8));
     }
 
     // textes flottants
-    ctx.font = 'bold 13px Segoe UI';
+    ctx.font = 'bold 13px "Myriad Pro"';
     for (const f of e.floats) {
       ctx.globalAlpha = Math.max(0, f.life);
       ctx.fillStyle = f.color;
