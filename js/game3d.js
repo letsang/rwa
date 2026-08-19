@@ -124,32 +124,100 @@ class Game3D {
       EAST:   { name: 'Royaume de l’Est', sigil: 'E', color: '#e27a6f', glow: 'rgba(180,53,45,.58)', lore: 'Terres de braise, magie interdite et légions nées sous le soleil rouge.' },
     };
     const racePresentation = {
-      HUMAN: 'Peuple de cités et de forteresses, les Humains se dressent avec discipline face aux guerres des royaumes.',
-      ELF: 'Anciens habitants des forêts occidentales, les Elfes cultivent une tradition de grâce, de mémoire et de magie.',
-      GOBLIN: 'Ingénieux et imprévisibles, les Gobelins survivent par leur ruse et leur parfaite connaissance des terres sauvages.',
-      TROLL: 'Nés des hautes terres du Nord, les Trolls portent dans leur stature la rudesse de la pierre et des vents glacés.',
-      DWARF: 'Forgerons et bâtisseurs opiniâtres, les Nains défendent leurs serments avec une ténacité que peu peuvent égaler.',
-      DRAKE: 'Marqués par un héritage ancien, les Drakes unissent une silhouette singulière à la fierté des clans du Nord.',
-      OGRE: 'Massifs et redoutables, les Ogres de l’Est avancent avec l’assurance de ceux que peu d’adversaires osent arrêter.',
-      DARK_ELF: 'Les Elfes Noirs manient les secrets et les traditions occultes d’un peuple façonné par les terres de l’Est.',
-      ORC: 'Guerriers endurcis par des générations de conflits, les Orcs placent la force du clan au-dessus de toute chose.',
+      HUMAN: [
+        'Héritiers du royaume d’Arthur, les Humains de l’Ouest défendent encore l’idéal de Camelot malgré la mort du Haut Roi et la guerre des trois royaumes. Chevaliers, gens d’armes et érudits perpétuent une civilisation fondée sur le devoir, la loi et les forteresses d’Albion.',
+        'Leur polyvalence reflète celle des peuples humains d’Albion, des robustes Britons aux savants Avaloniens. Ils excellent lorsqu’une troupe coordonnée protège ses lignes et avance avec la discipline des anciennes armées de Camelot.',
+      ],
+      ELF: [
+        'Les Elfes sont liés à Hibernia, au Voile et aux royaumes de l’Autre Monde. Après s’être retirés loin des terres mortelles, ils revinrent soutenir les peuples d’Hibernia dans leur lutte contre Albion et Midgard.',
+        'Leur ancienne magie et leur précision rappellent les voies de l’Eldritch, de l’Enchanteur et du Ranger. Ils préfèrent contrôler la distance, dissimuler leurs intentions et frapper au moment choisi plutôt que subir un combat frontal.',
+      ],
+      GOBLIN: [
+        'Longtemps dispersés dans les collines, les cavernes et les frontières des trois royaumes, les Gobelins n’ont jamais possédé la puissance d’Albion, de Midgard ou d’Hibernia. Les clans de l’Ouest ont survécu en observant leurs guerres et en récupérant ce que les grandes armées abandonnaient.',
+        'Cette adaptation jouable conserve leur image de créatures rusées des terres de Camelot. Pièges, magie opportuniste et embuscades leur permettent de vaincre par l’imprévu plutôt que par la force ouverte.',
+      ],
+      TROLL: [
+        'Les Trolls sont l’un des peuples emblématiques de Midgard, royaume des sagas nordiques et des dieux anciens. Leur peau minérale et leur stature colossale semblent avoir été taillées dans les montagnes qui entourent leurs terres.',
+        'Ils privilégient la force et l’endurance, suivant les voies martiales accordées aux défenseurs du Nord. Qu’ils tiennent une ligne ou brisent un rempart, leur présence incarne la brutalité des armées de Midgard.',
+      ],
+      DWARF: [
+        'Les Nains de Midgard sont forgerons, bâtisseurs et gardiens de serments. Sous le regard du panthéon nordique, ils défendent leurs foyers avec la même obstination que les guerriers défendent les portes de Jordheim.',
+        'Résistants et méthodiques, ils sont naturellement adaptés aux voies de soutien et aux combats d’usure. Ils avancent sans hâte, mais deviennent extrêmement difficiles à arrêter une fois engagés.',
+      ],
+      DRAKE: [
+        'Les Drakes constituent une lignée propre à Realm Warfare Arena, inspirée des dragons et des créatures draconiques qui hantent les terres de Dark Age of Camelot. Les clans du Nord voient leurs écailles comme la marque d’un antique pacte conclu dans les montagnes de Midgard.',
+        'Cette adaptation ne remplace aucune race jouable historique de DAoC. Fiers et combatifs, les Drakes combinent instinct, mobilité et résistance pour prendre l’initiative au cœur du combat.',
+      ],
+      OGRE: [
+        'Les Ogres de l’Est sont une adaptation des Half-Ogres connus en Albion depuis les guerres souterraines. Leurs ancêtres quittèrent les armées humaines pour former leurs propres clans, emportant avec eux une culture où la loyauté se prouve par les actes.',
+        'Leur puissance physique leur permet d’encaisser les chocs et d’ouvrir des passages dans les formations ennemies. Ils conservent la force légendaire des Half-Ogres tout en servant désormais leur propre royaume.',
+      ],
+      DARK_ELF: [
+        'Les Elfes Noirs trouvent leur origine dans les récits des profondeurs d’Hibernia et de l’Autre Monde, où des lignées elfiques furent séparées de leurs anciens royaumes. Leur exil a fait du secret et de la magie des instruments de survie.',
+        'Leur maîtrise des arts occultes et de l’infiltration rappelle les traditions des Shar et des Nightshades. Ils affaiblissent, isolent puis éliminent leurs ennemis avec une patience rarement laissée au hasard.',
+      ],
+      ORC: [
+        'Les Orcs de l’Est revendiquent l’héritage de l’ancienne civilisation half-orc découverte dans les réseaux souterrains reliant Albion, Midgard et Hibernia. Les survivants ont transformé des siècles de persécution en une identité guerrière farouche.',
+        'Ils placent la survie et l’honneur du clan au-dessus de toute ambition personnelle. Leur force collective se révèle pleinement lorsqu’ils avancent ensemble contre les forteresses des royaumes de la surface.',
+      ],
+    };
+    const classPresentation = {
+      GUARDIAN: [
+        'Le Gardien réunit l’héritage des Armsmen d’Albion, des Heroes d’Hibernia et des Warriors de Midgard. Comme ces défenseurs lourds de DAoC, il porte l’armure, maîtrise le bouclier et tient la ligne lorsque les mages et soigneurs sont menacés.',
+        'Il contrôle l’espace proche par ses interruptions et ses protections. Sa réussite dépend moins des dégâts infligés que de sa capacité à garder un allié et à empêcher l’ennemi de traverser le front.',
+      ],
+      BERSERKER: [
+        'Le Berserker appartient à la tradition de Midgard. Armé selon l’art de la Left Axe, il recherche les flancs et le dos de sa cible avant de libérer la fureur animale associée à sa forme de Vendo.',
+        'Sa frénésie augmente brutalement son potentiel offensif au prix de sa défense. Fidèle à son archétype DAoC, il doit choisir précisément son engagement sous peine de rester vulnérable au cœur des lignes ennemies.',
+      ],
+      SORCERER: [
+        'Le Sorcier suit les traditions magiques d’Albion et les voies de l’Esprit, du Corps et de la Matière. Il domine le rythme d’un affrontement par la domination mentale, les affaiblissements et le contrôle de plusieurs ennemis.',
+        'Fragile lorsqu’il est rejoint, il doit anticiper les déplacements et préserver ses distances. Comme dans DAoC, son influence vient d’un contrôle lancé au bon moment autant que de ses dégâts ou de ses créatures charmées.',
+      ],
+      MAGE: [
+        'Le Mage conserve l’héritage des maîtres des runes de Midgard. Il grave les Runes des Ténèbres, de Suppression et de Destruction afin de projeter ses sorts sur de longues distances.',
+        'Chaque incantation menée à son terme renforce ici ses runes, tandis que les interruptions dissipent cet avantage. Protégé par ses alliés, il remplit le rôle d’artillerie runique associé aux anciennes traditions de DAoC.',
+      ],
+      CLERIC: [
+        'Le Clerc appartient à la tradition religieuse d’Albion. Ses voies de Rejuvenation, d’Enhancement et de Smiting en font à la fois le principal guérisseur du royaume, un protecteur et un porteur de colère sacrée.',
+        'Sa réserve de mana impose des choix constants entre urgence et efficacité. Comme dans DAoC, un Clerc bien protégé prolonge les combats par ses soins et ses bénédictions, mais devient une cible prioritaire dès qu’il est isolé.',
+      ],
+      SKALD: [
+        'Le Skald est le poète-guerrier de Midgard. Ses Battlesongs exaltent ses compagnons, accélèrent leur marche et portent jusque sur les frontières les récits des dieux et des héros nordiques.',
+        'À courte portée, ses cris et ses armes interrompent les adversaires. Fidèle à son rôle DAoC, il décide du rythme du groupe : poursuite, engagement soudain ou retraite avant que l’ennemi ne referme son piège.',
+      ],
+      RANGER: [
+        'Le Ranger est l’archer furtif d’Hibernia, lié aux traditions de la forêt et aux voies de Pathfinding. Il observe les frontières depuis la distance et frappe les cibles vulnérables avant qu’elles ne puissent réagir.',
+        'Il alterne tir à l’arc, furtivité et combat rapproché inspiré du Celtic Dual. Sa vitesse et ses renforcements personnels lui permettent de choisir ses affrontements, mais l’isolement reste dangereux.',
+      ],
+      ROGUE: [
+        'Le Rogue rassemble les traditions furtives des Infiltrators d’Albion, des Nightshades d’Hibernia et des Shadowblades de Midgard. Il approche sans être vu, choisit une cible isolée et exploite les styles de Critical Strike.',
+        'Poisons, esquive et disparition traduisent ici les outils propres aux assassins des trois royaumes. Cette voie récompense la patience et la connaissance du terrain, mais pardonne peu une attaque révélée trop tôt.',
+      ],
     };
     // Flux dicté par la matrice : ROYAUME -> RACE -> CLASSE.
     let cf = null, cr = null, cc = null;
     const check = () => startBtn.disabled = !(cf && cr && cc);
+    const renderParagraphs = (element, paragraphs) => {
+      element.replaceChildren(...paragraphs.map(text => {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = text;
+        return paragraph;
+      }));
+    };
     const showRaceDetails = rid => {
       const R = RACES[rid];
       raceTitle.textContent = R ? R.name : 'Race';
-      raceDescription.textContent = racePresentation[rid] || 'Peuple du royaume.';
+      renderParagraphs(raceDescription, racePresentation[rid] || ['Peuple du royaume.', 'Choisis une race pour en apprendre davantage.']);
     };
     const clearClassDetails = () => {
       classTitle.textContent = 'Classe';
-      classDescription.textContent = 'Choisis la voie de ton champion.';
+      renderParagraphs(classDescription, ['Choisis la voie de ton champion.', 'Chaque classe possède un rôle et un rythme de combat distincts.']);
     };
     const showClassDetails = cid => {
       const C = CLASSES[cid];
       classTitle.textContent = C ? C.name : 'Classe';
-      classDescription.textContent = C ? 'Rôle de combat : ' + C.role + '.' : 'Choisis la voie de ton champion.';
+      renderParagraphs(classDescription, classPresentation[cid] || ['Choisis la voie de ton champion.', 'Chaque classe possède un rôle distinct.']);
     };
 
     // ---- Étape 3 : classes autorisées pour la race choisie ----

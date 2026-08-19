@@ -85,6 +85,13 @@ premières cellules ; les autres emplacements restent vides.
 Le composant spécifique `race-select/race-grid` a finalement été supprimé. La
 section Race réutilise exactement la structure CSS de `class-select`, avec un
 identifiant distinct uniquement pour préserver un DOM valide et le câblage JavaScript.
+Le panneau de gauche contient désormais deux paragraphes dédiés pour chacune des
+neuf races et chacune des huit classes. Les descriptions de classe correspondent à
+leurs mécaniques réelles de combat et sont remplacées à chaque nouvelle sélection.
+Les textes s'appuient sur les pages officielles DAoC `Three Realms`, `Classes &
+Races` et `Class Library`. Les peuples ajoutés par RWA sont explicitement traités
+comme des adaptations afin de ne pas les présenter comme des races jouables
+historiques de DAoC.
 
 ### Répartition canonique actuelle
 

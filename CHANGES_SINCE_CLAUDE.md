@@ -293,6 +293,11 @@ caméra, de contrôle territorial et de simulation reste active.
 - suppression du composant spécifique `race-select/race-grid` ; la section Race
   utilise désormais une copie structurelle de `class-select`, avec les mêmes
   classes CSS `choice-grid class-grid large` et un identifiant technique distinct ;
+- ajout de deux paragraphes de présentation distincts pour chacune des neuf races
+  et des huit classes, affichés dynamiquement dans le panneau de description ;
+- révision de ces textes selon les références officielles DAoC sur les trois
+  royaumes, leurs races et leurs voies de classe ; les races propres à RWA sont
+  présentées comme des adaptations plutôt que comme des races jouables historiques ;
 - classe d'artillerie renommée intégralement `MAGE` dans les données, matrices de
   races, IA, combat, entités et rendu visuel ;
 - nouvelles couleurs des noms de plaque : alliés gris-bleu clair, ennemis rouges
