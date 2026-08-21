@@ -129,7 +129,7 @@ class Game {
       const p = this.player;
       const map = {
         '1': p.def.skills[0], '2': p.def.skills[1], '3': p.def.skills[2], '4': p.def.skills[3],
-        'r': p.def.realm, 'q': UNIVERSAL_SKILLS.sprint, 'e': UNIVERSAL_SKILLS.purge,
+        'r': p.def.realm, 'q': UNIVERSAL_SKILLS.sprint,
       };
       const skill = map[k];
       if (skill) { e.preventDefault(); this.castPlayerSkill(skill); }

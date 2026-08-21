@@ -6,7 +6,8 @@
 
    V0.4.7 — matériaux PBR CC0 à hauteur de personnage :
    - 4 surfaces Poly Haven (grass/dirt/rock/mud), chacune albedo+normal+roughness.
-   - Densité de texel : tuile de détail fine + tuile macro (anti-tiling).
+   - Densité de texel fine + anti-tiling stochastique par seconde projection
+     tournée/décalée (sans réutiliser l'albedo comme bruit macro).
    - Blending riche : pente/altitude/humidité/biome + macro-noise (poches de dirt
      naturelles dans le grass, rock progressif sur les pentes).
    - Routes cassées : gravier, plaques d'herbe, ornières, bords bruités (plus de bande).
@@ -17,8 +18,8 @@
 const WV_CONFIG = {
   altLow: -12, altHigh: 150,
   moistFreq: 0.00013,
-  tileDetail: 105,             // 1 répétition détail = 105 u sim (~8.4 rendu) -> net au sol
-  tileMacro: 1150,             // modulation macro (anti-tiling)
+  tileDetail: 88,              // compromis lisibilité / moiré ; l'anti-tiling casse la répétition
+  antiTileScale: 0.035,        // fréquence du fondu stochastique en coordonnées rendu
   rockSlopeA: 10, rockSlopeB: 20, rockSlopeC: 36, rockAltA: 0.62, rockAltB: 0.88,
   wetRiverR: 2100,
   roadVisW0: 140, roadVisW1: 860,
@@ -134,24 +135,46 @@ uniform sampler2D grassNormTex; uniform sampler2D dirtNormTex; uniform sampler2D
 uniform sampler2D grassRoughTex; uniform sampler2D dirtRoughTex; uniform sampler2D rockRoughTex; uniform sampler2D wetRoughTex;
 uniform vec3 sunDir; uniform vec3 sunColor; uniform vec3 ambUp; uniform vec3 ambDown;
 uniform float sunIntensity; uniform float ambIntensity;
-uniform vec3 fogColor; uniform vec2 fogRange; uniform vec3 camPos; uniform float uDebug; uniform float macroScale;
-// double-échelle : détail (uv) modulé par macro (uv*macroScale)
-vec3 sampAlb(sampler2D s, vec2 uv){
-  vec3 det = texture2D(s, uv).rgb;
-  float m = texture2D(s, uv*macroScale).r;         // grande variation
-  return det * mix(0.78, 1.06, m);
+uniform vec3 fogColor; uniform vec2 fogRange; uniform vec3 camPos; uniform float uDebug; uniform float antiTileScale;
+float antiHash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
+float antiNoise(vec2 p){
+  vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+  return mix(mix(antiHash(i),antiHash(i+vec2(1.0,0.0)),f.x),mix(antiHash(i+vec2(0.0,1.0)),antiHash(i+vec2(1.0,1.0)),f.x),f.y);
+}
+vec2 antiUV(vec2 uv, vec2 offset){
+  // Rotation de 37°, échelle non harmonique et décalage : les détails ne se superposent plus.
+  return vec2(0.7986*uv.x-0.6018*uv.y,0.6018*uv.x+0.7986*uv.y)*0.83+offset;
+}
+vec3 sampAlb(sampler2D s, vec2 uv, vec2 uvB, float blend){
+  vec3 a=texture2D(s,uv).rgb, b=texture2D(s,uvB).rgb;
+  return mix(a,b,blend);
 }
 vec3 unpackNormal(sampler2D s, vec2 uv){ return texture2D(s, uv).rgb*2.0-1.0; }
+vec3 sampNormal(sampler2D s, vec2 uv, vec2 uvB, float blend){
+  vec3 a=unpackNormal(s,uv), b=unpackNormal(s,uvB);
+  // La seconde projection est tournée : ramener ses axes tangentiels dans ceux du monde.
+  b.xy=vec2(0.7986*b.x+0.6018*b.y,-0.6018*b.x+0.7986*b.y);
+  return normalize(mix(a,b,blend));
+}
+float sampRough(sampler2D s, vec2 uv, vec2 uvB, float blend){
+  return mix(texture2D(s,uv).r,texture2D(s,uvB).r,blend);
+}
 void main(void){
   vec4 w = vW; float s = max(w.r+w.g+w.b+w.a, 0.0001); w /= s;
-  vec2 uv = vUV;
-  vec3 albedo = sampAlb(grassTex,uv)*w.r + sampAlb(dirtTex,uv)*w.g + sampAlb(rockTex,uv)*w.b + sampAlb(wetTex,uv)*w.a;
-  // variation couleur micro
-  float cv = 0.86 + 0.12 * texture2D(dirtTex, vPosW.xz*0.02).g;
+  vec2 uv=vUV;
+  vec2 grassUVB=antiUV(uv,vec2(17.17,9.23));
+  vec2 dirtUVB =antiUV(uv,vec2(31.41,4.73));
+  vec2 rockUVB =antiUV(uv,vec2(7.61,26.89));
+  vec2 wetUVB  =antiUV(uv,vec2(23.53,19.37));
+  float antiBlend = smoothstep(0.22,0.78,antiNoise(vPosW.xz*antiTileScale));
+  vec3 albedo = sampAlb(grassTex,uv,grassUVB,antiBlend)*w.r + sampAlb(dirtTex,uv,dirtUVB,antiBlend)*w.g + sampAlb(rockTex,uv,rockUVB,antiBlend)*w.b + sampAlb(wetTex,uv,wetUVB,antiBlend)*w.a;
+  // Variation de couleur indépendante des textures : aucune grande copie de dirt visible.
+  float cv = 0.88 + 0.12 * antiNoise(vPosW.xz*0.018+vec2(13.7,4.1));
   albedo *= cv;
   // Normales PBR mélangées avec les mêmes poids que l'albedo.
-  vec3 nrm = normalize(unpackNormal(grassNormTex,uv)*w.r + unpackNormal(dirtNormTex,uv)*w.g + unpackNormal(rockNormTex,uv)*w.b + unpackNormal(wetNormTex,uv)*w.a);
-  float nStrength = 0.26 + 0.32*w.b;               // relief lisible sans bruit blanc
+  vec3 nrm = normalize(sampNormal(grassNormTex,uv,grassUVB,antiBlend)*w.r + sampNormal(dirtNormTex,uv,dirtUVB,antiBlend)*w.g + sampNormal(rockNormTex,uv,rockUVB,antiBlend)*w.b + sampNormal(wetNormTex,uv,wetUVB,antiBlend)*w.a);
+  float normalFade = mix(1.0,0.42,smoothstep(28.0,95.0,distance(vPosW,camPos)));
+  float nStrength = (0.20 + 0.26*w.b)*normalFade;  // détail proche, sans moiré au loin
   vec3 Ng = normalize(vNormalW);
   vec3 N = normalize(Ng + vec3(1.0,0.0,0.0)*nrm.x*nStrength + vec3(0.0,0.0,1.0)*nrm.y*nStrength);
   // éclairage
@@ -162,7 +185,7 @@ void main(void){
   // Budget lumineux borné : empêche ambiance + soleil de clipper les albedos clairs.
   vec3 lit = albedo * (amb*0.68*ambIntensity + sunColor*ndl*0.58*sunIntensity);
   // Roughness PBR : contrôle conjoint de la largeur et de l'intensité spéculaire.
-  float roughness = texture2D(grassRoughTex,uv).r*w.r + texture2D(dirtRoughTex,uv).r*w.g + texture2D(rockRoughTex,uv).r*w.b + texture2D(wetRoughTex,uv).r*w.a;
+  float roughness = sampRough(grassRoughTex,uv,grassUVB,antiBlend)*w.r + sampRough(dirtRoughTex,uv,dirtUVB,antiBlend)*w.g + sampRough(rockRoughTex,uv,rockUVB,antiBlend)*w.b + sampRough(wetRoughTex,uv,wetUVB,antiBlend)*w.a;
   vec3 V = normalize(camPos - vPosW);
   vec3 Hh = normalize(Ld + V);
   float specPower = mix(72.0, 9.0, roughness);
@@ -183,7 +206,7 @@ void main(void){
     const E = RWA_ENV, scene = this.scene;
     const m = new BABYLON.ShaderMaterial('rwaTerrain', scene, { vertex: 'rwaTerrain', fragment: 'rwaTerrain' }, {
       attributes: ['position', 'normal', 'uv', 'color'],
-      uniforms: ['worldViewProjection', 'world', 'sunDir', 'sunColor', 'ambUp', 'ambDown', 'sunIntensity', 'ambIntensity', 'fogColor', 'fogRange', 'camPos', 'uDebug', 'macroScale'],
+      uniforms: ['worldViewProjection', 'world', 'sunDir', 'sunColor', 'ambUp', 'ambDown', 'sunIntensity', 'ambIntensity', 'fogColor', 'fogRange', 'camPos', 'uDebug', 'antiTileScale'],
       samplers: ['grassTex', 'dirtTex', 'rockTex', 'wetTex', 'grassNormTex', 'dirtNormTex', 'rockNormTex', 'wetNormTex', 'grassRoughTex', 'dirtRoughTex', 'rockRoughTex', 'wetRoughTex'],
     });
     m.setTexture('grassTex', this.texGrass); m.setTexture('dirtTex', this.texDirt); m.setTexture('rockTex', this.texRock); m.setTexture('wetTex', this.texWet);
@@ -194,7 +217,7 @@ void main(void){
     m.setFloat('sunIntensity', E.terrainSunIntensity); m.setFloat('ambIntensity', E.terrainAmbientIntensity);
     m.setColor3('fogColor', this._col(E.fogColor)); m.setVector2('fogRange', new BABYLON.Vector2(E.fogStart, E.fogEnd));
     m.setVector3('camPos', new BABYLON.Vector3(0, 0, 0)); m.setFloat('uDebug', 0);
-    m.setFloat('macroScale', WV_CONFIG.tileDetail / WV_CONFIG.tileMacro);
+    m.setFloat('antiTileScale', WV_CONFIG.antiTileScale);
     this._tuningBaseline = {
       sunColor: E.sunColor.slice(), ambUp: E.ambUp.slice(), ambDown: E.ambDown.slice(),
       sunIntensity: E.terrainSunIntensity, ambIntensity: E.terrainAmbientIntensity,

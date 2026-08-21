@@ -31,6 +31,7 @@ class RWAudioManager {
     this.lastFort = '';
     this._nearObjective = null;
     this._lastFortAt = 0;
+    this._combatContext = null;
     this.settings = this.loadSettings();
     this.applyVolumes();
     this.bindOptions();
@@ -134,6 +135,28 @@ class RWAudioManager {
     const sound = new Audio(src);
     sound.volume = this.settings.master * this.settings.sfx;
     sound.play().catch(() => {});
+  }
+
+  /* Impacts courts synthétisés : pas de nouvel asset, pas de décodage par coup.
+     Réservé aux actions impliquant le joueur pour garder la bataille lisible. */
+  playCombatImpact({ magic = false, killed = false, received = false } = {}) {
+    if (this.settings.muted || typeof window === 'undefined') return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = this._combatContext || (this._combatContext = new AudioCtx());
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    const osc = ctx.createOscillator();
+    const volume = this.settings.master * this.settings.sfx * (received ? 0.16 : 0.12);
+    if (volume <= 0.001) return;
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + (killed ? 0.22 : 0.11));
+    osc.type = magic ? 'sine' : 'triangle';
+    osc.frequency.setValueAtTime(magic ? 260 : (received ? 105 : 135), now);
+    osc.frequency.exponentialRampToValueAtTime(magic ? 90 : 48, now + (killed ? 0.22 : 0.11));
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now); osc.stop(now + (killed ? 0.23 : 0.12));
   }
 
   playRandomFortDrums() {

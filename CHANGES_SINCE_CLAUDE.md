@@ -371,6 +371,41 @@ intégration. Le skybox, l'environnement de réflexion et l'éclairage indirect
 utilisent tous cette nouvelle source ; le dôme gradient reste le fallback de
 chargement.
 
+## Combat Feel et Battlefield Prototype
+
+- centralisation d’un événement visuel après chaque dégât effectivement résolu,
+  sans modifier les formules de combat ;
+- animation d’attaque déclenchée par la frappe réelle plutôt que bouclée en
+  permanence dès qu’un ennemi est à portée ;
+- réaction brève du modèle touché, flash d’impact mêlée/magie, éclats de mort,
+  secousse caméra limitée aux coups donnés ou reçus par le joueur et son
+  d’impact synthétisé respectant les volumes existants ;
+- placement initial de deux escouades de quatre bots sur l’axe entre le spawn du
+  joueur et son fort le plus proche, à 950 unités de simulation ;
+- caméra d’entrée orientée vers cette escarmouche et reprise immédiate par la
+  BotAI normale : aucune règle de combat, statistique ou IA parallèle ;
+- tags `battlefieldSquad` et état de front explicite, réutilisables par le futur
+  interest management ;
+- tests dédiés au contrat d’impact, à la mise à mort et au placement déterministe
+  du front.
+
+## Front Loop et Visual Interest
+
+- maintien de l’escarmouche dans le temps : les huit combattants du front
+  conservent le respawn canonique des `Entity`, puis regagnent leur slot de
+  bataille et reprennent une cible via la BotAI existante ;
+- ajout d’une frontière d’intérêt visuel calculée depuis `scene.fogEnd`, convertie
+  en unités simulation avec une marge de transition ;
+- mise à jour immédiate de cette frontière lorsque le panneau DEV `F8` modifie le
+  fog, sans reconstruire les chunks ni changer la portée de simulation ;
+- arrêt du rendu, des overlays et des animations de personnages hors intérêt,
+  avec reprise automatique lorsqu’ils reviennent dans la zone ;
+- compteurs `INTEREST n/total`, rayon courant et renforts du front ajoutés au HUD
+  diagnostic `F3` ;
+- chauffe initiale effectuée après le premier calcul d’intérêt afin d’éviter les
+  apparitions tardives à la sortie du chargement ;
+- tests dédiés aux renforts et à la conversion dynamique fog → rayon d’intérêt.
+
 ## Prochaine passe recommandée
 
 - valider visuellement les échelles et l'orientation des huit arbres sur plusieurs biomes ;

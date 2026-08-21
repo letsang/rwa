@@ -63,6 +63,20 @@ const GLB_ASSETS = {
   GOBLIN:   _glb('Goblin.glb'),
 };
 
+// Prototype d'equipement : le casque est un mesh rigide attache a l'os head.
+// Les valeurs restent declaratives pour permettre un futur inventaire par slot.
+const EQUIPMENT_ASSETS = {
+  TROLL: {
+    head: {
+      url: './assets/equipment/head/helmet2.glb',
+      bone: 'head',
+      scale: 25,
+      position: [9, 0, 17],
+      rotation: [Math.PI, 170 * Math.PI / 180, Math.PI / 2],
+    },
+  },
+};
+
 class Game3D {
   constructor() {
     this.map = new GameMap();
@@ -82,6 +96,8 @@ class Game3D {
     this.racePreviewToken = 0;
     this.jumpState = null;
     this.jumpOffset = 0;
+    this._cameraTrauma = 0;
+    this._cameraShakeTime = 0;
     this._debugMode = 2; // diagnostic masqué par défaut ; F3 l'affiche
     // état caméra : MODE discret + rig sphérique
     this.mode = 'THIRD_PERSON';
@@ -91,6 +107,8 @@ class Game3D {
     this.dragging = false;
     this.dragButton = -1;
     this.lastDrag = { x: 0, y: 0 };
+    this.cameraInspection = null;
+    this.cameraInspectionLocked = false;
   }
 
   log(t) { UI.log(t); }
@@ -484,6 +502,16 @@ class Game3D {
       }
     }
 
+    // Première scène jouable : deux groupes existants se rencontrent à courte
+    // distance du spawn. Après ce placement initial, l'IA normale reprend tout.
+    this.battlefield = (typeof BattlefieldPrototype !== 'undefined') ? new BattlefieldPrototype(this) : null;
+    const stagedBattlefield = this.battlefield ? this.battlefield.stage(faction) : null;
+    if (stagedBattlefield) {
+      // La caméra d'entrée regarde le front : le joueur avance réellement vers
+      // les silhouettes et les impacts perceptibles à travers la brume.
+      this.cam.yaw = Math.atan2(-stagedBattlefield.forward.x, -stagedBattlefield.forward.y);
+    }
+
     this.initBabylon();
     this.buildWorld();
     const visualPromises = [];
@@ -534,6 +562,7 @@ class Game3D {
 
     // Rendu de chauffe encore masqué par l'écran de chargement : compilation du
     // shader terrain, positionnement des unités et premier remplissage des buffers.
+    if (this.interest) this.interest.refresh();
     this.updateCamera(0.016);
     this.updateMeshes(0.016);
     this.scene.render();
@@ -548,7 +577,9 @@ class Game3D {
       UI.update(this);
     });
     window.addEventListener('resize', () => eng.resize());
-    UI.notify('La guerre fait rage — V pour changer de caméra.', '#fff');
+    UI.notify(stagedBattlefield
+      ? 'Des armes s’entrechoquent dans la brume, droit devant.'
+      : 'La guerre fait rage — V pour changer de caméra.', '#fff');
   }
 
   /* ================= BABYLON SETUP ================= */
@@ -644,6 +675,13 @@ class Game3D {
     // Outil DEV indépendant : lit et pilote uniquement les objets visuels existants.
     this.visualTuning = (typeof VisualTuningPanel !== 'undefined' && this.environment)
       ? new VisualTuningPanel(this) : null;
+    this.equipmentTuning = (typeof EquipmentTuningPanel !== 'undefined')
+      ? new EquipmentTuningPanel(this, EQUIPMENT_ASSETS.TROLL.head) : null;
+
+    // Première frontière d'intérêt : fogEnd pilote en direct le budget de rendu
+    // des personnages, sans réduire la portée de la simulation globale.
+    this.interest = (typeof VisualInterestManager !== 'undefined')
+      ? new VisualInterestManager(this, { renderScale: S }) : null;
 
     // Landmarks (objectifs) : DONNÉES du monde, en coords globales, indépendants des chunks.
     this.buildLandmarks();
@@ -691,7 +729,18 @@ class Game3D {
       // Chargement ASYNCHRONE : toutes les promesses sont agrégées par start(), qui
       // conserve l'écran de chargement jusqu'à ce que chaque personnage soit prêt.
       return CharacterVisual.loadModel(this, e, glb.url, opts)
-        .then(cv => { e.visual = cv; e._bodyTopY = cv.bodyTopY; this.logGlbAnimsOnce(cv); })
+        .then(async cv => {
+          // Premier test d'equipement : uniquement le joueur Troll, afin de ne
+          // pas multiplier les textures du casque sur chaque minion.
+          const baseHelmet = e.isPlayer && EQUIPMENT_ASSETS[e.race] && EQUIPMENT_ASSETS[e.race].head;
+          const helmet = baseHelmet && this.equipmentTuning
+            ? this.equipmentTuning.optionsFor(baseHelmet) : baseHelmet;
+          if (helmet) {
+            try { await cv.equipStaticModel('head', helmet.url, helmet); }
+            catch (err) { console.warn('[RWA] Casque non charge :', err); }
+          }
+          e.visual = cv; e._bodyTopY = cv.bodyTopY; this.logGlbAnimsOnce(cv);
+        })
         .catch(err => {
           console.warn('[RWA] Échec du chargement ' + glb.url + ' → fallback placeholder pour '
             + e.def.name + ' (' + (e.race || '?') + ') : ' + ((err && err.message) || err));
@@ -727,29 +776,43 @@ class Game3D {
     cv.addEventListener('pointermove', e => {
       const r = cv.getBoundingClientRect();
       this.pointer.x = e.clientX - r.left; this.pointer.y = e.clientY - r.top;
-      // Orbite caméra sur clic DROIT maintenu (yaw inversé selon préférence).
-      if (this.dragging && this.dragButton === 2) {
+      // Clic droit : orbite gameplay. Clic gauche : inspection persistante.
+      if (this.dragging && (this.dragButton === 0 || this.dragButton === 2)) {
         const dx = e.clientX - this.lastDrag.x, dy = e.clientY - this.lastDrag.y;
         this.lastDrag = { x: e.clientX, y: e.clientY };
         const M = CAM_MODES[this.mode];
         this.cam.yaw += dx * 0.006;   // INVERSÉ (gauche/droite)
         this.cam.pitch = Math.max(M.pitchMin, Math.min(M.pitchMax, this.cam.pitch + dy * 0.005));
         this.cam.tPitch = this.cam.pitch;
+        if (this.cameraInspection) this.cameraInspection.distance += Math.hypot(dx, dy);
       }
     });
 
     cv.addEventListener('pointerdown', e => {
       cv.setPointerCapture(e.pointerId);
       if (e.button === 2) {           // clic DROIT = caméra
+        this.cameraInspectionLocked = false;
         this.dragging = true; this.dragButton = 2; this.lastDrag = { x: e.clientX, y: e.clientY };
+      } else if (e.button === 0) {    // clic GAUCHE maintenu = inspection persistante
+        this.dragging = true; this.dragButton = 0; this.lastDrag = { x: e.clientX, y: e.clientY };
+        this.cameraInspection = {
+          distance: 0,
+        };
       }
-      // clic GAUCHE traité au relâchement (cibler / attaquer)
     });
 
     cv.addEventListener('pointerup', e => {
       if (e.button === 2) { this.dragging = false; this.dragButton = -1; }
-      else if (e.button === 0) { if (!this.player.dead) this.selectAtPointer(); }  // cibler + attaquer si ennemi
+      else if (e.button === 0) {
+        const inspection = this.cameraInspection;
+        const wasDrag = !!inspection && inspection.distance >= 4;
+        this.dragging = false; this.dragButton = -1; this.cameraInspection = null;
+        if (wasDrag) this.cameraInspectionLocked = true;
+        if (!wasDrag && !this.player.dead) this.selectAtPointer();
+      }
     });
+
+    cv.addEventListener('pointercancel', () => this.endCameraInspection());
 
     cv.addEventListener('wheel', e => {
       e.preventDefault();
@@ -773,16 +836,24 @@ class Game3D {
       const p = this.player;
       const skillByAction = {
         ability1: p.def.skills[0], ability2: p.def.skills[1], ability3: p.def.skills[2], ability4: p.def.skills[3],
-        realmAbility: p.def.realm, sprint: UNIVERSAL_SKILLS.sprint, purge: UNIVERSAL_SKILLS.purge,
+        realmAbility: p.def.realm, sprint: UNIVERSAL_SKILLS.sprint,
       };
       const sk = skillByAction[action];
       if (sk) { e.preventDefault(); this.castPlayerSkill(sk); }
     });
     window.addEventListener('keyup', e => this.keys.delete(e.code));
-    window.addEventListener('blur', () => this.keys.clear());
+    window.addEventListener('blur', () => { this.keys.clear(); this.endCameraInspection(); });
+  }
+
+  endCameraInspection() {
+    const inspection = this.cameraInspection;
+    if (!inspection) return;
+    this.dragging = false; this.dragButton = -1; this.cameraInspection = null;
+    if (inspection.distance >= 4) this.cameraInspectionLocked = true;
   }
 
   toggleCamera() {
+    this.cameraInspectionLocked = false;
     // V = véritable changement d'ÉTAT (indépendant du niveau de zoom).
     this.mode = this.mode === 'THIRD_PERSON' ? 'TACTICAL' : 'THIRD_PERSON';
     const M = CAM_MODES[this.mode];
@@ -895,7 +966,7 @@ class Game3D {
     this.mouseWorld.x = (ray.origin.x + ray.direction.x * t) / S;
     this.mouseWorld.y = (ray.origin.z + ray.direction.z * t) / S;
   }
-  moveToMouse() { this.updateMouseWorld(); this.clearStick(false); this.player.moveTarget = { x: this.mouseWorld.x, y: this.mouseWorld.y }; this.wasdActive = false; }
+  moveToMouse() { this.cameraInspectionLocked = false; this.updateMouseWorld(); this.clearStick(false); this.player.moveTarget = { x: this.mouseWorld.x, y: this.mouseWorld.y }; this.wasdActive = false; }
 
   /* HUD debug (V0.4.0) : position monde, chunk, compteurs, estimation de trajet. */
   updateDebugHUD() {
@@ -914,6 +985,8 @@ class Game3D {
       '\nACTIVE CHUNKS  ' + cm.activeCount() +
       '\nTERRAIN verts ' + cm.vertexCount() + '  tris ' + cm.triangleCount() +
       '\nSCENE MESHES   ' + this.scene.meshes.length + '   CHARACTERS ' + this.entities.filter(e => !e.dead).length +
+      (this.interest ? '\nINTEREST ' + this.interest.count() + '/' + this.entities.length + '   radius ' + Math.round(this.interest.radius) : '') +
+      (this.battlefield && this.battlefield.state ? '\nFRONT reinforcements ' + this.battlefield.state.reinforcements : '') +
       (this.vegetation ? '\nVEGET  T:' + this.vegetation._counts.tree + ' R:' + this.vegetation._counts.rock + ' B:' + this.vegetation._counts.bush + ' G:' + this.vegetation._counts.grass : '') +
       '\nSEAM max err   ' + (this._seamErr != null ? this._seamErr.toExponential(1) : '—') +
       '\nSLOPE max ' + (this._slopeStats ? this._slopeStats.maxDeg.toFixed(1) : '—') + '°  avg ' + (this._slopeStats ? this._slopeStats.avgDeg.toFixed(1) : '—') + '°' +
@@ -974,6 +1047,7 @@ class Game3D {
     const lf = pressed('moveLeft');
     const rt = pressed('moveRight');
     if (!(up || dn || lf || rt)) { if (this.wasdActive) { p.moveTarget = null; this.wasdActive = false; } return; }
+    this.cameraInspectionLocked = false;
     this.clearStick(false);
     // Base caméra RÉELLE (Babylon) projetée au sol -> évite toute désynchro de signe.
     // forward = direction où regarde la caméra (Axis.Z) ; right = Axis.X.
@@ -996,14 +1070,47 @@ class Game3D {
 
   /* ================= SIM (inchangée) ================= */
   spawnGroundEffect(cfg) { this.groundEffects.push(Object.assign({ timer: 0, ticksDone: 0 }, cfg)); }
-  spawnHitFx(x, y, magic) {
-    // petit flash 3D éphémère
+  onCombatImpact(impact) {
+    const { source, target, damage, killed } = impact;
+    if (source) source._attackVisualTime = 0.42;
+    if (target && target.visual) target.visual.pulseImpact(Math.min(1.6, 0.65 + damage / 90));
+    this.spawnHitFx(target.x, target.y, impact);
+    if (killed) this.spawnDeathFx(target.x, target.y, impact.magic);
+
+    const dealt = source === this.player;
+    const received = target === this.player;
+    if (dealt || received) {
+      const force = Math.min(1, 0.18 + damage / Math.max(1, target.maxHp) * 2.5 + (killed ? 0.35 : 0));
+      this._cameraTrauma = Math.min(1, this._cameraTrauma + force * (received ? 1 : 0.7));
+      if (this.audio) this.audio.playCombatImpact({ magic: impact.magic, killed, received });
+    }
+  }
+
+  spawnHitFx(x, y, options) {
+    // Flash compact au point d'impact ; signature booléenne conservée en fallback.
     if (!this.scene) return;
+    const impact = typeof options === 'object' ? options : { magic: Boolean(options), melee: !options, killed: false };
+    const magic = impact.magic;
     const s = BABYLON.MeshBuilder.CreateSphere('hit', { diameter: 1.2 }, this.scene);
     s.position = this.wpos(x, y, 2);
-    s.material = this.mat(magic ? 'hitm' : 'hitp', magic ? '#9678ff' : '#ffdc78', { emissive: magic ? '#9678ff' : '#ffdc78' });
-    s.isPickable = false; s._life = 0.22;
+    const color = impact.killed ? '#e85a4f' : (magic ? '#9678ff' : '#ffdc78');
+    s.material = this.mat('impact_' + color, color, { emissive: color });
+    s.isPickable = false; s._life = impact.killed ? 0.34 : 0.22; s._maxLife = s._life;
     (this._fx = this._fx || []).push(s);
+  }
+
+  spawnDeathFx(x, y, magic) {
+    if (!this.scene) return;
+    const color = magic ? '#aa82ff' : '#b93f38';
+    for (let i = 0; i < 6; i++) {
+      const shard = BABYLON.MeshBuilder.CreateBox('deathShard', { size: 0.28 }, this.scene);
+      const angle = i / 6 * Math.PI * 2;
+      shard.position = this.wpos(x, y, 1.4);
+      shard.material = this.mat('death_' + color, color, { emissive: color });
+      shard.isPickable = false; shard._life = 0.48; shard._maxLife = 0.48;
+      shard._velocity = new BABYLON.Vector3(Math.cos(angle) * 2.8, 2.2 + (i % 2), Math.sin(angle) * 2.8);
+      (this._fx = this._fx || []).push(shard);
+    }
   }
   recomputeFocus() {
     for (const f of FACTION_IDS) {
@@ -1048,6 +1155,7 @@ class Game3D {
     for (const e of this.entities) if (e !== this.player && !e.dead) BotAI.update(e, this, dt);
     for (const e of this.entities) e.update(dt);
     if (this.player.dead && this.player.respawnTimer <= 0) this.player.respawn();
+    if (this.battlefield) this.battlefield.update(dt);
 
     this.map.update(dt, this.entities, (t, prev, now) => {
       UI.notify(`${t.name} capturé par ${FACTIONS[now].name} !`, FACTIONS[now].color);
@@ -1067,10 +1175,11 @@ class Game3D {
 
     this.updateCamera(dt);
 
-    // FACING DÉCOUPLÉ DU DÉPLACEMENT : le joueur regarde là où pointe la caméra.
-    // La direction de déplacement (WASD relatif caméra) reste indépendante ->
-    // strafe, recul et diagonales possibles sans rotation artificielle du modèle.
-    if (this.player && !this.player.dead) {
+    // FACING DÉCOUPLÉ DU DÉPLACEMENT : pendant et après un vrai glisser gauche,
+    // le facing reste figé pour inspecter le personnage. Un déplacement, V ou
+    // un glisser droit rend ensuite la caméra au contrôle normal du gameplay.
+    const inspecting = !!(this.cameraInspection || this.cameraInspectionLocked);
+    if (this.player && !this.player.dead && !inspecting) {
       if (this.player._stickActive && this.player.followTarget) {
         const st = this.player.followTarget;
         this.player.facing = Math.atan2(st.y - this.player.y, st.x - this.player.x);
@@ -1086,6 +1195,7 @@ class Game3D {
     if (this.vegetation) this.vegetation.update(this.player.x, this.player.y);
     if (this.water) this.water.update();   // reconstruit l'eau si les chunks actifs ont changé
     if (this.audio) this.audio.updateWorldAudio(this.player);
+    if (this.interest) this.interest.refresh();
     if (this._playerShadow && this.player && !this.player.dead) {
       const sh = this._playerShadow; sh.setEnabled(true);
       sh.position.set(this.player.x * S, this.getTerrainHeight(this.player.x, this.player.y) + 0.15, this.player.y * S);
@@ -1122,6 +1232,16 @@ class Game3D {
     // empêche la caméra de passer sous le terrain (échantillonne le sol sous la caméra)
     const camTerrain = this.getTerrainHeight(camPos.x / S, camPos.z / S);
     if (camPos.y < camTerrain + 2) camPos.y = camTerrain + 2;
+    this._cameraShakeTime += dt;
+    this._cameraTrauma = Math.max(0, this._cameraTrauma - dt * 3.4);
+    if (this._cameraTrauma > 0.001) {
+      const amplitude = this._cameraTrauma * this._cameraTrauma * (this.mode === 'TACTICAL' ? 0.34 : 0.18);
+      const shake = new BABYLON.Vector3(
+        Math.sin(this._cameraShakeTime * 71) * amplitude,
+        Math.sin(this._cameraShakeTime * 93 + 1.7) * amplitude * 0.65,
+        Math.cos(this._cameraShakeTime * 83) * amplitude * 0.35);
+      camPos.addInPlace(shake); target.addInPlace(shake);
+    }
     this.camera.position.copyFrom(camPos);
     this.camera.setTarget(target);
     this._camDir = target.subtract(camPos).normalize();
@@ -1133,7 +1253,14 @@ class Game3D {
     const p = this.player;
     for (const e of this.entities) {
       const v = e.visual; if (!v) continue;
-      const visible = !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
+      v.updateFeedback(dt);
+      const relevant = !this.interest || this.interest.isRelevant(e);
+      if (!relevant && e._renderRelevant !== false) {
+        if (v.animator) v.animator.stop();
+        else if (v.animationController) v.animationController.stop();
+      }
+      e._renderRelevant = relevant;
+      const visible = relevant && !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
       v.setEnabled(visible);
       if (!visible) continue;
       const jumpY = e === p ? this.jumpOffset : 0;
@@ -1144,18 +1271,18 @@ class Game3D {
       const st = e.isStealthed || e.isCamouflaged;
       v.setVisibility(st ? (ally ? 0.4 : 0.25) : 1);
 
-      const inMelee = e.target && !e.target.dead && e.faction !== e.target.faction
-        && e.distanceTo(e.target) <= (e.def.attackRange + e.radius + e.target.radius);
+      e._attackVisualTime = Math.max(0, (e._attackVisualTime || 0) - dt);
+      const striking = e._attackVisualTime > 0;
 
       if (v.animator) {
         // GLB rig Manny : attaque prioritaire, sinon LOCOMOTION DIRECTIONNELLE
         // déterminée par le VECTEUR DE DÉPLACEMENT RÉEL (pas les touches).
-        if (inMelee) v.animator.play('Attack_01');
+        if (striking) v.animator.play('Attack_01');
         else v.animator.play(this.locomotionClip(e, dt));
       } else {
         // placeholder / britm (anims internes) : état simple
         const moving = (e.moveTarget || e.followTarget) && e.flags.canMove;
-        v.playAnim(inMelee ? 'attack' : (moving ? 'run' : 'idle'));
+        v.playAnim(striking ? 'attack' : (moving ? 'run' : 'idle'));
       }
 
       // mémorise la position pour le calcul de déplacement de la frame suivante
@@ -1163,7 +1290,21 @@ class Game3D {
     }
     // (V0.4.0 : landmarks statiques colorés par type — pas de recolor par propriétaire)
     // hit fx
-    if (this._fx) { for (const s of this._fx) { s._life -= dt; s.scaling.setAll(1 + (0.22 - s._life) * 4); s.material.alpha = Math.max(0, s._life / 0.22); } this._fx = this._fx.filter(s => { if (s._life <= 0) { s.dispose(); return false; } return true; }); }
+    if (this._fx) {
+      for (const s of this._fx) {
+        s._life -= dt;
+        if (s._velocity) {
+          s.position.addInPlace(s._velocity.scale(dt));
+          s._velocity.y -= 9 * dt;
+          s.rotation.x += dt * 9; s.rotation.z += dt * 7;
+        } else {
+          const age = s._maxLife - s._life;
+          s.scaling.setAll(1 + age * 4);
+        }
+        s.material.alpha = Math.max(0, s._life / s._maxLife);
+      }
+      this._fx = this._fx.filter(s => { if (s._life <= 0) { s.dispose(); return false; } return true; });
+    }
   }
 
   /* ================= OVERLAY DOM (HP / texte flottant) ================= */
@@ -1182,6 +1323,7 @@ class Game3D {
     const sy = h ? (cvs.clientHeight / h) : 1;
     for (const e of this.entities) {
       const plate = e._plate; if (!plate) continue;
+      if (this.interest && !this.interest.isRelevant(e)) { plate.style.display = 'none'; continue; }
       // modèle GLB pas encore chargé (async) : pas de plaque tant que le visuel n'existe pas
       if (!e.visual || e._bodyTopY == null) { plate.style.display = 'none'; continue; }
       const visible = !e.dead && (e.faction === p.faction || this.isEnemyVisible(e));
@@ -1224,7 +1366,7 @@ class Game3D {
 
   /* Skillbar : rendre les slots cliquables + libellés de touches adaptés */
   patchSkillbar() {
-    const actions = ['ability1', 'ability2', 'ability3', 'ability4', 'realmAbility', 'sprint', 'purge'];
+    const actions = ['ability1', 'ability2', 'ability3', 'ability4', 'realmAbility'];
     const refreshBindings = () => UI.slots.forEach((slot, index) => {
       const keyEl = slot.el.querySelector('.key');
       if (keyEl) keyEl.textContent = RWAKeybindings.label(actions[index]);

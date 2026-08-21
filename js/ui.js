@@ -11,11 +11,9 @@ const UI = {
     bar.innerHTML = '';
     this.slots = [];
     const list = [
-      ...player.def.skills,
+      ...player.def.skills.slice(0, 4),
       player.def.realm,
-      UNIVERSAL_SKILLS.sprint,
-      UNIVERSAL_SKILLS.purge,
-    ];
+    ].filter(Boolean);
     for (const s of list) {
       const el = document.createElement('div');
       el.className = 'skill-slot';

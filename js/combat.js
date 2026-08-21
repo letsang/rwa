@@ -11,13 +11,24 @@ const CombatSystem = {
   /* Dégâts centralisés (+ vfx). */
   dealDamage(source, target, amount, opts = {}) {
     if (!target || target.dead) return;
+    const hpBefore = target.hp;
     if (source) {
       opts.magic = opts.magic != null ? opts.magic : MAGIC_CLASSES.includes(source.classId);
       // Rogue sort du stealth en attaquant
       source.combatTimer = 0;
     }
     target.takeDamage(Math.max(1, Math.round(amount)), source, opts);
-    if (source && source.game) source.game.spawnHitFx(target.x, target.y, opts.magic);
+    const game = (source && source.game) || target.game;
+    const impact = {
+      source, target,
+      damage: Math.max(0, hpBefore - Math.max(0, target.hp)),
+      magic: Boolean(opts.magic),
+      melee: Boolean(opts.melee),
+      killed: target.dead,
+    };
+    if (game && typeof game.onCombatImpact === 'function') game.onCombatImpact(impact);
+    else if (game && typeof game.spawnHitFx === 'function') game.spawnHitFx(target.x, target.y, opts.magic);
+    return impact;
   },
 
   applyPoison(rogue, target) {

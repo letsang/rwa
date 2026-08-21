@@ -19,7 +19,6 @@ const RWA_KEYBINDING_ACTIONS = [
   { id: 'ability4', label: 'Compétence 4', code: 'Digit4' },
   { id: 'realmAbility', label: 'Compétence de royaume', code: 'KeyR' },
   { id: 'sprint', label: 'Sprint', code: 'ShiftLeft' },
-  { id: 'purge', label: 'Purge', code: 'KeyE' },
 ];
 
 class RWAKeybindingManager {

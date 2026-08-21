@@ -52,11 +52,14 @@ class CharacterVisual {
     this.scene = game.scene;
     this.entity = entity;
     this.meshes = [];            // tous les meshes visibles (pour la visibilité)
+    this.equipment = {};         // accessoires GLB attaches aux os
     this.skeleton = null;        // rempli par un glb en V0.3
     this.weaponSockets = {};
     this.animationController = new AnimationController(this);
     this._vis = 1;
     this._ringAlly = null;
+    this._impactTime = 0;
+    this._impactStrength = 0;
   }
 
   /* Construit la représentation PLACEHOLDER (capsule + tête + accessoires).
@@ -139,7 +142,10 @@ class CharacterVisual {
 
   /* -------- API stable (utilisée par game3d) -------- */
   setTransform(x, y, z, rotY) { this.visualRoot.position.set(x, y, z); this.visualRoot.rotation.y = rotY; }
-  setEnabled(b) { this.visualRoot.setEnabled(b); }
+  setEnabled(b) {
+    this.visualRoot.setEnabled(b);
+    for (const item of Object.values(this.equipment)) item.holder.setEnabled(b);
+  }
   setVisibility(v) {
     if (v === this._vis) return;
     this._vis = v;
@@ -152,6 +158,26 @@ class CharacterVisual {
     this._ringAlly = ally;
     this.factionRing.material = this.game.mat(ally ? 'ally' : 'enemy', hex, { emissive: ally ? '#173a20' : '#3a1010' });
   }
+  /* Réaction d'impact purement visuelle. visualRoot reste à l'échelle 1 : les
+     échelles d'import et de race portées par meshRoot ne sont jamais écrasées. */
+  pulseImpact(strength = 1) {
+    this._impactTime = 0.16;
+    this._impactStrength = Math.max(this._impactStrength, Math.min(1.6, strength));
+  }
+  updateFeedback(dt) {
+    if (!this.visualRoot) return;
+    this._impactTime = Math.max(0, this._impactTime - dt);
+    if (this._impactTime <= 0) {
+      this.visualRoot.scaling.setAll(1);
+      this.visualRoot.rotation.z = 0;
+      this._impactStrength = 0;
+      return;
+    }
+    const phase = 1 - this._impactTime / 0.16;
+    const kick = Math.sin(phase * Math.PI) * this._impactStrength;
+    this.visualRoot.scaling.set(1 + kick * 0.035, 1 - kick * 0.055, 1 + kick * 0.035);
+    this.visualRoot.rotation.z = Math.sin(phase * Math.PI * 2) * 0.025 * this._impactStrength;
+  }
   /* playAnim accepte un nom SÉMANTIQUE ('idle'/'run'/'attack') résolu via
      semanticAnim (rempli à l'import), sinon un nom d'AnimationGroup direct.
      Aucune exception si l'animation est absente (no-op). */
@@ -163,8 +189,49 @@ class CharacterVisual {
     if (!key) return;
     this.animationController.play(key);
   }
+  async equipStaticModel(slot, url, opts = {}) {
+    if (!this.skeleton || !this.skinnedMesh) throw new Error('Squelette requis pour equiper ' + slot);
+    const boneName = opts.bone || slot;
+    const bone = this.skeleton.bones.find(b => {
+      const name = String(b.name || '').toLowerCase();
+      const wanted = boneName.toLowerCase();
+      return name === wanted || name.endsWith(':' + wanted);
+    });
+    if (!bone) throw new Error('Os introuvable : ' + boneName);
+
+    this.unequip(slot);
+    const imported = await BABYLON.SceneLoader.ImportMeshAsync('', '', url, this.scene, null, '.glb');
+    const holder = new BABYLON.TransformNode('equip_' + slot + this.entity.id, this.scene);
+    for (const mesh of imported.meshes) if (!mesh.parent) mesh.parent = holder;
+    holder.attachToBone(bone, this.skinnedMesh);
+
+    const position = opts.position || [0, 0, 0];
+    const rotation = opts.rotation || [0, 0, 0];
+    const scale = opts.scale == null ? 1 : opts.scale;
+    holder.position.set(position[0], position[1], position[2]);
+    holder.rotation.set(rotation[0], rotation[1], rotation[2]);
+    holder.scaling.setAll(scale);
+
+    const meshes = imported.meshes.filter(m => m.getTotalVertices && m.getTotalVertices() > 0);
+    for (const mesh of meshes) {
+      mesh.isPickable = false;
+      mesh.alwaysSelectAsActiveMesh = true;
+      this.meshes.push(mesh);
+    }
+    this.equipment[slot] = { holder, meshes, imported };
+    return this.equipment[slot];
+  }
+  unequip(slot) {
+    const item = this.equipment[slot];
+    if (!item) return;
+    const removed = new Set(item.meshes);
+    this.meshes = this.meshes.filter(mesh => !removed.has(mesh));
+    item.holder.dispose(false, true);
+    delete this.equipment[slot];
+  }
   dispose() {
     this.animationController.dispose();
+    for (const slot of Object.keys(this.equipment)) this.unequip(slot);
     if (this.visualRoot) this.visualRoot.dispose(false, true);
     this.meshes = [];
   }
@@ -214,6 +281,7 @@ class CharacterVisual {
     // Meshes géométriques (excluent le __root__ transform sans vertices)
     const geo = res.meshes.filter(m => m.getTotalVertices && m.getTotalVertices() > 0);
     cv.meshes = geo;
+    cv.skinnedMesh = geo.find(m => m.skeleton === cv.skeleton) || geo[0] || null;
     // Picking : metadata sur toutes les géométries (ceinture)
     for (const m of geo) { m.isPickable = true; m.metadata = { entity }; }
 
